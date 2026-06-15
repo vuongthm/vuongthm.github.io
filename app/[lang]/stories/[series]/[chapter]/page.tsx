@@ -11,9 +11,19 @@ export const dynamic = "force-static"
 export async function generateStaticParams() {
   const params: { lang: string; series: string; chapter: string }[] = []
   for (const lang of ["en", "vi"] as const) {
-    for (const series of getVisibleSeries(lang)) {
-      for (const chapter of getChaptersBySeriesSlug(series.slug, lang)) {
-        params.push({ lang, series: series.slug, chapter: chapter.slug })
+    const seriesList = getVisibleSeries(lang)
+    if (seriesList.length === 0) {
+      params.push({ lang, series: "placeholder", chapter: "placeholder" })
+    } else {
+      for (const series of seriesList) {
+        const chapters = getChaptersBySeriesSlug(series.slug, lang)
+        if (chapters.length === 0) {
+          params.push({ lang, series: series.slug, chapter: "placeholder" })
+        } else {
+          for (const chapter of chapters) {
+            params.push({ lang, series: series.slug, chapter: chapter.slug })
+          }
+        }
       }
     }
   }

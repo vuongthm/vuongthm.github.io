@@ -11,8 +11,14 @@ export const dynamic = "force-static"
 export async function generateStaticParams() {
   const params: { lang: string; slug: string }[] = []
   for (const lang of ["en", "vi"] as const) {
-    for (const note of getVisibleNotes(lang)) {
-      params.push({ lang, slug: note.slug })
+    const notes = getVisibleNotes(lang)
+    if (notes.length === 0) {
+      // Đường dẫn dự phòng nếu danh sách Note trống
+      params.push({ lang, slug: "placeholder" })
+    } else {
+      for (const note of notes) {
+        params.push({ lang, slug: note.slug })
+      }
     }
   }
   return params
