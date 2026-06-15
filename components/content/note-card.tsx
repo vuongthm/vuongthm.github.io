@@ -66,8 +66,25 @@ export function NoteCard({
         {note.description}
       </p>
 
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+      {/* 
+        Khung chân thẻ Note:
+        - Mặc định ở màn hình hẹp: Dàn theo hàng dọc (flex-col) tránh đè chữ.
+        - Màn hình rộng (sm): Tự động dàn hàng ngang (sm:flex-row) cân đối hai lề.
+      */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+        {/* Thời gian + số phút đọc (Bên trái) */}
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[11px] text-muted-foreground whitespace-nowrap">
+            {formatDate(note.date, lang)}
+          </span>
+          <span className="flex items-center gap-1 text-[11px] text-muted-foreground whitespace-nowrap">
+            <Clock size={10} />
+            {note.readingTime} {lang === "en" ? "min" : "phút"}
+          </span>
+        </div>
+
+        {/* Danh sách nhãn Tags (Bên phải, tự động căn phải trên màn hình rộng) */}
+        <div className="flex items-center gap-1.5 flex-wrap sm:justify-end min-w-0">
           {note.tags.map((tag) => (
             <span
               key={tag}
@@ -76,16 +93,6 @@ export function NoteCard({
               {tag}
             </span>
           ))}
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0 ml-2">
-          <span className="text-[11px] text-muted-foreground whitespace-nowrap">
-            {formatDate(note.date, lang)}
-          </span>
-          <span className="flex items-center gap-1 text-[11px] text-muted-foreground whitespace-nowrap">
-            <Clock size={10} />
-            {note.readingTime} {lang === "en" ? "min" : "phút"}
-          </span>
         </div>
       </div>
     </Link>

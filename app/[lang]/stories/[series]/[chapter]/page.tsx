@@ -8,28 +8,20 @@ interface PageProps {
 
 export const dynamic = "force-static"
 
+// Generate static parameters for all chapters of all series across locales
 export async function generateStaticParams() {
   const params: { lang: string; series: string; chapter: string }[] = []
   for (const lang of ["en", "vi"] as const) {
-    const seriesList = getVisibleSeries(lang)
-    if (seriesList.length === 0) {
-      params.push({ lang, series: "placeholder", chapter: "placeholder" })
-    } else {
-      for (const series of seriesList) {
-        const chapters = getChaptersBySeriesSlug(series.slug, lang)
-        if (chapters.length === 0) {
-          params.push({ lang, series: series.slug, chapter: "placeholder" })
-        } else {
-          for (const chapter of chapters) {
-            params.push({ lang, series: series.slug, chapter: chapter.slug })
-          }
-        }
+    for (const series of getVisibleSeries(lang)) {
+      for (const chapter of getChaptersBySeriesSlug(series.slug, lang)) {
+        params.push({ lang, series: series.slug, chapter: chapter.slug })
       }
     }
   }
   return params
 }
 
+// Generate chapter metadata for search engine indexing
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { series, chapter, lang } = await params
   const chap = getChapter(series, chapter, lang)
@@ -41,7 +33,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
+// Render the standalone chapter server page calling the client reader view
 export default async function Page({ params }: PageProps) {
-  const { series, chapter } = await params
-  return <ChapterPageClient series={series} chapter={chapter} />
+  const { series, chapter, lang } = await params
+  return <ChapterPageClient series={series} chapter={chapter} lang={lang} />
 }

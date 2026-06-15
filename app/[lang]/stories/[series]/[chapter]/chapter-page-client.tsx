@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation"
 import { Link } from "@/components/ui/link"
 import { useEffect, useRef, useState } from "react"
-import { ArrowLeft, ArrowRight, List, X } from "lucide-react"
+import { ArrowLeft, List, X } from "lucide-react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { ReadingProgressBar } from "@/components/features/reading-progress-bar"
@@ -11,17 +11,16 @@ import { BackToTop } from "@/components/features/back-to-top"
 import { ShareButton } from "@/components/features/share-button"
 import { ProseContent } from "@/components/content/prose-content"
 import { extractTocItems } from "@/components/features/table-of-contents"
-import { useLang } from "@/components/providers/lang-provider"
-import { getChapter, getChaptersBySeriesSlug, getSeriesBySlug, formatDate, estimateReadingTime } from "@/lib/data"
+import { getChapter, getChaptersBySeriesSlug, getSeriesBySlug, formatDate, estimateReadingTime, type Lang } from "@/lib/data"
 import { cn } from "@/lib/utils"
 
 interface ChapterPageClientProps {
   series: string
   chapter: string
+  lang: Lang
 }
 
-export default function ChapterPageClient({ series: seriesSlug, chapter: chapterSlug }: ChapterPageClientProps) {
-  const { lang } = useLang()
+export default function ChapterPageClient({ series: seriesSlug, chapter: chapterSlug, lang }: ChapterPageClientProps) {
   const [chapterPanelOpen, setChapterPanelOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
 
@@ -63,12 +62,18 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
       <ReadingProgressBar tocItems={chapterTocItems} lang={lang} />
       <BackToTop />
 
-      <div className="fixed bottom-24 right-4 sm:right-6 z-40 lg:hidden">
-        <button onClick={() => setChapterPanelOpen((v) => !v)} aria-label={L.chapters} className="size-11 flex items-center justify-center rounded-full bg-background border border-border shadow-lg text-muted-foreground hover:text-foreground hover:border-accent-brand/50 transition-all">
-          <List size={18} />
+      {/* Floating mobile list toggle button */}
+      <div className="fixed bottom-[76px] right-6 z-40 lg:hidden">
+        <button 
+          onClick={() => setChapterPanelOpen((v) => !v)} 
+          aria-label={L.chapters} 
+          className="size-10 flex items-center justify-center rounded-full bg-background border border-border shadow-lg text-muted-foreground hover:text-foreground hover:border-accent-brand/50 transition-all cursor-pointer"
+        >
+          <List size={16} />
         </button>
       </div>
 
+      {/* Mobile Chapters selection panel */}
       {chapterPanelOpen && (
         <div className="fixed inset-0 z-[60] flex items-end lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setChapterPanelOpen(false)} />
@@ -103,9 +108,12 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
         </div>
       )}
 
+      {/* Main content reader section */}
       <main className="pt-14">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
           <div className="flex gap-8 lg:gap-10 py-8 sm:py-12">
+            
+            {/* Desktop Left Sidebar: Chapters navigation list */}
             <aside className="hidden lg:block w-52 shrink-0">
               <div className="sticky top-20">
                 <Link href={`/stories/${seriesSlug}`} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-4">
@@ -123,6 +131,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
               </div>
             </aside>
 
+            {/* Main reading content */}
             <article className="flex-1 min-w-0">
               <div className="h-10 lg:hidden" aria-hidden="true" />
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6 flex-wrap">
@@ -148,6 +157,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
                 <ShareButton title={chapter.title} lang={lang} />
               </div>
 
+              {/* Prev / Next chapter navigation */}
               <nav className="grid grid-cols-2 gap-3 mt-6">
                 <div>
                   {prevChapter ? (

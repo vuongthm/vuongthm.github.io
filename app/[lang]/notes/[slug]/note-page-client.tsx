@@ -11,15 +11,14 @@ import { ShareButton } from "@/components/features/share-button"
 import { TableOfContents, extractTocItems } from "@/components/features/table-of-contents"
 import { ProseContent } from "@/components/content/prose-content"
 import { NoteCard } from "@/components/content/note-card"
-import { useLang } from "@/components/providers/lang-provider"
-import { getNoteBySlug, getRelatedNotes, formatDate, estimateReadingTime } from "@/lib/data"
+import { getNoteBySlug, getRelatedNotes, formatDate, estimateReadingTime, type Lang } from "@/lib/data"
 
 interface NotePageClientProps {
   slug: string
+  lang: Lang
 }
 
-export default function NotePageClient({ slug }: NotePageClientProps) {
-  const { lang } = useLang()
+export default function NotePageClient({ slug, lang }: NotePageClientProps) {
   const note = getNoteBySlug(slug, lang)
   if (!note) notFound()
 

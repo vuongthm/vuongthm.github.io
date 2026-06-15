@@ -13,7 +13,6 @@ export async function generateStaticParams() {
   for (const lang of ["en", "vi"] as const) {
     const tags = getAllTags(lang)
     if (tags.length === 0) {
-      // Đường dẫn dự phòng nếu danh sách Thẻ trống
       params.push({ lang, tag: "placeholder" })
     } else {
       for (const { tag } of tags) {
@@ -34,6 +33,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function Page({ params }: PageProps) {
-  const { tag } = await params
-  return <TagPageClient tag={tag} />
+  const { tag, lang } = await params
+  return <TagPageClient tag={tag} lang={lang} />
 }

@@ -4,12 +4,12 @@ import { Link } from "@/components/ui/link"
 import { ArrowLeft, BookOpen, FileText } from "lucide-react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
-import { useLang } from "@/components/providers/lang-provider"
-import { getPostsByTag, estimateReadingTime } from "@/lib/data"
+import { getPostsByTag, estimateReadingTime, type Lang } from "@/lib/data"
 import type { Series, Note } from "@/lib/data"
 
 interface TagPageClientProps {
   tag: string
+  lang: Lang
 }
 
 const COPY = {
@@ -17,8 +17,7 @@ const COPY = {
   vi: { back: "Tất cả thẻ", tagged: "Bài viết được gắn thẻ", noResults: "Không tìm thấy bài viết nào cho thẻ này.", story: "Chuyện kể", note: "Ghi chú", minRead: "phút đọc", chapters: (n: number) => `${n} chương` },
 }
 
-export default function TagPageClient({ tag }: TagPageClientProps) {
-  const { lang } = useLang()
+export default function TagPageClient({ tag, lang }: TagPageClientProps) {
   const c = COPY[lang]
   const decodedTag = decodeURIComponent(tag)
   const posts = getPostsByTag(decodedTag, lang)

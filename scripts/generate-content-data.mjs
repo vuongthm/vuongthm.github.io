@@ -35,6 +35,7 @@ function generateData() {
   const allNotes = [];
 
   if (fs.existsSync(contentDir)) {
+    // Quét dữ liệu Stories
     const storiesDir = path.join(contentDir, "stories");
     if (fs.existsSync(storiesDir)) {
       const seriesFolders = fs.readdirSync(storiesDir);
@@ -42,26 +43,28 @@ function generateData() {
         const seriesPath = path.join(storiesDir, seriesSlug);
         if (!fs.statSync(seriesPath).isDirectory()) continue;
 
-        const seriesMdFile = path.join(seriesPath, "series.md");
-        if (fs.existsSync(seriesMdFile)) {
-          const { data } = parseFrontmatter(fs.readFileSync(seriesMdFile, "utf-8"));
-          allSeries.push({
-            slug: seriesSlug,
-            title: data.title || seriesSlug,
-            description: data.description || "",
-            coverImage: data.coverImage || "",
-            chapterCount: 0,
-            status: data.status || "ongoing",
-            tags: data.tags || [],
-            startDate: data.date || "",
-            lang: data.lang || "en"
-          });
-        }
-
+        // Quét series.md lồng bên trong thư mục en/ và vi/
         for (const lang of ["en", "vi"]) {
           const langPath = path.join(seriesPath, lang);
           if (fs.existsSync(langPath)) {
-            const files = fs.readdirSync(langPath).filter(f => f.endsWith(".md"));
+            const seriesMdFile = path.join(langPath, "series.md");
+            if (fs.existsSync(seriesMdFile)) {
+              const { data } = parseFrontmatter(fs.readFileSync(seriesMdFile, "utf-8"));
+              allSeries.push({
+                slug: seriesSlug,
+                title: data.title || seriesSlug,
+                description: data.description || "",
+                coverImage: data.coverImage || "",
+                chapterCount: 0,
+                status: data.status || "ongoing",
+                tags: data.tags || [],
+                startDate: data.date || "",
+                lang: lang
+              });
+            }
+
+            // Quét các chương truyện (Bỏ qua tệp cấu hình chung series.md)
+            const files = fs.readdirSync(langPath).filter(f => f.endsWith(".md") && f !== "series.md");
             for (const file of files) {
               const filePath = path.join(langPath, file);
               const rawContent = fs.readFileSync(filePath, "utf-8");
@@ -83,10 +86,12 @@ function generateData() {
       }
     }
 
+    // Tự động tính toán số lượng chương truyện
     allSeries.forEach(s => {
       s.chapterCount = allChapters.filter(c => c.seriesSlug === s.slug && c.lang === s.lang).length;
     });
 
+    // Quét dữ liệu Notes
     const notesDir = path.join(contentDir, "notes");
     if (fs.existsSync(notesDir)) {
       const noteFolders = fs.readdirSync(notesDir);

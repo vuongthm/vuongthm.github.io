@@ -13,7 +13,6 @@ export async function generateStaticParams() {
   for (const lang of ["en", "vi"] as const) {
     const notes = getVisibleNotes(lang)
     if (notes.length === 0) {
-      // Đường dẫn dự phòng nếu danh sách Note trống
       params.push({ lang, slug: "placeholder" })
     } else {
       for (const note of notes) {
@@ -36,6 +35,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function Page({ params }: PageProps) {
-  const { slug } = await params
-  return <NotePageClient slug={slug} />
+  const { slug, lang } = await params
+  return <NotePageClient slug={slug} lang={lang} />
 }

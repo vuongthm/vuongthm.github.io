@@ -79,19 +79,20 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
   const storyItems = getVisibleSeries(lang)
   const noteItems = getVisibleNotes(lang)
   const tagItems = getAllTags(lang)
+  
   const storyFuse = new Fuse(storyItems, {
     keys: ["title", "description", "tags"],
     threshold: 0.35,
-    includeScore: true,
   })
   const noteFuse = new Fuse(noteItems, {
     keys: ["title", "description", "tags"],
     threshold: 0.35,
-    includeScore: true,
   })
-  const tagFuse = new Fuse(tagItems, { keys: ["tag"], threshold: 0.3, includeScore: true })
+  const tagFuse = new Fuse(tagItems, { keys: ["tag"], threshold: 0.3 })
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 8)
@@ -155,7 +156,7 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
   }
 
   const handleSearchInput = (value: string) => {
-    setSearchQuery(value)
+    setQuery(value)
     if (debounceRef.current) clearTimeout(debounceRef.current)
     if (!value.trim()) {
       setSearchResults([])
@@ -192,9 +193,13 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
   const hasResults   = searchResults.length > 0
 
   return (
+    /* 
+      Đã nâng cấp z-index của thẻ <header> từ z-50 lên z-[90] 
+      để đảm bảo Menu luôn nằm nổi trên tất cả các lớp mục lục di động.
+    */
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-[90] transition-all duration-300",
         scrolled
           ? "frosted header-fade-bottom border-b border-border/50 shadow-sm"
           : "bg-transparent"
@@ -229,7 +234,7 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
         <div className="flex items-center gap-1">
           <div ref={searchContainerRef} className="relative flex items-center">
             {searchExpanded ? (
-              <div className="flex items-center gap-0.5">
+              <div className="flex items-center">
                 <div className="relative">
                   <Search
                     size={13}
@@ -241,7 +246,7 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
                     value={searchQuery}
                     onChange={(e) => handleSearchInput(e.target.value)}
                     placeholder={SL.placeholder}
-                    className="h-8 pl-7 pr-7 w-44 sm:w-60 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground text-xs outline-none focus:ring-2 focus:ring-accent-brand/30 focus:border-accent-brand/60 transition-all duration-200"
+                    className="h-8 pl-7 pr-7 w-48 sm:w-72 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground text-xs outline-none focus:ring-2 focus:ring-accent-brand/30 focus:border-accent-brand/60 transition-all duration-200"
                     aria-label="Search"
                     aria-expanded={showResults && hasResults}
                     aria-haspopup="listbox"
@@ -254,108 +259,103 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
                         setShowResults(false)
                         searchInputRef.current?.focus()
                       }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                       aria-label="Clear search"
                     >
                       <X size={11} />
                     </button>
                   )}
+
+                  {/* BẢNG KẾT QUẢ TÌM KIẾM */}
+                  {showResults && hasResults && (
+                    <div
+                      className="absolute top-full left-0 right-0 mt-2 w-full bg-popover border border-border rounded-xl shadow-xl z-[200] overflow-hidden"
+                      role="listbox"
+                      aria-label="Search results"
+                    >
+                      {storyResults.length > 0 && (
+                        <div>
+                          <p className="px-3 pt-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                            {SL.stories}
+                          </p>
+                          {storyResults.map(({ item }) => (
+                            <Link
+                              key={item.slug}
+                              href={`/stories/${item.slug}`}
+                              onClick={collapseSearch}
+                              role="option"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs text-foreground hover:bg-muted transition-colors"
+                            >
+                              <Search size={11} className="shrink-0 text-muted-foreground" />
+                              <span className="truncate">{item.title}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                      {noteResults.length > 0 && (
+                        <div className={storyResults.length > 0 ? "border-t border-border" : ""}>
+                          <p className="px-3 pt-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                            {SL.notes}
+                          </p>
+                          {noteResults.map(({ item }) => (
+                            <Link
+                              key={item.slug}
+                              href={`/notes/${item.slug}`}
+                              onClick={collapseSearch}
+                              role="option"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs text-foreground hover:bg-muted transition-colors"
+                            >
+                              <Search size={11} className="shrink-0 text-muted-foreground" />
+                              <span className="truncate">{item.title}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                      {tagResults.length > 0 && (
+                        <div className={(storyResults.length > 0 || noteResults.length > 0) ? "border-t border-border" : ""}>
+                          <p className="px-3 pt-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                            {SL.tags}
+                          </p>
+                          {tagResults.map(({ item }) => (
+                            <Link
+                              key={item.tag}
+                              href={`/tags/${item.tag}`}
+                              onClick={collapseSearch}
+                              role="option"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs text-foreground hover:bg-muted transition-colors"
+                            >
+                              <Hash size={11} className="shrink-0 text-accent-brand" />
+                              <span className="truncate">{item.tag}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* KHUNG THÔNG BÁO KHÔNG CÓ KẾT QUẢ TÌM KIẾM */}
+                  {showResults && !hasResults && searchQuery && (
+                    <div className="absolute top-full left-0 right-0 mt-2 w-full bg-popover border border-border rounded-xl shadow-xl z-[200] px-3 py-4">
+                      <p className="text-xs text-muted-foreground text-center">{SL.noResults}</p>
+                    </div>
+                  )}
                 </div>
-                <button
-                  onClick={collapseSearch}
-                  aria-label="Close search"
-                  className="size-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150"
-                >
-                  <X size={14} />
-                </button>
               </div>
             ) : (
               <button
                 onClick={openSearch}
                 aria-label="Open search"
-                className="size-9 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150"
+                className="size-9 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150 cursor-pointer"
               >
                 <Search size={16} />
               </button>
-            )}
-
-            {searchExpanded && showResults && hasResults && (
-              <div
-                className="absolute top-full right-0 mt-2 w-72 sm:w-80 bg-popover border border-border rounded-xl shadow-xl z-[200] overflow-hidden"
-                role="listbox"
-                aria-label="Search results"
-              >
-                {storyResults.length > 0 && (
-                  <div>
-                    <p className="px-3 pt-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                      {SL.stories}
-                    </p>
-                    {storyResults.map(({ item }) => (
-                      <Link
-                        key={item.slug}
-                        href={`/stories/${item.slug}`}
-                        onClick={collapseSearch}
-                        role="option"
-                        className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                      >
-                        <Search size={12} className="shrink-0 text-muted-foreground" />
-                        <span className="truncate">{item.title}</span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                {noteResults.length > 0 && (
-                  <div className={storyResults.length > 0 ? "border-t border-border" : ""}>
-                    <p className="px-3 pt-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                      {SL.notes}
-                    </p>
-                    {noteResults.map(({ item }) => (
-                      <Link
-                        key={item.slug}
-                        href={`/notes/${item.slug}`}
-                        onClick={collapseSearch}
-                        role="option"
-                        className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                      >
-                        <Search size={12} className="shrink-0 text-muted-foreground" />
-                        <span className="truncate">{item.title}</span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                {tagResults.length > 0 && (
-                  <div className={(storyResults.length > 0 || noteResults.length > 0) ? "border-t border-border" : ""}>
-                    <p className="px-3 pt-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                      {SL.tags}
-                    </p>
-                    {tagResults.map(({ item }) => (
-                      <Link
-                        key={item.tag}
-                        href={`/tags/${item.tag}`}
-                        onClick={collapseSearch}
-                        role="option"
-                        className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                      >
-                        <Hash size={12} className="shrink-0 text-accent-brand" />
-                        <span className="truncate">{item.tag}</span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {searchExpanded && showResults && !hasResults && searchQuery && (
-              <div className="absolute top-full right-0 mt-2 w-64 bg-popover border border-border rounded-xl shadow-xl z-[200] px-4 py-5">
-                <p className="text-sm text-muted-foreground text-center">{SL.noResults}</p>
-              </div>
             )}
           </div>
 
           <button
             onClick={() => setLang(lang === "en" ? "vi" : "en")}
             aria-label={`Switch to ${lang === "en" ? "Vietnamese" : "English"}`}
-            className="h-9 px-2 flex items-center justify-center rounded-md text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150"
+            className="h-9 px-2 flex items-center justify-center rounded-md text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150 cursor-pointer"
           >
             {lang === "en" ? "VI" : "EN"}
           </button>
@@ -364,7 +364,7 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
             <button
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               aria-label={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
-              className="size-9 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150"
+              className="size-9 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150 cursor-pointer"
             >
               {resolvedTheme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             </button>
@@ -377,36 +377,49 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
               aria-haspopup="menu"
-              className="size-9 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150"
+              className={cn(
+                "size-9 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300 cursor-pointer",
+                mobileOpen ? "rotate-90 text-foreground" : "rotate-0"
+              )}
             >
-              <Menu size={16} />
+              {mobileOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
 
-            {mobileOpen && (
-              <div
-                ref={mobileMenuRef}
-                role="menu"
-                aria-label="Mobile navigation"
-                className="absolute top-full right-0 mt-2 w-48 bg-popover border border-border rounded-xl shadow-lg overflow-hidden z-[200]"
-              >
-                {NAV_LINKS.map(({ key, href }) => (
-                  <Link
-                    key={key}
-                    href={href}
-                    role="menuitem"
-                    onClick={() => setMobileOpen(false)}
-                    className={cn(
-                      "flex items-center min-h-[44px] px-4 text-sm font-medium transition-colors duration-150",
-                      isNavActive(href)
-                        ? "text-foreground bg-muted"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                    )}
-                  >
-                    {NAV_LABELS[key][lang]}
-                  </Link>
-                ))}
-              </div>
-            )}
+            {/* 
+              ĐÃ NÂNG CẤP HIỆU ỨNG RÊ CHẠM (HOVER & TOUCH):
+              - Thêm rounded-lg và p-1.5 cho khung chứa để căn chỉnh cân đối.
+              - Thay đổi hover của hàng liên kết sang đổi màu nền và màu chữ nổi bật, bo tròn tinh tế.
+              - Hỗ trợ trạng thái bấm giữ 'active:bg-muted' nhạy bén trên di động.
+            */}
+            <div
+              ref={mobileMenuRef}
+              role="menu"
+              aria-label="Mobile navigation"
+              className={cn(
+                "absolute top-full right-0 mt-2 w-48 frosted border border-border rounded-xl shadow-lg p-1.5 overflow-hidden z-[200]",
+                "origin-top-right transition-all duration-200 ease-out",
+                mobileOpen
+                  ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+              )}
+            >
+              {NAV_LINKS.map(({ key, href }) => (
+                <Link
+                  key={key}
+                  href={href}
+                  role="menuitem"
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "flex items-center min-h-[40px] px-3.5 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer",
+                    isNavActive(href)
+                      ? "text-accent-brand bg-accent-brand/10 font-semibold"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/80"
+                  )}
+                >
+                  {NAV_LABELS[key][lang]}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

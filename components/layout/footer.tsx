@@ -8,6 +8,7 @@ function XIcon({ size = 16 }: { size?: number }) {
     </svg>
   )
 }
+
 function GithubIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -38,13 +39,11 @@ const ABOUT_LINKS: Record<Lang, { label: string; href: string }[]> = {
     { label: "About me", href: "/about" },
     { label: "Hometown", href: "/about#hometown" },
     { label: "Timeline", href: "/about#timeline" },
-    { label: "People in my life", href: "/about/people" },
   ],
   vi: [
     { label: "Về tôi", href: "/about" },
     { label: "Quê hương", href: "/about#hometown" },
     { label: "Các mốc", href: "/about#timeline" },
-    { label: "Người trong cuộc đời tôi", href: "/about/people" },
   ],
 }
 
@@ -60,14 +59,14 @@ const COPY: Record<Lang, {
     contentHeading: "Content",
     aboutHeading: "About",
     quoteText: "Writing is the only way I know to think clearly.",
-    copyright: "© 2024 Vuong (vuongthm).",
+    copyright: "© 2026 Vuong (vuongthm). All rights reserved.",
   },
   vi: {
     tagline: "Kể chuyện cuộc đời. Chia sẻ những gì học được.",
     contentHeading: "Nội dung",
     aboutHeading: "Về tôi",
     quoteText: "Viết là cách duy nhất tôi biết để suy nghĩ rõ ràng.",
-    copyright: "© 2024 Vuong (vuongthm).",
+    copyright: "© 2026 Vuong (vuongthm). All rights reserved.",
   },
 }
 
@@ -76,45 +75,53 @@ export function Footer({ lang = "en" }: FooterProps) {
 
   return (
     <footer className="mt-20 sm:mt-24">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-        <div className="border-t border-border" />
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-12">
+        <div className="border-t border-border/80" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12 py-10 sm:py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
-          <div className="sm:col-span-2 lg:col-span-1">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-12 py-10 sm:py-14">
+        {/* 
+          Cơ chế lưới Responsive mới:
+          - grid-cols-2 ở màn hình di động giúp dàn ngang 2 cột.
+          - md:grid-cols-4 ở màn hình tablet trở lên giúp chia thành 4 cột thẳng hàng.
+        */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
+          
+          {/* Cột 1: Thông tin tác giả & Mạng xã hội */}
+          <div className="col-span-2 md:col-span-1">
             <Link
               href="/"
-              className="font-serif text-xl font-semibold text-foreground hover:text-accent-brand transition-colors"
+              className="font-serif text-lg sm:text-xl font-semibold text-foreground hover:text-accent-brand transition-colors duration-150"
             >
               vuong<span className="text-accent-brand">.</span>
             </Link>
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed max-w-xs">
               {c.tagline}
             </p>
-            <div className="flex items-center gap-2 mt-4">
+            <div className="flex items-center gap-1 mt-4">
               <a
                 href="https://twitter.com/vuongthm"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Twitter / X"
-                className="size-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-accent-brand transition-colors"
+                className="size-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-accent-brand hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
               >
-                <XIcon size={15} />
+                <XIcon size={14} />
               </a>
               <a
                 href="https://github.com/vuongthm"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="size-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-accent-brand transition-colors"
+                className="size-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-accent-brand hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
               >
-                <GithubIcon size={15} />
+                <GithubIcon size={14} />
               </a>
             </div>
           </div>
 
-          <div className="hidden sm:block">
+          {/* Cột 2: Các liên kết Nội dung (Đã hiển thị trên di động dưới dạng cột đơn) */}
+          <div className="col-span-1">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
               {c.contentHeading}
             </p>
@@ -123,7 +130,7 @@ export function Footer({ lang = "en" }: FooterProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-150"
                 >
                   {item.label}
                 </Link>
@@ -131,7 +138,8 @@ export function Footer({ lang = "en" }: FooterProps) {
             </nav>
           </div>
 
-          <div className="hidden sm:block">
+          {/* Cột 3: Các liên kết Về tôi (Đã hiển thị trên di động dưới dạng cột đơn) */}
+          <div className="col-span-1">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
               {c.aboutHeading}
             </p>
@@ -140,7 +148,7 @@ export function Footer({ lang = "en" }: FooterProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-150"
                 >
                   {item.label}
                 </Link>
@@ -148,8 +156,9 @@ export function Footer({ lang = "en" }: FooterProps) {
             </nav>
           </div>
 
-          <div className="sm:col-span-2 lg:col-span-1">
-            <blockquote className="border-l-2 border-accent-brand/40 pl-4">
+          {/* Cột 4: Trích dẫn tâm đắc (Quote) */}
+          <div className="col-span-2 md:col-span-1">
+            <blockquote className="border-l-2 border-accent-brand/40 pl-4 py-0.5">
               <p className="text-sm text-muted-foreground italic leading-relaxed">
                 &ldquo;{c.quoteText}&rdquo;
               </p>
@@ -160,12 +169,13 @@ export function Footer({ lang = "en" }: FooterProps) {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+        {/* Phần dòng chân trang bản quyền dưới cùng */}
+        <div className="mt-10 pt-6 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground text-center sm:text-left">
             {c.copyright}
           </p>
           <p className="text-xs text-muted-foreground text-center sm:text-right">
-            Built with Next.js
+            Made with wholehearted dedication.
           </p>
         </div>
       </div>

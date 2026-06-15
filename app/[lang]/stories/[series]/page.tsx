@@ -8,12 +8,12 @@ interface PageProps {
 
 export const dynamic = "force-static"
 
+// Generate static parameters for all series across locales
 export async function generateStaticParams() {
   const params: { lang: string; series: string }[] = []
   for (const lang of ["en", "vi"] as const) {
     const seriesList = getVisibleSeries(lang)
     if (seriesList.length === 0) {
-      // Đường dẫn dự phòng nếu danh sách Truyện trống
       params.push({ lang, series: "placeholder" })
     } else {
       for (const series of seriesList) {
@@ -24,6 +24,7 @@ export async function generateStaticParams() {
   return params
 }
 
+// Generate localized metadata for SEO indexing
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { series, lang } = await params
   const s = getSeriesBySlug(series, lang)
@@ -35,7 +36,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
+// Render the standalone server page calling the client view
 export default async function Page({ params }: PageProps) {
-  const { series } = await params
-  return <SeriesPageClient series={series} />
+  const { series, lang } = await params
+  return <SeriesPageClient series={series} lang={lang} />
 }

@@ -57,15 +57,6 @@ export function TableOfContents({ items, lang = "en", className, spinningDot = f
 
           return (
             <li key={item.id} style={{ paddingLeft: `${indent}px` }} className="flex items-center gap-1.5">
-              {spinningDot && (
-                <span
-                  className={cn(
-                    "shrink-0 size-2.5 rounded-full border-2 transition-colors duration-150",
-                    isActive ? "border-accent-brand border-t-transparent toc-spin-dot" : "border-transparent"
-                  )}
-                  aria-hidden="true"
-                />
-              )}
               <a
                 href={`#${item.id}`}
                 onClick={(e) => {
