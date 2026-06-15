@@ -1,0 +1,42 @@
+{
+  "_comment": "Each entry maps a sibling content repo to destination paths inside this repo. Paths are relative to the repo root.",
+  "repos": [
+    {
+      "name": "stories",
+      "github": "vuongthm/stories",
+      "sources": [
+        {
+          "from": "*/chapter-*.md",
+          "to": "content/stories",
+          "description": "Chapter markdown files"
+        },
+        {
+          "from": "*/series.md",
+          "to": "content/stories",
+          "description": "Series index markdown files"
+        },
+        {
+          "from": "*/media/**",
+          "to": "public/media/stories",
+          "description": "Story images and media"
+        }
+      ]
+    },
+    {
+      "name": "network-notes",
+      "github": "vuongthm/network-notes",
+      "sources": [
+        {
+          "from": "*/note.md",
+          "to": "content/notes",
+          "description": "Note markdown files"
+        },
+        {
+          "from": "*/media/**",
+          "to": "public/media/notes",
+          "description": "Note images and media"
+        }
+      ]
+    }
+  ]
+}

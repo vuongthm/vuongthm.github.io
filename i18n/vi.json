@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "stories": "Chuyện kể",
+    "notes": "Ghi chú",
+    "about": "Về tôi",
+    "search": "Tìm kiếm"
+  },
+  "home": {
+    "tagline": "Kể chuyện cuộc đời. Chia sẻ những gì học được.",
+    "cta_stories": "Đọc chuyện kể",
+    "cta_notes": "Xem ghi chú",
+    "stories_heading": "Chuyện đang viết",
+    "notes_heading": "Ghi chú gần đây",
+    "about_heading": "Về tác giả",
+    "about_excerpt": "Tôi là Vuong (vuongthm) — lớn lên ở một làng quê nhỏ, tự mày mò học mọi thứ, và viết để hiểu bản thân hơn. Blog này là nơi tôi kể những câu chuyện chưa kịp nói và chia sẻ những điều đã học được trên con đường trưởng thành.",
+    "about_link": "Đọc thêm về tôi",
+    "view_all_stories": "Xem tất cả chuyện kể",
+    "view_all_notes": "Xem tất cả ghi chú"
+  },
+  "stories": {
+    "heading": "Chuyện kể",
+    "description": "Những câu chuyện cá nhân được chia thành các chương — về tuổi thơ, những năm tháng bất kham, và hành trình trưởng thành.",
+    "filter_all": "Tất cả",
+    "filter_ongoing": "Đang viết",
+    "filter_completed": "Hoàn thành",
+    "chapters": "chương",
+    "ongoing": "Đang viết",
+    "completed": "Hoàn thành",
+    "start_reading": "Bắt đầu đọc"
+  },
+  "notes": {
+    "heading": "Ghi chú",
+    "description": "Kiến thức, kỹ năng, mô hình tư duy và bài học — những thứ tôi học được và muốn chia sẻ lại.",
+    "search_placeholder": "Tìm kiếm ghi chú...",
+    "all_tags": "Tất cả",
+    "read_more": "Đọc thêm",
+    "min_read": "phút đọc"
+  },
+  "reading": {
+    "chapter": "Chương",
+    "prev_chapter": "Chương trước",
+    "next_chapter": "Chương tiếp theo",
+    "table_of_contents": "Mục lục",
+    "share": "Chia sẻ",
+    "copy_link": "Sao chép liên kết",
+    "link_copied": "Đã sao chép!",
+    "comments": "Bình luận",
+    "related_posts": "Bài liên quan",
+    "reading_time": "phút đọc",
+    "back_to_top": "Lên đầu trang",
+    "only_available": "Bài viết này chỉ có bằng tiếng Anh."
+  },
+  "about": {
+    "heading": "Về tôi",
+    "timeline_heading": "Những mốc quan trọng",
+    "interests_heading": "Quan tâm & Kỹ năng",
+    "contact_heading": "Liên hệ"
+  },
+  "search": {
+    "placeholder": "Tìm kiếm bài viết, chuyện kể...",
+    "no_results": "Không tìm thấy kết quả.",
+    "stories_section": "Chuyện kể",
+    "notes_section": "Ghi chú",
+    "shortcut": "để tìm kiếm"
+  },
+  "footer": {
+    "copyright": "© 2024 Vuong (vuongthm). Mọi quyền được bảo lưu.",
+    "built_with": "Viết bằng Next.js."
+  },
+  "meta": {
+    "site_name": "Blog của Vuong",
+    "site_description": "Blog cá nhân của Vuong — chuyện kể cuộc đời và những điều học được."
+  }
+}

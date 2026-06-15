@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "stories": "Stories",
+    "notes": "Notes",
+    "about": "About",
+    "search": "Search"
+  },
+  "home": {
+    "tagline": "Telling life stories. Sharing what I've learned.",
+    "cta_stories": "Read Stories",
+    "cta_notes": "Browse Notes",
+    "stories_heading": "Stories in progress",
+    "notes_heading": "Recent Notes",
+    "about_heading": "About the author",
+    "about_excerpt": "I'm Vuong (vuongthm) — grew up in a small rural village, taught myself everything I know, and write to understand myself better. This blog is where I tell the stories I haven't had a chance to share, and pass along what I've learned along the way.",
+    "about_link": "Read more about me",
+    "view_all_stories": "View all stories",
+    "view_all_notes": "View all notes"
+  },
+  "stories": {
+    "heading": "Stories",
+    "description": "Personal narrative series split into chapters — childhood, the reckless years, and a journey of growth.",
+    "filter_all": "All",
+    "filter_ongoing": "Ongoing",
+    "filter_completed": "Completed",
+    "chapters": "chapters",
+    "ongoing": "Ongoing",
+    "completed": "Completed",
+    "start_reading": "Start reading"
+  },
+  "notes": {
+    "heading": "Notes",
+    "description": "Knowledge, skills, mental models, and lessons — things I've learned and want to share.",
+    "search_placeholder": "Search notes...",
+    "all_tags": "All",
+    "read_more": "Read more",
+    "min_read": "min read"
+  },
+  "reading": {
+    "chapter": "Chapter",
+    "prev_chapter": "Previous Chapter",
+    "next_chapter": "Next Chapter",
+    "table_of_contents": "Table of Contents",
+    "share": "Share",
+    "copy_link": "Copy link",
+    "link_copied": "Copied!",
+    "comments": "Comments",
+    "related_posts": "Related posts",
+    "reading_time": "min read",
+    "back_to_top": "Back to top",
+    "only_available": "This post is only available in Vietnamese."
+  },
+  "about": {
+    "heading": "About",
+    "timeline_heading": "Key milestones",
+    "interests_heading": "Interests & Skills",
+    "contact_heading": "Contact"
+  },
+  "search": {
+    "placeholder": "Search posts, stories...",
+    "no_results": "No results found.",
+    "stories_section": "Stories",
+    "notes_section": "Notes",
+    "shortcut": "to search"
+  },
+  "footer": {
+    "copyright": "© 2024 Vuong (vuongthm). All rights reserved.",
+    "built_with": "Built with Next.js."
+  },
+  "meta": {
+    "site_name": "Vuong's Blog",
+    "site_description": "Personal blog by Vuong — life stories and lessons learned."
+  }
+}

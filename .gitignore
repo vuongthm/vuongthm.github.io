@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+.DS_Store
+tsconfig.tsbuildinfo
+
+# Tệp sinh ra tự động trong quá trình đồng bộ cục bộ (Không push lên repo)
+content/notes/
+content/stories/
+public/media/notes/
+public/media/stories/
+lib/content.generated.ts

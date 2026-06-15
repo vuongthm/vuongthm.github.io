@@ -1,0 +1,77 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  repository_dispatch:
+    types: [content-updated]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main site
+        uses: actions/checkout@v5
+        with:
+          path: vuongthm.github.io
+
+      - name: Check out stories content
+        uses: actions/checkout@v5
+        with:
+          repository: vuongthm/stories
+          path: stories
+          token: ${{ secrets.PAT_TOKEN }}
+        continue-on-error: true
+
+      - name: Check out network-notes content
+        uses: actions/checkout@v5
+        with:
+          repository: vuongthm/network-notes
+          path: network-notes
+          token: ${{ secrets.PAT_TOKEN }}
+        continue-on-error: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.15.4 --activate
+
+      - name: Install dependencies
+        working-directory: ./vuongthm.github.io
+        run: pnpm install --frozen-lockfile
+
+      - name: Build site
+        working-directory: ./vuongthm.github.io
+        run: pnpm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./vuongthm.github.io/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
