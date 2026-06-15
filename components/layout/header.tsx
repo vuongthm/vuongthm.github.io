@@ -156,7 +156,8 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
   }
 
   const handleSearchInput = (value: string) => {
-    setQuery(value)
+    // Fixed: change setQuery to setSearchQuery to match declared React state hook
+    setSearchQuery(value)
     if (debounceRef.current) clearTimeout(debounceRef.current)
     if (!value.trim()) {
       setSearchResults([])
@@ -193,10 +194,6 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
   const hasResults   = searchResults.length > 0
 
   return (
-    /* 
-      Đã nâng cấp z-index của thẻ <header> từ z-50 lên z-[90] 
-      để đảm bảo Menu luôn nằm nổi trên tất cả các lớp mục lục di động.
-    */
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-[90] transition-all duration-300",
@@ -385,12 +382,6 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
               {mobileOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
 
-            {/* 
-              ĐÃ NÂNG CẤP HIỆU ỨNG RÊ CHẠM (HOVER & TOUCH):
-              - Thêm rounded-lg và p-1.5 cho khung chứa để căn chỉnh cân đối.
-              - Thay đổi hover của hàng liên kết sang đổi màu nền và màu chữ nổi bật, bo tròn tinh tế.
-              - Hỗ trợ trạng thái bấm giữ 'active:bg-muted' nhạy bén trên di động.
-            */}
             <div
               ref={mobileMenuRef}
               role="menu"
