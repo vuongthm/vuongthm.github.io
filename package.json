@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/sync-dev.mjs && next dev",
-    "sync": "node scripts/sync-dev.mjs",
-    "build": "node scripts/sync-dev.mjs && next build",
+    "dev": "node scripts/sync-dev.mjs && node scripts/generate-content-data.mjs && next dev",
+    "sync": "node scripts/sync-dev.mjs && node scripts/generate-content-data.mjs",
+    "build": "node scripts/sync-dev.mjs && node scripts/generate-content-data.mjs && next build",
     "start": "next start",
     "lint": "eslint ."
   },

@@ -2,8 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   repository_dispatch:
     types: [content-updated]
   workflow_dispatch:
@@ -21,17 +20,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Checkout repo chính vào thư mục core
       - name: Check out main site
         uses: actions/checkout@v5
         with:
-          path: vuongthm.github.io
+          path: core
 
+      # Checkout các repo nội dung (Bỏ dòng token nếu repo là public)
       - name: Check out stories content
         uses: actions/checkout@v5
         with:
           repository: vuongthm/stories
           path: stories
-          token: ${{ secrets.PAT_TOKEN }}
+          # token: ${{ secrets.PAT_TOKEN }}  # Mở dòng này nếu repo stories là PRIVATE
         continue-on-error: true
 
       - name: Check out network-notes content
@@ -39,7 +40,7 @@ jobs:
         with:
           repository: vuongthm/network-notes
           path: network-notes
-          token: ${{ secrets.PAT_TOKEN }}
+          # token: ${{ secrets.PAT_TOKEN }}  # Mở dòng này nếu repo network-notes là PRIVATE
         continue-on-error: true
 
       - name: Set up Node.js
@@ -52,18 +53,19 @@ jobs:
           corepack enable
           corepack prepare pnpm@9.15.4 --activate
 
+      # Quan trọng: Cài đặt và Build bên trong thư mục 'core'
       - name: Install dependencies
-        working-directory: ./vuongthm.github.io
+        working-directory: ./core
         run: pnpm install --frozen-lockfile
 
       - name: Build site
-        working-directory: ./vuongthm.github.io
+        working-directory: ./core
         run: pnpm run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./vuongthm.github.io/out
+          path: ./core/out
 
   deploy:
     needs: build
