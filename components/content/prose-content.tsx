@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { Copy, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Link } from "@/components/ui/link"
 
 interface ProseContentProps {
   content: string
@@ -26,14 +27,8 @@ function CodeBlock({
 
   return (
     <div className="relative group my-6 rounded-xl overflow-hidden border border-border bg-[#1e1e1e]">
-      {/* Thanh header của khối mã nguồn */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-white/10">
         <span className="text-xs font-mono text-white/40">{language ?? "code"}</span>
-        
-        {/* 
-          Nút Copy có opacity-0 (ẩn mặc định) và tự động fade-in qua group-hover:opacity-100 
-          khi người dùng rê chuột vào bất kỳ vị trí nào trên khối mã (khối div có class 'group')
-        */}
         <button
           onClick={copy}
           aria-label="Copy code"
@@ -55,29 +50,90 @@ function renderMarkdown(md: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = []
   let i = 0
 
+  /* 
+    Updated: Advanced inline parser that supports:
+    1. Markdown Images: ![alt](url) -> renders centered responsive <img> tags
+    2. Markdown Links: [label](url) -> renders dynamic internal Links or secure external anchors
+    3. Bold: **text** -> renders strong tags
+    4. Code: `code` -> renders styled inline code elements
+    5. Italic: *text* -> renders em tags
+  */
   const inlineRender = (text: string): React.ReactNode => {
-    const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/)
+    // Regex matching: images, links, bold, inline code, and italics
+    const tokenRegex = /(\!\[[^\]]*\]\([^)]+\)|\[[^\]]*\]\([^)]+\)|\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g;
+    const parts = text.split(tokenRegex);
+    
     return parts.map((part, idx) => {
-      if (part.startsWith("**") && part.endsWith("**")) {
-        return <strong key={idx}>{part.slice(2, -2)}</strong>
+      if (!part) return null;
+      
+      // 1. Parse Markdown Image: ![alt](url)
+      if (part.startsWith("![") && part.includes("](") && part.endsWith(")")) {
+        const closeBracketIdx = part.indexOf("](");
+        const alt = part.slice(2, closeBracketIdx);
+        const url = part.slice(closeBracketIdx + 2, -1);
+        
+        return (
+          <span key={idx} className="block my-6 text-center select-none">
+            <img
+              src={url}
+              alt={alt}
+              className="mx-auto rounded-lg max-w-full h-auto border border-border/40 shadow-sm"
+              loading="lazy"
+            />
+            {alt && (
+              <span className="block mt-2 text-xs text-muted-foreground italic">
+                {alt}
+              </span>
+            )}
+          </span>
+        );
       }
+      
+      // 2. Parse Markdown Link: [label](url)
+      if (part.startsWith("[") && part.includes("](") && part.endsWith(")")) {
+        const closeBracketIdx = part.indexOf("](");
+        const label = part.slice(1, closeBracketIdx);
+        const url = part.slice(closeBracketIdx + 2, -1);
+        
+        if (url.startsWith("/")) {
+          return (
+            <Link key={idx} href={url} className="text-accent-brand hover:underline font-medium">
+              {label}
+            </Link>
+          );
+        }
+        return (
+          <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="text-accent-brand hover:underline font-medium inline-flex items-center gap-0.5">
+            {label}
+          </a>
+        );
+      }
+      
+      // 3. Parse Bold: **text**
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return <strong key={idx} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+      }
+      
+      // 4. Parse Inline Code: `code`
       if (part.startsWith("`") && part.endsWith("`")) {
         return (
           <code
             key={idx}
-            className="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-[0.875em]"
+            className="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-[0.875em] border border-border/40"
           >
             {part.slice(1, -1)}
           </code>
-        )
+        );
       }
-      return part.split(/(\*[^*]+\*)/).map((s, j) => {
-        if (s.startsWith("*") && s.endsWith("*")) {
-          return <em key={j}>{s.slice(1, -1)}</em>
-        }
-        return s
-      })
-    })
+      
+      // 5. Parse Italic: *text*
+      if (part.startsWith("*") && part.endsWith("*")) {
+        return <em key={idx} className="italic text-foreground/90">{part.slice(1, -1)}</em>;
+      }
+      
+      // Standard plain text fallback
+      return part;
+    });
   }
 
   const parseTableRow = (rowStr: string): string[] => {
@@ -109,7 +165,7 @@ function renderMarkdown(md: string): React.ReactNode[] {
       const text = line.slice(2)
       const id = text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-")
       nodes.push(
-        <h1 key={i} id={id} className="font-serif text-3xl font-semibold text-foreground mt-10 mb-4 group flex items-center gap-2">
+        <h1 key={i} id={id} className="font-serif text-3xl font-semibold text-foreground mt-10 mb-4 group flex items-center gap-2 scroll-mt-28 lg:scroll-mt-20">
           {text}
           <a href={`#${id}`} className="opacity-0 group-hover:opacity-60 text-muted-foreground text-base font-normal">#</a>
         </h1>
@@ -121,7 +177,7 @@ function renderMarkdown(md: string): React.ReactNode[] {
       const text = line.slice(5)
       const id = text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-")
       nodes.push(
-        <h4 key={i} id={id} className="font-serif text-lg font-semibold text-foreground mt-8 mb-3 group flex items-center gap-2">
+        <h4 key={i} id={id} className="font-serif text-lg font-semibold text-foreground mt-8 mb-3 group flex items-center gap-2 scroll-mt-28 lg:scroll-mt-20">
           {text}
           <a href={`#${id}`} className="opacity-0 group-hover:opacity-60 text-muted-foreground text-sm font-normal">#</a>
         </h4>
@@ -132,7 +188,7 @@ function renderMarkdown(md: string): React.ReactNode[] {
       const text = line.slice(4)
       const id = text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-")
       nodes.push(
-        <h3 key={i} id={id} className="font-serif text-xl font-semibold text-foreground mt-10 mb-3 group flex items-center gap-2">
+        <h3 key={i} id={id} className="font-serif text-xl font-semibold text-foreground mt-10 mb-3 group flex items-center gap-2 scroll-mt-28 lg:scroll-mt-20">
           {text}
           <a href={`#${id}`} className="opacity-0 group-hover:opacity-60 text-muted-foreground text-sm font-normal">#</a>
         </h3>
@@ -143,7 +199,7 @@ function renderMarkdown(md: string): React.ReactNode[] {
       const text = line.slice(3)
       const id = text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-")
       nodes.push(
-        <h2 key={i} id={id} className="font-serif text-2xl font-semibold text-foreground mt-12 mb-4 group flex items-center gap-2">
+        <h2 key={i} id={id} className="font-serif text-2xl font-semibold text-foreground mt-12 mb-4 group flex items-center gap-2 scroll-mt-28 lg:scroll-mt-20">
           {text}
           <a href={`#${id}`} className="opacity-0 group-hover:opacity-60 text-muted-foreground text-base font-normal">#</a>
         </h2>

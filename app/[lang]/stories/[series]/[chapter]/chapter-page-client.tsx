@@ -73,11 +73,16 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
         </button>
       </div>
 
-      {/* Mobile Chapters selection panel */}
+      {/* Mobile Chapters selection panel with frosted glass background */}
       {chapterPanelOpen && (
         <div className="fixed inset-0 z-[60] flex items-end lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setChapterPanelOpen(false)} />
-          <div ref={panelRef} className="relative w-full bg-background border-t border-border rounded-t-2xl max-h-[70vh] flex flex-col overflow-hidden shadow-2xl">
+          
+          {/* 
+            Updated: Swapped background class from solid 'bg-background' to translucent 'frosted'
+            This creates a beautiful, bright glassmorphic sliding sheet on mobile devices.
+          */}
+          <div ref={panelRef} className="relative w-full frosted border-t border-border rounded-t-2xl max-h-[70vh] flex flex-col overflow-hidden shadow-2xl">
             <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-border shrink-0">
               <div className="flex items-center gap-2">
                 <List size={14} className="text-muted-foreground" />

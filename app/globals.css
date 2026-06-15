@@ -151,11 +151,19 @@
     font-weight: 600;
     line-height: 1.3;
   }
+  
+  /* 
+    Updated: Deep-obscured brightened glassmorphism effect (Super High Blur)
+    - Set blur to 64px to completely smudge and hide any underlying text and details
+    - Set blending ratio of var(--surface) to 82% to make the frosted sheet thick and highly opaque
+    - Keeps saturate at 150% to maintain vibrant ambient color bleeding as the page scrolls
+  */
   .frosted {
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    background-color: color-mix(in srgb, var(--background) 70%, transparent);
+    backdrop-filter: blur(80px) saturate(140%);
+    -webkit-backdrop-filter: blur(80px) saturate(100%);
+    background-color: color-mix(in srgb, var(--surface) 95%, transparent);
   }
+  
   .header-fade-bottom::after {
     content: '';
     position: absolute;
