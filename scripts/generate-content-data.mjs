@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import CryptoJS from "crypto-js"; // Import crypto-js for build-time AES encryption
 
 function parseFrontmatter(fileContent) {
   const frontmatterRegex = /^---\r?\n([\s\S]+?)\r?\n---/;
@@ -35,7 +36,7 @@ function generateData() {
   const allNotes = [];
 
   if (fs.existsSync(contentDir)) {
-    // Quét dữ liệu Stories
+    // 1. Scan Stories Content
     const storiesDir = path.join(contentDir, "stories");
     if (fs.existsSync(storiesDir)) {
       const seriesFolders = fs.readdirSync(storiesDir);
@@ -43,7 +44,6 @@ function generateData() {
         const seriesPath = path.join(storiesDir, seriesSlug);
         if (!fs.statSync(seriesPath).isDirectory()) continue;
 
-        // Quét series.md lồng bên trong thư mục en/ và vi/
         for (const lang of ["en", "vi"]) {
           const langPath = path.join(seriesPath, lang);
           if (fs.existsSync(langPath)) {
@@ -63,12 +63,19 @@ function generateData() {
               });
             }
 
-            // Quét các chương truyện (Bỏ qua tệp cấu hình chung series.md)
             const files = fs.readdirSync(langPath).filter(f => f.endsWith(".md") && f !== "series.md");
             for (const file of files) {
               const filePath = path.join(langPath, file);
               const rawContent = fs.readFileSync(filePath, "utf-8");
               const { data, body } = parseFrontmatter(rawContent);
+
+              // Encrypt chapter content if password frontmatter exists
+              let chapterContent = body;
+              let isLocked = false;
+              if (data.password) {
+                isLocked = true;
+                chapterContent = CryptoJS.AES.encrypt(body, data.password.toString().trim()).toString();
+              }
 
               allChapters.push({
                 slug: file.replace(".md", ""),
@@ -77,7 +84,8 @@ function generateData() {
                 title: data.title || file,
                 preview: data.preview || "",
                 date: data.date || "",
-                content: body,
+                content: chapterContent,
+                isLocked: isLocked, // Mark as locked
                 lang: lang
               });
             }
@@ -86,12 +94,11 @@ function generateData() {
       }
     }
 
-    // Tự động tính toán số lượng chương truyện
     allSeries.forEach(s => {
       s.chapterCount = allChapters.filter(c => c.seriesSlug === s.slug && c.lang === s.lang).length;
     });
 
-    // Quét dữ liệu Notes
+    // 2. Scan Notes Content
     const notesDir = path.join(contentDir, "notes");
     if (fs.existsSync(notesDir)) {
       const noteFolders = fs.readdirSync(notesDir);
@@ -111,6 +118,14 @@ function generateData() {
               const words = body.trim().split(/\s+/).filter(Boolean).length;
               const readingTime = Math.max(1, Math.round(words / 200));
 
+              // Encrypt note content if password frontmatter exists
+              let noteContent = body;
+              let isLocked = false;
+              if (data.password) {
+                isLocked = true;
+                noteContent = CryptoJS.AES.encrypt(body, data.password.toString().trim()).toString();
+              }
+
               allNotes.push({
                 slug: file.replace(".md", ""),
                 title: data.title || file,
@@ -118,7 +133,8 @@ function generateData() {
                 tags: data.tags || [],
                 date: data.date || "",
                 readingTime: readingTime,
-                content: body,
+                content: noteContent,
+                isLocked: isLocked, // Mark as locked
                 lang: lang
               });
             }
@@ -153,6 +169,7 @@ export interface Chapter {
   preview: string;
   date: string;
   content: string;
+  isLocked?: boolean;
   lang: Lang;
 }
 
@@ -164,6 +181,7 @@ export interface Note {
   date: string;
   readingTime: number;
   content: string;
+  isLocked?: boolean;
   lang: Lang;
 }
 
@@ -186,10 +204,12 @@ function groupBySlug<T extends { slug: string; lang: Lang }>(items: T[]): Map<st
   return grouped
 }
 
+// Select by Lang with deduplication logic
 function selectByLang<T extends { slug: string; lang: Lang }>(items: T[], lang: Lang): T[] {
   return Array.from(groupBySlug(items).values()).map((bucket) => bucket.find((item) => item.lang === lang) ?? bucket[0])
 }
 
+// Select single item by slug and lang fallback
 function selectOne<T extends { slug: string; lang: Lang }>(items: T[], slug: string, lang: Lang): T | undefined {
   const matches = items.filter((item) => item.slug === slug)
   return matches.find((item) => item.lang === lang) ?? matches[0]
