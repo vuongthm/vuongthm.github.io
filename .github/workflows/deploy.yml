@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   repository_dispatch:
     types: [content-updated]
   workflow_dispatch:
@@ -20,19 +21,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # Checkout repo chính vào thư mục core
+      # Checkout core main web repository
       - name: Check out main site
         uses: actions/checkout@v5
         with:
           path: core
 
-      # Checkout các repo nội dung (Bỏ dòng token nếu repo là public)
+      # Checkout content repositories (Story and Notes)
       - name: Check out stories content
         uses: actions/checkout@v5
         with:
           repository: vuongthm/stories
           path: stories
-          # token: ${{ secrets.PAT_TOKEN }}  # Mở dòng này nếu repo stories là PRIVATE
         continue-on-error: true
 
       - name: Check out network-notes content
@@ -40,8 +40,12 @@ jobs:
         with:
           repository: vuongthm/network-notes
           path: network-notes
-          # token: ${{ secrets.PAT_TOKEN }}  # Mở dòng này nếu repo network-notes là PRIVATE
         continue-on-error: true
+
+      # Generate temporary passwords.json inside core workspace from secure GitHub secret
+      - name: Create temporary passwords.json from secret
+        working-directory: ./core
+        run: echo '${{ secrets.POST_PASSWORDS }}' > passwords.json
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
@@ -53,15 +57,17 @@ jobs:
           corepack enable
           corepack prepare pnpm@9.15.4 --activate
 
-      # Quan trọng: Cài đặt và Build bên trong thư mục 'core'
+      # Install dependencies using frozen lockfile
       - name: Install dependencies
         working-directory: ./core
         run: pnpm install --frozen-lockfile
 
+      # Build and export static assets (sync-dev.mjs, generate-content-data.mjs, and next build)
       - name: Build site
         working-directory: ./core
         run: pnpm run build
 
+      # Upload statically compiled /out artifact to GitHub Pages
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

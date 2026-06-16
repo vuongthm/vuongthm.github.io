@@ -35,6 +35,18 @@ function generateData() {
   const allChapters = [];
   const allNotes = [];
 
+  // Load local secure passwords map if exists
+  let passwordMap = {};
+  const passwordMapPath = path.resolve("passwords.json");
+  if (fs.existsSync(passwordMapPath)) {
+    try {
+      passwordMap = JSON.parse(fs.readFileSync(passwordMapPath, "utf-8"));
+      console.log("[Encrypt] Successfully loaded passwords.json");
+    } catch (err) {
+      console.error("[Encrypt] Error parsing passwords.json:", err);
+    }
+  }
+
   if (fs.existsSync(contentDir)) {
     // 1. Scan Stories Content
     const storiesDir = path.join(contentDir, "stories");
@@ -69,12 +81,19 @@ function generateData() {
               const rawContent = fs.readFileSync(filePath, "utf-8");
               const { data, body } = parseFrontmatter(rawContent);
 
-              // Encrypt chapter content if password frontmatter exists
+              // Check if the chapter requires encryption via "locked" property
               let chapterContent = body;
               let isLocked = false;
-              if (data.password) {
+              if (data.locked === "true" || data.locked === true) {
                 isLocked = true;
-                chapterContent = CryptoJS.AES.encrypt(body, data.password.toString().trim()).toString();
+                const chapterSlug = file.replace(".md", "");
+                const securePassword = passwordMap[chapterSlug];
+                
+                if (securePassword) {
+                  chapterContent = CryptoJS.AES.encrypt(body, securePassword.trim()).toString();
+                } else {
+                  console.warn(`[Encrypt] Password not found in passwords.json for chapter: ${seriesSlug}/${chapterSlug}`);
+                }
               }
 
               allChapters.push({
@@ -85,7 +104,7 @@ function generateData() {
                 preview: data.preview || "",
                 date: data.date || "",
                 content: chapterContent,
-                isLocked: isLocked, // Mark as locked
+                isLocked: isLocked,
                 lang: lang
               });
             }
@@ -118,12 +137,19 @@ function generateData() {
               const words = body.trim().split(/\s+/).filter(Boolean).length;
               const readingTime = Math.max(1, Math.round(words / 200));
 
-              // Encrypt note content if password frontmatter exists
+              // Check if the note requires encryption via "locked" property
               let noteContent = body;
               let isLocked = false;
-              if (data.password) {
+              if (data.locked === "true" || data.locked === true) {
                 isLocked = true;
-                noteContent = CryptoJS.AES.encrypt(body, data.password.toString().trim()).toString();
+                const noteSlug = file.replace(".md", "");
+                const securePassword = passwordMap[noteSlug];
+
+                if (securePassword) {
+                  noteContent = CryptoJS.AES.encrypt(body, securePassword.trim()).toString();
+                } else {
+                  console.warn(`[Encrypt] Password not found in passwords.json for note: ${noteSlug}`);
+                }
               }
 
               allNotes.push({
@@ -134,7 +160,7 @@ function generateData() {
                 date: data.date || "",
                 readingTime: readingTime,
                 content: noteContent,
-                isLocked: isLocked, // Mark as locked
+                isLocked: isLocked,
                 lang: lang
               });
             }
@@ -204,12 +230,10 @@ function groupBySlug<T extends { slug: string; lang: Lang }>(items: T[]): Map<st
   return grouped
 }
 
-// Select by Lang with deduplication logic
 function selectByLang<T extends { slug: string; lang: Lang }>(items: T[], lang: Lang): T[] {
   return Array.from(groupBySlug(items).values()).map((bucket) => bucket.find((item) => item.lang === lang) ?? bucket[0])
 }
 
-// Select single item by slug and lang fallback
 function selectOne<T extends { slug: string; lang: Lang }>(items: T[], slug: string, lang: Lang): T | undefined {
   const matches = items.filter((item) => item.slug === slug)
   return matches.find((item) => item.lang === lang) ?? matches[0]

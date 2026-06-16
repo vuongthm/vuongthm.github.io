@@ -10,3 +10,5 @@ content/stories/
 public/media/notes/
 public/media/stories/
 lib/content.generated.ts
+passwords.json
+
