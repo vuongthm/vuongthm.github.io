@@ -25,6 +25,7 @@ interface NotePageClientProps {
 
 export default function NotePageClient({ slug, lang }: NotePageClientProps) {
   const note = getNoteBySlug(slug, lang)
+  console.log("DEBUG NOTE DATA:", { slug, lang, note }) 
   if (!note) notFound()
 
   // State management for decryption form
