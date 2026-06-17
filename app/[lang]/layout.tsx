@@ -13,10 +13,10 @@ export default async function LangLayout({
   children,
   params,
 }: LayoutProps) {
-  // Giải nén Promise params bằng await theo đúng tiêu chuẩn Next.js 15+ & 16
+  // Unwrap Promise params with await, per the Next.js 15+ & 16 specification
   const { lang } = await params
 
-  // Bộ lọc bảo vệ ngăn chặn Next.js biên dịch nhầm các đường dẫn tĩnh thành trang động
+  // Protection filter to prevent Next.js from incorrectly compiling static paths into dynamic pages
   if (lang !== "en" && lang !== "vi") {
     notFound()
   }
