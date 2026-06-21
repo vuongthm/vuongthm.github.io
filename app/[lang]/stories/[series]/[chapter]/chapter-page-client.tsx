@@ -195,7 +195,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
 
       {/* Main content reader section */}
       <main className="pt-14">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           
           {/* Render password prompt form if the chapter is locked and not yet unlocked */}
           {chapter.isLocked && !isUnlocked ? (

@@ -31,7 +31,6 @@ export default function StoriesPage() {
       <Header />
       <BackToTop />
       <main className="pt-14">
-        {/* Đã đồng bộ lề ngang bằng việc đổi max-w-7xl sang max-w-6xl */}
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-12 pb-8 sm:pt-16 sm:pb-10">
           <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-foreground mb-3">{c.heading}</h1>
           <p className="text-base text-muted-foreground leading-relaxed max-w-xl">{c.description}</p>
@@ -52,7 +51,6 @@ export default function StoriesPage() {
           </div>
         </div>
 
-        {/* Đã đồng bộ lề ngang bằng việc đổi max-w-7xl sang max-w-6xl */}
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-16">
           {filtered.length === 0 ? (
             <p className="text-muted-foreground text-center py-16">{c.noResults}</p>

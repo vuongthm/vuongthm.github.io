@@ -202,7 +202,7 @@ export function Header({ onSearchOpen: _unused }: HeaderProps) {
           : "bg-transparent"
       )}
     >
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12 h-14 flex items-center justify-between gap-4">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
         <Link
           href="/"
           className="font-serif text-lg font-semibold text-foreground hover:text-accent-brand transition-colors duration-150 shrink-0"

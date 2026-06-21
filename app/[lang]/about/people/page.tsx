@@ -36,14 +36,14 @@ const PEOPLE_VI = [
     bio: "Người đã cất mọi tờ giấy khen vào hộp sắt mà không cần nói thêm gì.",
   },
   {
-    name: "Linh",
-    photo: "/about/people-linh.png",
+    name: "aaa",
+    photo: "/about/people-aaa.png",
     role: "Người bạn thân nhất",
     bio: "Người đã nói với tôi hãy bắt đầu viết công khai khi tôi còn sợ.",
   },
   {
-    name: "Nam",
-    photo: "/about/people-nam.png",
+    name: "bbb",
+    photo: "/about/people-bbb.png",
     role: "Đồng nghiệp",
     bio: "Cùng nhau làm ra sản phẩm đầu tiên rồi thất bại. Vẫn đang làm, vẫn đang thất bại.",
   },

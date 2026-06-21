@@ -9,6 +9,7 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { SeriesCard } from "@/components/content/series-card"
 import { NoteCard } from "@/components/content/note-card"
+import { BackToTop } from "@/components/features/back-to-top" // Imported BackToTop to resolve ReferenceError
 import { getVisibleSeries, getVisibleNotes } from "@/lib/data"
 
 const COPY = {
@@ -41,10 +42,10 @@ const COPY = {
 }
 
 const ABOUT_CAROUSEL_IMAGES = [
-  { src: "/hometown/dai-lanh-coast.png", alt: "Đại Lãnh coast at dawn" },
-  { src: "/hometown/dai-lanh-village.png", alt: "Đại Lãnh fishing village" },
-  { src: "/hometown/dai-lanh-mountain.png", alt: "Đại Lãnh mountain cove" },
-  { src: "/avatar.png", alt: "Vuong — the author" },
+  { src: "/hometown/dai-lanh-coast.png", alt: "Dai Lanh coast at dawn" },
+  { src: "/hometown/dai-lanh-village.png", alt: "Dai Lanh fishing village" },
+  { src: "/hometown/dai-lanh-mountain.png", alt: "Dai Lanh mountain cove" },
+  { src: "/avatar.png", alt: "Vuong - the author" },
 ]
 
 function AboutCarousel() {
@@ -101,7 +102,7 @@ function AboutCarousel() {
       <button
         onClick={prev}
         aria-label="Previous photo"
-        className="absolute left-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover/inner:opacity-100 hover:bg-black/60 transition-all duration-200 z-10"
+        className="absolute left-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover/inner:opacity-100 hover:bg-black/60 transition-all duration-200 z-10 cursor-pointer"
       >
         <ChevronLeft size={16} />
       </button>
@@ -109,7 +110,7 @@ function AboutCarousel() {
       <button
         onClick={next}
         aria-label="Next photo"
-        className="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover/inner:opacity-100 hover:bg-black/60 transition-all duration-200 z-10"
+        className="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover/inner:opacity-100 hover:bg-black/60 transition-all duration-200 z-10 cursor-pointer"
       >
         <ChevronRight size={16} />
       </button>
@@ -123,7 +124,7 @@ function AboutCarousel() {
               setCurrent(i)
             }}
             aria-label={`Go to photo ${i + 1}`}
-            className={`rounded-full transition-all duration-200 ${
+            className={`rounded-full transition-all duration-200 cursor-pointer ${
               i === current ? "w-4 h-1.5 bg-white" : "size-1.5 bg-white/50 hover:bg-white/80"
             }`}
           />
@@ -142,15 +143,17 @@ export default function HomePage() {
   return (
     <>
       <Header />
+      <BackToTop />
 
       <main className="pt-14" id="main-content">
-        <section className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12 pt-16 pb-12 sm:pt-24 sm:pb-16">
+        {/* Intro Section - Standardized container margins */}
+        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-16 pb-12 sm:pt-24 sm:pb-16 animate-fade-in">
           <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-6 sm:gap-10">
             <div className="shrink-0">
               <div className="relative size-20 sm:size-24 rounded-full overflow-hidden border-2 border-border bg-muted">
                 <Image
                   src="/avatar.png"
-                  alt="Vuong — author"
+                  alt="Vuong - author"
                   fill
                   className="object-cover"
                   priority
@@ -159,7 +162,7 @@ export default function HomePage() {
             </div>
 
             <div className="flex-1">
-              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground leading-tight text-balance mb-3">
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-3">
                 Vuong<span className="text-accent-brand">.</span>
               </h1>
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg text-pretty mb-6 mx-auto sm:mx-0">
@@ -184,11 +187,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+        {/* Separator Line */}
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="border-t border-border" />
         </div>
 
-        <section className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12 py-10 sm:py-14">
+        {/* Featured Stories feed */}
+        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <h2 className="font-serif text-xl sm:text-2xl font-semibold text-foreground w-full text-center sm:text-left sm:w-auto">
               {c.storiesHeading}
@@ -219,11 +224,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+        {/* Separator Line */}
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="border-t border-border" />
         </div>
 
-        <section className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12 py-10 sm:py-14">
+        {/* Recent Notes Section with responsive padding adjustment */}
+        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-serif text-xl sm:text-2xl font-semibold text-foreground">
               {c.notesHeading}
@@ -237,13 +244,22 @@ export default function HomePage() {
             </Link>
           </div>
 
+          {/* 
+            Mobile view container:
+            - Kept completely standard without extra padding to align flush with the main header on mobile.
+          */}
           <div className="sm:hidden">
             {recentNotes.slice(0, 4).map((note) => (
               <NoteCard key={note.slug} note={note} lang={lang} variant="compact" />
             ))}
           </div>
 
-          <div className="hidden sm:grid grid-cols-2 gap-x-10">
+          {/* 
+            Desktop/Tablet view container:
+            - Applied sm:px-0 (no padding on tablets) and lg:px-6 (indented left and right on laptops/desktops).
+            - Keeps the column-gap spacing at gap-x-16 (64px) for beautiful layout breathing room.
+          */}
+          <div className="hidden sm:grid grid-cols-2 gap-x-16 sm:px-0 lg:px-6">
             <div className="divide-y divide-border">
               {recentNotes.slice(0, 4).map((note) => (
                 <NoteCard key={note.slug} note={note} lang={lang} variant="compact" />
@@ -257,11 +273,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+        {/* Separator Line */}
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="border-t border-border" />
         </div>
 
-        <section className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12 py-10 sm:py-14">
+        {/* About card promotional teaser */}
+        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <Link
             href="/about"
             className="group/carousel block rounded-xl border border-border bg-card hover:border-accent-brand/30 hover:shadow-md transition-all duration-200 overflow-hidden"
