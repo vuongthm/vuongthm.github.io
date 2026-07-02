@@ -5,12 +5,14 @@ import { ThemeProvider } from "@/components/providers/theme-provider"
 import { LangProvider } from "@/components/providers/lang-provider"
 import { Toaster } from "@/components/ui/sonner"
 
+// Initialize primary sans-serif font
 const inter = Inter({
   subsets: ["latin", "vietnamese"],
   variable: "--font-inter",
   display: "swap",
 })
 
+// Initialize brand serif font used for headers and logos
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
@@ -18,16 +20,18 @@ const fraunces = Fraunces({
   axes: ["SOFT", "WONK", "opsz"],
 })
 
+// Initialize monospace font for code blocks
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
   display: "swap",
 })
 
+// Define metadata including optimized page title template
 export const metadata: Metadata = {
   title: {
-    default: "Vuong's Blog",
-    template: "%s | Vuong's Blog",
+    default: "Vuong",
+    template: "%s | Vuong", // Ensures the browser tab matches "[Page Title] | Vuong"
   },
   description:
     "Personal blog by Vuong (vuongthm) — life stories and lessons learned.",
@@ -55,12 +59,13 @@ export const metadata: Metadata = {
     icon: [
       { url: "/icon-light-32x32.png", media: "(prefers-color-scheme: light)" },
       { url: "/icon-dark-32x32.png", media: "(prefers-color-scheme: dark)" },
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" }, // Scalable vector logo for browser tabs
     ],
     apple: "/apple-icon.png",
   },
 }
 
+// Config theme viewport options
 export const viewport: Viewport = {
   colorScheme: "light dark",
   themeColor: [

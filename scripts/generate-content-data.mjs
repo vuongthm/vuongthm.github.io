@@ -1,6 +1,12 @@
 import fs from "fs";
 import path from "path";
-import CryptoJS from "crypto-js"; // Import crypto-js for build-time AES encryption
+import CryptoJS from "crypto-js";
+import { fileURLToPath } from "url";
+
+// Establish absolute path directories based on current script location
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRootDir = path.resolve(__dirname, "..");
 
 function parseFrontmatter(fileContent) {
   const frontmatterRegex = /^---\r?\n([\s\S]+?)\r?\n---/;
@@ -29,15 +35,15 @@ function parseFrontmatter(fileContent) {
 }
 
 function generateData() {
-  const contentDir = path.resolve("content");
+  const contentDir = path.join(projectRootDir, "content");
   
   const allSeries = [];
   const allChapters = [];
   const allNotes = [];
+  const allAlbums = [];
 
-  // Load local secure passwords map if exists
   let passwordMap = {};
-  const passwordMapPath = path.resolve("passwords.json");
+  const passwordMapPath = path.join(projectRootDir, "passwords.json");
   if (fs.existsSync(passwordMapPath)) {
     try {
       passwordMap = JSON.parse(fs.readFileSync(passwordMapPath, "utf-8"));
@@ -81,7 +87,6 @@ function generateData() {
               const rawContent = fs.readFileSync(filePath, "utf-8");
               const { data, body } = parseFrontmatter(rawContent);
 
-              // Check if the chapter requires encryption via "locked" property
               let chapterContent = body;
               let isLocked = false;
               if (data.locked === "true" || data.locked === true) {
@@ -92,7 +97,7 @@ function generateData() {
                 if (securePassword) {
                   chapterContent = CryptoJS.AES.encrypt(body, securePassword.trim()).toString();
                 } else {
-                  console.warn(`[Encrypt] Password not found in passwords.json for chapter: ${seriesSlug}/${chapterSlug}`);
+                  console.warn(`[Encrypt] Password not found for chapter: ${seriesSlug}/${chapterSlug}`);
                 }
               }
 
@@ -137,7 +142,6 @@ function generateData() {
               const words = body.trim().split(/\s+/).filter(Boolean).length;
               const readingTime = Math.max(1, Math.round(words / 200));
 
-              // Check if the note requires encryption via "locked" property
               let noteContent = body;
               let isLocked = false;
               if (data.locked === "true" || data.locked === true) {
@@ -148,7 +152,7 @@ function generateData() {
                 if (securePassword) {
                   noteContent = CryptoJS.AES.encrypt(body, securePassword.trim()).toString();
                 } else {
-                  console.warn(`[Encrypt] Password not found in passwords.json for note: ${noteSlug}`);
+                  console.warn(`[Encrypt] Password not found for note: ${noteSlug}`);
                 }
               }
 
@@ -160,6 +164,8 @@ function generateData() {
                 date: data.date || "",
                 readingTime: readingTime,
                 content: noteContent,
+                // Parse optional weight from Frontmatter (fallback to 999 if empty)
+                weight: parseInt(data.weight) || 999,
                 isLocked: isLocked,
                 lang: lang
               });
@@ -168,8 +174,85 @@ function generateData() {
         }
       }
     }
-  } else {
-    console.log("[Generate] content directory not found. Generating template with empty collections.");
+
+    // 3. Scan dynamic Decoupled Albums
+    const albumsDir = path.join(contentDir, "albums");
+    if (fs.existsSync(albumsDir)) {
+      const albumFolders = fs.readdirSync(albumsDir);
+      for (const albumSlug of albumFolders) {
+        const albumPath = path.join(albumsDir, albumSlug);
+        if (!fs.statSync(albumPath).isDirectory()) continue;
+
+        for (const lang of ["en", "vi"]) {
+          const langPath = path.join(albumPath, lang);
+          if (fs.existsSync(langPath)) {
+            const albumMdFile = path.join(langPath, "album.md");
+            if (fs.existsSync(albumMdFile)) {
+              const { data, body } = parseFrontmatter(fs.readFileSync(albumMdFile, "utf-8"));
+              
+              const mediaItems = [];
+              const mediaPublicDir = path.join(projectRootDir, `public/media/albums/${albumSlug}`);
+              const metaJsonPath = path.join(mediaPublicDir, "metadata.json");
+              
+              let fileMetadata = {};
+              if (fs.existsSync(metaJsonPath)) {
+                try {
+                  fileMetadata = JSON.parse(fs.readFileSync(metaJsonPath, "utf-8"));
+                } catch (e) {
+                  console.error(`[Album] Failed to parse metadata.json for ${albumSlug}`, e);
+                }
+              }
+
+              let firstImageFile = "";
+              if (fs.existsSync(mediaPublicDir)) {
+                const mediaFiles = fs.readdirSync(mediaPublicDir).filter(f => {
+                  const ext = path.extname(f).toLowerCase();
+                  return [".png", ".jpg", ".jpeg", ".webp", ".mp4", ".webm"].includes(ext);
+                });
+
+                const imageFile = mediaFiles.find(f => {
+                  const ext = path.extname(f).toLowerCase();
+                  return [".png", ".jpg", ".jpeg", ".webp"].includes(ext);
+                });
+                if (imageFile) {
+                  firstImageFile = `/media/albums/${albumSlug}/${imageFile}`;
+                }
+
+                for (const filename of mediaFiles) {
+                  const ext = path.extname(filename).toLowerCase();
+                  const isVideo = [".mp4", ".webm"].includes(ext);
+                  
+                  const customMeta = fileMetadata[filename] || {};
+                  const itemTitle = (customMeta.title && customMeta.title[lang]) || filename;
+                  const itemDate = customMeta.date || data.date || "2024-01-01";
+                  const itemNote = (customMeta.note && customMeta.note[lang]) || "";
+
+                  mediaItems.push({
+                    filename: filename,
+                    src: `/media/albums/${albumSlug}/${filename}`,
+                    type: isVideo ? "video" : "image",
+                    title: itemTitle,
+                    date: itemDate,
+                    note: itemNote
+                  });
+                }
+              }
+
+              allAlbums.push({
+                slug: albumSlug,
+                title: data.title || albumSlug,
+                description: data.description || "",
+                coverImage: data.coverImage || firstImageFile || `/media/albums/${albumSlug}/photo-1.png`,
+                date: data.date || "2024-01-01",
+                lang: lang,
+                content: body,
+                media: mediaItems
+              });
+            }
+          }
+        }
+      }
+    }
   }
 
   const outputCode = `// Generated automatically. Do not edit.
@@ -207,8 +290,29 @@ export interface Note {
   date: string;
   readingTime: number;
   content: string;
+  weight?: number; // Added optional weight parameter
   isLocked?: boolean;
   lang: Lang;
+}
+
+export interface AlbumMediaItem {
+  filename: string;
+  src: string;
+  type: "image" | "video";
+  title: string;
+  date: string;
+  note: string;
+}
+
+export interface Album {
+  slug: string;
+  title: string;
+  description: string;
+  coverImage: string;
+  date: string;
+  lang: Lang;
+  content: string;
+  media: AlbumMediaItem[];
 }
 
 export interface TagInfo {
@@ -219,6 +323,7 @@ export interface TagInfo {
 export const allSeries: Series[] = ${JSON.stringify(allSeries, null, 2)};
 export const allChapters: Chapter[] = ${JSON.stringify(allChapters, null, 2)};
 export const allNotes: Note[] = ${JSON.stringify(allNotes, null, 2)};
+export const allAlbums: Album[] = ${JSON.stringify(allAlbums, null, 2)};
 
 function groupBySlug<T extends { slug: string; lang: Lang }>(items: T[]): Map<string, T[]> {
   const grouped = new Map<string, T[]>()
@@ -261,14 +366,28 @@ export function getNoteBySlug(slug: string, lang: Lang = "en"): Note | undefined
   return selectOne(allNotes, slug, lang)
 }
 
+// Double sort algorithm: Prioritize custom weight ASC, then sort secondarily by date DESC
 export function getVisibleNotes(lang: Lang = "en"): Note[] {
-  return selectByLang(allNotes, lang).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  return selectByLang(allNotes, lang).sort((a, b) => {
+    const wA = a.weight ?? 999;
+    const wB = b.weight ?? 999;
+    if (wA !== wB) return wA - wB;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 }
 
 export function getRelatedNotes(note: Note, limit = 3): Note[] {
   return getVisibleNotes(note.lang)
     .filter((item) => item.slug !== note.slug && item.tags.some((tag) => note.tags.includes(tag)))
     .slice(0, limit)
+}
+
+export function getVisibleAlbums(lang: Lang = "en"): Album[] {
+  return selectByLang(allAlbums, lang).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+}
+
+export function getAlbumBySlug(slug: string, lang: Lang = "en"): Album | undefined {
+  return selectOne(allAlbums, slug, lang)
 }
 
 export function getAllTags(lang: Lang = "en"): TagInfo[] {
@@ -284,6 +403,7 @@ export function getAllTags(lang: Lang = "en"): TagInfo[] {
     .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
 }
 
+// Enhanced double-type tag sorting: Keep learning roadmap sequence intact
 export function getPostsByTag(tag: string, lang: Lang = "en"): Array<{ type: "story"; item: Series } | { type: "note"; item: Note }> {
   const posts: Array<{ type: "story"; item: Series } | { type: "note"; item: Note }> = []
   for (const series of getVisibleSeries(lang)) {
@@ -292,8 +412,16 @@ export function getPostsByTag(tag: string, lang: Lang = "en"): Array<{ type: "st
   for (const note of getVisibleNotes(lang)) {
     if (note.tags.includes(tag)) posts.push({ type: "note", item: note })
   }
-  const getDate = (entry: (typeof posts)[number]) => entry.type === "story" ? entry.item.startDate : entry.item.date
-  return posts.sort((a, b) => new Date(getDate(b)).getTime() - new Date(getDate(a)).getTime())
+  return posts.sort((a, b) => {
+    if (a.type === "note" && b.type === "note") {
+      const wA = (a.item as Note).weight ?? 999;
+      const wB = (b.item as Note).weight ?? 999;
+      if (wA !== wB) return wA - wB;
+    }
+    const dateA = a.type === "story" ? a.item.startDate : a.item.date;
+    const dateB = b.type === "story" ? b.item.startDate : b.item.date;
+    return new Date(dateB).getTime() - new Date(dateA).getTime();
+  });
 }
 
 export function estimateReadingTime(content: string): number {
@@ -318,9 +446,9 @@ export function formatDate(dateStr: string, lang: Lang = "en"): string {
 }
 `;
 
-  fs.mkdirSync(path.resolve("lib"), { recursive: true });
-  fs.writeFileSync(path.resolve("lib/content.generated.ts"), outputCode);
-  console.log("[Generate] lib/content.generated.ts generated successfully.");
+  fs.mkdirSync(path.join(projectRootDir, "lib"), { recursive: true });
+  fs.writeFileSync(path.join(projectRootDir, "lib/content.generated.ts"), outputCode);
+  console.log("[Generate] lib/content.generated.ts compiled successfully.");
 }
 
 generateData();

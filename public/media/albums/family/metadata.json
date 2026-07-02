@@ -1,0 +1,35 @@
+{
+  "photo-1.png": {
+    "title": {
+      "en": "First family capture",
+      "vi": "Khoảnh khắc family đầu tiên"
+    },
+    "date": "2024-05-15",
+    "note": {
+      "en": "A warm visual memory recorded in pixel and light.",
+      "vi": "Kỷ niệm đẹp được lưu lại qua dải ánh sáng ấm áp."
+    }
+  },
+  "photo-2.png": {
+    "title": {
+      "en": "Second family capture",
+      "vi": "Khoảnh khắc family thứ hai"
+    },
+    "date": "2024-08-20",
+    "note": {
+      "en": "Another quiet footprint on this traveling journey.",
+      "vi": "Một dấu chân lặng lẽ khác trên con đường hành trình."
+    }
+  },
+  "video-1.mp4": {
+    "title": {
+      "en": "Dynamic Memory Clip",
+      "vi": "Thước phim kỷ niệm động"
+    },
+    "date": "2024-11-10",
+    "note": {
+      "en": "Captured dynamic video movement from our workplace daily lives.",
+      "vi": "Ghi lại những khoảnh khắc chuyển động thực tế từ cuộc sống hàng ngày."
+    }
+  }
+}

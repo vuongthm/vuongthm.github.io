@@ -3,6 +3,8 @@ export type {
   Series,
   Chapter,
   Note,
+  AlbumMediaItem,
+  Album,
   TagInfo,
 } from "./content.generated"
 
@@ -10,6 +12,7 @@ export {
   allSeries,
   allChapters,
   allNotes,
+  allAlbums,
   getSeriesBySlug,
   getVisibleSeries,
   getChaptersBySeriesSlug,
@@ -17,6 +20,8 @@ export {
   getNoteBySlug,
   getVisibleNotes,
   getRelatedNotes,
+  getVisibleAlbums,
+  getAlbumBySlug,
   getAllTags,
   getPostsByTag,
   estimateReadingTime,

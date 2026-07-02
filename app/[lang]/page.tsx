@@ -9,7 +9,7 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { SeriesCard } from "@/components/content/series-card"
 import { NoteCard } from "@/components/content/note-card"
-import { BackToTop } from "@/components/features/back-to-top" // Imported BackToTop to resolve ReferenceError
+import { BackToTop } from "@/components/features/back-to-top"
 import { getVisibleSeries, getVisibleNotes } from "@/lib/data"
 
 const COPY = {
@@ -45,7 +45,6 @@ const ABOUT_CAROUSEL_IMAGES = [
   { src: "/hometown/dai-lanh-coast.png", alt: "Dai Lanh coast at dawn" },
   { src: "/hometown/dai-lanh-village.png", alt: "Dai Lanh fishing village" },
   { src: "/hometown/dai-lanh-mountain.png", alt: "Dai Lanh mountain cove" },
-  { src: "/avatar.png", alt: "Vuong - the author" },
 ]
 
 function AboutCarousel() {
@@ -77,7 +76,7 @@ function AboutCarousel() {
 
   return (
     <div
-      className="relative w-full h-full group/inner"
+      className="relative w-full h-full group/inner overflow-hidden"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -93,8 +92,9 @@ function AboutCarousel() {
             src={img.src}
             alt={img.alt}
             fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, 500px"
+            // Tối ưu hóa: object-cover kết hợp thu phóng nhẹ tạo chiều sâu cho ảnh khi di chuột vào khung
+            className="object-cover transition-transform duration-700 ease-out group-hover/carousel:scale-[1.02]"
+            sizes="(max-width: 640px) 100vw, 600px"
           />
         </div>
       ))}
@@ -313,7 +313,8 @@ export default function HomePage() {
                 </span>
               </div>
 
-              <div className="sm:col-span-6 h-52 sm:h-56 lg:h-72 relative bg-muted">
+              {/* Tối ưu hóa: Điều chỉnh tăng chiều cao khung ảnh trên di động/tablet/máy tính & bổ sung overflow-hidden */}
+              <div className="sm:col-span-6 h-64 sm:h-[300px] lg:h-[360px] relative bg-muted overflow-hidden">
                 <AboutCarousel />
               </div>
             </div>

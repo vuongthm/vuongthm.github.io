@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { Link } from "@/components/ui/link"
 import { useState, useEffect, useCallback, use } from "react"
-import { Mail, ChevronLeft, ChevronRight, Users, Shield, Network, PenTool, ExternalLink } from "lucide-react"
+import { Mail, ChevronLeft, ChevronRight, Users, Shield, Network, PenTool, Images } from "lucide-react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { BackToTop } from "@/components/features/back-to-top"
@@ -74,7 +74,6 @@ function PhotoSlider({ lang }: { lang: "en" | "vi" }) {
 
   return (
     <div className="relative w-full overflow-hidden rounded-2xl bg-muted select-none border border-border/50 animate-fade-in">
-      {/* Updated: Increased height dynamically for a majestic widescreen display */}
       <div
         className="relative w-full h-80 sm:h-[500px] lg:h-[580px]"
         style={{ transition: "opacity 280ms ease", opacity: transitioning ? 0 : 1 }}
@@ -113,6 +112,7 @@ function PhotoSlider({ lang }: { lang: "en" | "vi" }) {
             aria-label={`Go to slide ${i + 1}`}
             onClick={() => goTo(i)}
             className={`rounded-full transition-all duration-200 cursor-pointer ${
+              // Fixed: swapped incorrect variable 'current' to state variable 'idx'
               i === idx
                 ? "w-5 h-1.5 bg-accent-brand"
                 : "w-1.5 h-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60"
@@ -234,7 +234,7 @@ const COPY = {
   en: {
     heading: "About",
     introTitle: "Grown up by the sea, drawn toward the invisible architecture of the internet.",
-    intro1: "I am Vương (vuongthm) — a student of Network Engineering & Security in Đà Nẵng, raised barefoot along the coast of Đại Lãnh, Phú Yên. It is a quiet place that doesn't appear on most maps, yet its seascape was engraved on Tuyên Đỉnh (one of Hue's Cửu Đỉnh) in 1836. My childhood was shaped by the East Sea, a library of four hundred old books, and the quiet shadow of a father mending fishing nets.",
+    intro1: "I am Vuong (vuongthm) — a student of Network Engineering & Security in Đà Nẵng, raised barefoot along the coast of Đại Lãnh, Phú Yên. It is a quiet place that doesn't appear on most maps, yet its seascape was engraved on Tuyên Đỉnh (one of Hue's Cửu Đỉnh) in 1836. My childhood was shaped by the East Sea, a library of four hundred old books, and the quiet shadow of a father mending fishing nets.",
     intro2: "At sixteen, I left the village to attend high school 25 km away — my first departure. At eighteen, I moved to Đà Nẵng with an eleven-kilogram suitcase to study the invisible architecture of the internet. Navigating the uncertainties of my early university years taught me that being unsettled is simply the necessary threshold where real work and self-discovery begin.",
     intro3: "This blog is my digital garden, where I archive my technical notes from server racks, honest reflections on self-learning, and memoirs of the coast. I hope something here resonates with your own journey.",
     timelineHeading: "Milestones",
@@ -245,6 +245,7 @@ const COPY = {
     peopleLink: "Friends Circle",
     contactHeading: "Get in touch",
     contactNote: "I'm always glad to hear from readers — whether you have a question, want to share a thought, or just want to say hello. Email is the best way to reach me.",
+    albumBtn: "Explore My Memory Album",
   },
   vi: {
     heading: "Về tôi",
@@ -260,6 +261,7 @@ const COPY = {
     peopleLink: "Vòng tròn bạn bè",
     contactHeading: "Liên hệ",
     contactNote: "Tôi luôn vui khi nhận được tin từ độc giả — dù là một câu hỏi, một chia sẻ, hay chỉ đơn giản là lời chào. Email là cách tốt nhất để kết nối với tôi.",
+    albumBtn: "Khám phá Bộ sưu tập ký ức",
   },
 }
 
@@ -276,20 +278,10 @@ export default function AboutPage({ params }: { params: Promise<{ lang: "en" | "
       <BackToTop />
 
       <main className="pt-14">
-        {/* 
-          Updated parent container bottom-padding from pb-16 to pb-0 
-          to reduce the excessive vertical space to the footer.
-        */}
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 pb-0">
-
-          {/* 
-            UPDATED LAYOUT GRID (6/9 ratio left column, 3/9 ratio right column):
-            - Mobile responsive ordering: Right Column (Avatar/tagline/icons) renders FIRST on mobile (order-first lg:order-last).
-            - Left Column is 6/9 width (lg:col-span-6) containing text, beliefs, timeline, and the contact box (order-last lg:order-first).
-          */}
           <div className="grid grid-cols-1 lg:grid-cols-9 gap-10 lg:gap-14 items-start">
             
-            {/* LEFT COLUMN: Main biographical narrative, beliefs, timeline, interests, and contact (Spans 6/9 width) */}
+            {/* LEFT COLUMN: Main biographical narrative, beliefs, timeline, interests, and contact */}
             <div className="lg:col-span-6 flex flex-col gap-14 order-last lg:order-first">
               
               {/* Biographical Narrative Block */}
@@ -307,6 +299,22 @@ export default function AboutPage({ params }: { params: Promise<{ lang: "en" | "
                   <p>{c.intro1}</p>
                   <p>{c.intro2}</p>
                   <p>{c.intro3}</p>
+
+                  {/* 
+                    VỊ TRÍ 1 (Cực kỳ nổi bật - CTA chính):
+                    - Đặt nút bấm lớn sang trọng ngay dưới dòng tự sự giới thiệu bản thân
+                    - Có hiệu ứng trượt nhẹ mũi tên khi người dùng di chuột
+                  */}
+                  <div className="mt-4 flex justify-center sm:justify-start">
+                    <Link
+                      href="/my-album"
+                      className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl border border-accent-brand/20 bg-accent-brand/5 hover:bg-accent-brand hover:text-accent-brand-foreground text-accent-brand text-xs sm:text-sm font-semibold transition-all duration-200 group/btn shadow-xs hover:scale-[1.02]"
+                    >
+                      <Images size={15} className="animate-pulse" />
+                      <span>{c.albumBtn}</span>
+                      <ChevronRight size={13} className="group-hover/btn:translate-x-1.5 transition-transform duration-200" />
+                    </Link>
+                  </div>
                 </div>
               </div>
 
@@ -368,7 +376,7 @@ export default function AboutPage({ params }: { params: Promise<{ lang: "en" | "
                 </div>
               </section>
 
-              {/* Contact Section (Get in touch) - Now nested inside the Left 6/9 Column */}
+              {/* Contact Section */}
               <section className="border-t border-border/60 pt-10">
                 <h2 className="font-serif text-xl sm:text-2xl font-semibold text-foreground mb-3">
                   {c.contactHeading}
@@ -380,13 +388,9 @@ export default function AboutPage({ params }: { params: Promise<{ lang: "en" | "
 
             </div>
 
-            {/* RIGHT COLUMN: Sticky Portrait Card (Spans 3/9 width - Desktop only) - Renders FIRST on mobile */}
+            {/* RIGHT COLUMN: Sticky Portrait Card (Spans 3/9 width) */}
             <div className="lg:col-span-3 lg:sticky lg:top-24 flex flex-col items-center order-first lg:order-last">
               
-              {/* 
-                Modern Portrait Avatar Card (Aspect ratio 4:5 - slightly shorter than 3:4):
-                - Designed with a thick, modern editorial accent border running vertically on the RIGHT lề (border-r-[6px] border-r-accent-brand).
-              */}
               <div className="shrink-0 w-full max-w-[240px] sm:w-56 md:w-64 lg:w-64 aspect-[4/5] relative rounded-2xl overflow-hidden bg-muted border-y border-l border-border border-r-[6px] border-r-accent-brand shadow-sm select-none">
                 <Image
                   src="/avatar.png"
@@ -407,8 +411,21 @@ export default function AboutPage({ params }: { params: Promise<{ lang: "en" | "
                 </p>
               </div>
 
-              {/* Social Icons row representing contact entrypoints and Friends Circle link */}
+              {/* 
+                VỊ TRÍ 2 (Đồng bộ - Hàng icon liên kết dưới Avatar):
+                - Icon Album thiết kế hiện đại có vòng sóng nhấp nháy animate-ping nổi bật lôi cuốn người dùng bấm vào
+              */}
               <div className="flex items-center justify-center gap-2.5 w-full max-w-[240px] border-t border-border/60 pt-4">
+                <Link
+                  href="/my-album"
+                  aria-label="My Album"
+                  className="size-9 flex items-center justify-center rounded-lg border border-accent-brand/40 bg-accent-brand/10 text-accent-brand hover:bg-accent-brand hover:text-accent-brand-foreground hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer relative group/album"
+                >
+                  <Images size={15} />
+                  <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-accent-brand animate-ping" />
+                  <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-accent-brand" />
+                </Link>
+
                 <Link
                   href="/about/people"
                   aria-label="Friends Circle"
@@ -449,7 +466,7 @@ export default function AboutPage({ params }: { params: Promise<{ lang: "en" | "
 
           <div className="border-t border-border/60 my-14" />
 
-          {/* Full-width Photo Slider (Lens) with widescreen cinematic aspect ratio - Reduced margin-bottom */}
+          {/* Full-width Photo Slider */}
           <section className="mb-0">
             <div className="flex items-center justify-between mb-5 flex-wrap gap-4">
               <div>

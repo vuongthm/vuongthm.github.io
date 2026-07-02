@@ -1,0 +1,16 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Round dark background matching the user's template -->
+  <circle cx="64" cy="64" r="64" fill="#181818"/>
+
+  <!-- Brand name styled in Semibold Serif (Fraunces / Georgia) to match the header logo -->
+  <text x="58" y="74"
+        text-anchor="middle"
+        font-family="Fraunces, Georgia, serif"
+        font-size="32"
+        font-weight="600"
+        fill="#ffffff"
+        letter-spacing="-0.5">vuong</text>
+
+  <!-- Brand orange dot matching the website's accent-brand color -->
+  <circle cx="105" cy="73" r="4.5" fill="#f59e0b"/>
+</svg>
