@@ -234,7 +234,7 @@ const COPY = {
   en: {
     heading: "About",
     introTitle: "Grown up by the sea, drawn toward the invisible architecture of the internet.",
-    intro1: "I am Vuong (vuongthm) — a student of Network Engineering & Security in Đà Nẵng, raised barefoot along the coast of Đại Lãnh, Phú Yên. It is a quiet place that doesn't appear on most maps, yet its seascape was engraved on Tuyên Đỉnh (one of Hue's Cửu Đỉnh) in 1836. My childhood was shaped by the East Sea, a library of four hundred old books, and the quiet shadow of a father mending fishing nets.",
+    intro1: "I am Vuong (vuongthm) — a student of Network Engineering & Security in Da Nang, raised barefoot along the coast of Dai Lanh, Khanh Hoa. It is a quiet place that doesn't appear on most maps, yet its seascape was engraved on Tuyên Đỉnh (one of Hue's Cửu Đỉnh) in 1836. My childhood was shaped by the East Sea, a library of four hundred old books, and the quiet shadow of a father mending fishing nets.",
     intro2: "At sixteen, I left the village to attend high school 25 km away — my first departure. At eighteen, I moved to Đà Nẵng with an eleven-kilogram suitcase to study the invisible architecture of the internet. Navigating the uncertainties of my early university years taught me that being unsettled is simply the necessary threshold where real work and self-discovery begin.",
     intro3: "This blog is my digital garden, where I archive my technical notes from server racks, honest reflections on self-learning, and memoirs of the coast. I hope something here resonates with your own journey.",
     timelineHeading: "Milestones",

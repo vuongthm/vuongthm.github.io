@@ -2,7 +2,7 @@
 
 import { notFound } from "next/navigation"
 import { Link } from "@/components/ui/link"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useMemo } from "react"
 import { ArrowLeft, List, X, Lock, Unlock, KeyRound } from "lucide-react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
@@ -13,7 +13,7 @@ import { ProseContent } from "@/components/content/prose-content"
 import { extractTocItems } from "@/components/features/table-of-contents"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import CryptoJS from "crypto-js" // Import crypto-js for client-side decryption
+import CryptoJS from "crypto-js"
 import { getChapter, getChaptersBySeriesSlug, getSeriesBySlug, formatDate, estimateReadingTime, type Lang } from "@/lib/data"
 import { cn } from "@/lib/utils"
 
@@ -31,18 +31,21 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
   const chapter = getChapter(seriesSlug, chapterSlug, lang)
   if (!chapter || !series) notFound()
 
-  // State management for decryption form
+  // State management for decryption form and decrypted results
   const [password, setPassword] = useState("")
   const [decryptedText, setDecryptedText] = useState<string | null>(null)
+  const [decryptedTitle, setDecryptedTitle] = useState<string | null>(null)
   const [isUnlocked, setIsUnlocked] = useState(false)
   const [error, setError] = useState(false)
+  const [decryptedChapters, setDecryptedChapters] = useState<any[]>([])
 
-  const chapters = getChaptersBySeriesSlug(seriesSlug, lang)
-  const currentIdx = chapters.findIndex((item) => item.slug === chapterSlug)
-  const prevChapter = currentIdx > 0 ? chapters[currentIdx - 1] : null
-  const nextChapter = currentIdx < chapters.length - 1 ? chapters[currentIdx + 1] : null
+  const rawChapters = useMemo(() => getChaptersBySeriesSlug(seriesSlug, lang), [seriesSlug, lang])
 
-  // Labels for multi-language display
+  // Resolve previous and next chapters from the decrypted array to show human-readable titles
+  const currentIdx = decryptedChapters.findIndex((item) => item.slug === chapterSlug)
+  const prevChapter = currentIdx > 0 ? decryptedChapters[currentIdx - 1] : null
+  const nextChapter = currentIdx < decryptedChapters.length - 1 ? decryptedChapters[currentIdx + 1] : null
+
   const LABELS = {
     en: { 
       chapter: "Chapter", 
@@ -62,7 +65,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
       next: "Chương tiếp", 
       chapters: "Danh sách chương", 
       minRead: "phút đọc",
-      lockedTitle: "Chương riêng tư",
+      lockedTitle: "Chương truyện riêng tư",
       lockedDesc: "Nội dung chương truyện này đã được mã hóa bảo mật. Vui lòng nhập đúng mật khẩu để mở khóa và đọc nội dung.",
       placeholder: "Nhập mật khẩu...",
       unlockBtn: "Mở khóa",
@@ -71,54 +74,89 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
   }
   const L = LABELS[lang]
 
-  // Check sessionStorage on mount to keep unlocked state during the browser session
+  // Check sessionStorage on mount to keep unlocked state during the browser session (Supports SSO)
   useEffect(() => {
     if (chapter.isLocked) {
-      const cachedPassword = sessionStorage.getItem(`unlock-chapter-${seriesSlug}-${chapterSlug}`)
-      if (cachedPassword) {
+      const seriesPassword = sessionStorage.getItem(`unlock-series-${seriesSlug}`)
+      const chapterPassword = sessionStorage.getItem(`unlock-chapter-${seriesSlug}-${chapterSlug}`)
+      const activePassword = seriesPassword || chapterPassword
+
+      if (activePassword) {
         try {
-          const bytes = CryptoJS.AES.decrypt(chapter.content, cachedPassword)
-          const decrypted = bytes.toString(CryptoJS.enc.Utf8)
-          if (decrypted) {
-            setDecryptedText(decrypted)
+          const success = attemptDecryption(activePassword)
+          if (success) {
             setIsUnlocked(true)
           }
         } catch (_) {
+          sessionStorage.removeItem(`unlock-series-${seriesSlug}`)
           sessionStorage.removeItem(`unlock-chapter-${seriesSlug}-${chapterSlug}`)
         }
       }
+    } else {
+      setDecryptedTitle(chapter.title)
+      setDecryptedText(chapter.content)
+      setDecryptedChapters(rawChapters)
     }
-  }, [chapter.isLocked, chapter.content, seriesSlug, chapterSlug])
+  }, [chapter.isLocked, chapter.content, seriesSlug, chapterSlug, rawChapters])
 
-  // Decryption handler
+  // Core decryption method for chapter title, content body, and adjacent chapter titles
+  const attemptDecryption = (passKey: string): boolean => {
+    try {
+      const trimmed = passKey.trim()
+
+      const contentBytes = CryptoJS.AES.decrypt(chapter.content, trimmed)
+      const decryptedContent = contentBytes.toString(CryptoJS.enc.Utf8)
+
+      const titleBytes = CryptoJS.AES.decrypt(chapter.title, trimmed)
+      const decryptedChapterTitle = titleBytes.toString(CryptoJS.enc.Utf8)
+
+      if (!decryptedContent || !decryptedChapterTitle) {
+        return false
+      }
+
+      // Decrypt all chapters in this series to populate sidebar & navigation titles
+      const tempChapters: any[] = []
+      for (const ch of rawChapters) {
+        const tBytes = CryptoJS.AES.decrypt(ch.title, trimmed)
+        const decTitle = tBytes.toString(CryptoJS.enc.Utf8)
+
+        const pBytes = CryptoJS.AES.decrypt(ch.preview, trimmed)
+        const decPreview = pBytes.toString(CryptoJS.enc.Utf8)
+
+        if (!decTitle) return false
+
+        tempChapters.push({
+          ...ch,
+          title: decTitle,
+          preview: decPreview
+        })
+      }
+
+      setDecryptedText(decryptedContent)
+      setDecryptedTitle(decryptedChapterTitle)
+      setDecryptedChapters(tempChapters)
+      return true
+    } catch (_) {
+      return false
+    }
+  }
+
+  // Decryption form handler
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault()
     if (!password.trim()) return
 
-    try {
-      // Attempt to decrypt using user-provided password
-      const bytes = CryptoJS.AES.decrypt(chapter.content, password.trim())
-      const decrypted = bytes.toString(CryptoJS.enc.Utf8)
-
-      // If decryption fails, the resulting string will be empty
-      if (!decrypted) {
-        setError(true)
-        toast.error(L.wrongPassword)
-        return
-      }
-
-      // Unlock successful
-      setDecryptedText(decrypted)
-      setIsUnlocked(true)
-      setError(false)
-      toast.success(lang === "en" ? "Chapter unlocked" : "Đã mở khóa chương")
-      
-      // Save password in sessionStorage to preserve unlocked state on reload
-      sessionStorage.setItem(`unlock-chapter-${seriesSlug}-${chapterSlug}`, password.trim())
-    } catch (_) {
+    const success = attemptDecryption(password.trim())
+    if (!success) {
       setError(true)
       toast.error(L.wrongPassword)
+      return
     }
+
+    setIsUnlocked(true)
+    setError(false)
+    sessionStorage.setItem(`unlock-chapter-${seriesSlug}-${chapterSlug}`, password.trim())
+    toast.success(lang === "en" ? "Chapter unlocked" : "Đã mở khóa chương")
   }
 
   useEffect(() => {
@@ -136,8 +174,8 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
     }
   }, [chapterPanelOpen])
 
-  // Use decrypted text if unlocked, otherwise use raw chapter content (for unlocked public chapters)
-  const displayContent = chapter.isLocked ? (decryptedText ?? "") : chapter.content
+  const displayContent = decryptedText ?? ""
+  const displayTitle = decryptedTitle ?? ""
   const chapterTocItems = extractTocItems(displayContent)
   const readingTime = estimateReadingTime(displayContent)
 
@@ -179,7 +217,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
             </div>
             <nav className="overflow-y-auto flex-1 px-4 py-3">
               <ul className="flex flex-col gap-0.5">
-                {chapters.map((item) => (
+                {decryptedChapters.map((item) => (
                   <li key={item.slug}>
                     <Link href={`/stories/${seriesSlug}/${item.slug}`} onClick={() => setChapterPanelOpen(false)} className={cn("flex items-start gap-2.5 min-h-[44px] py-2.5 px-3 rounded-lg text-sm transition-colors", item.slug === chapterSlug ? "bg-muted text-foreground font-medium" : "text-muted-foreground hover:text-foreground")}>
                       <span className="shrink-0 text-xs text-muted-foreground mt-0.5 w-5 text-right font-mono">{item.part}.</span>
@@ -197,8 +235,8 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
       <main className="pt-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           
-          {/* Render password prompt form if the chapter is locked and not yet unlocked */}
           {chapter.isLocked && !isUnlocked ? (
+            /* === LOCKED PASSWORD PANEL === */
             <div className="flex flex-col items-center justify-center min-h-[70vh] max-w-md mx-auto py-12 px-4">
               <div className="size-16 rounded-2xl bg-muted border border-border flex items-center justify-center text-accent-brand mb-6 shadow-xs animate-bounce">
                 <Lock size={28} />
@@ -227,7 +265,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
                     required
                   />
                 </div>
-                <Button type="submit" variant="default" className="h-11 rounded-xl text-sm font-medium w-full flex items-center gap-2 cursor-pointer bg-accent-brand hover:opacity-95 border-0">
+                <Button type="submit" variant="default" className="h-11 rounded-xl text-sm font-medium w-full flex items-center justify-center gap-2 cursor-pointer bg-accent-brand hover:opacity-95 border-0">
                   <Unlock size={14} />
                   {L.unlockBtn}
                 </Button>
@@ -239,7 +277,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
             </div>
           ) : (
             
-            /* Render standard chapter reading view when unlocked */
+            /* === PUBLIC UNLOCKED READER VIEW === */
             <div className="flex gap-8 lg:gap-10 py-8 sm:py-12">
               
               {/* Desktop Left Sidebar */}
@@ -250,7 +288,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
                   </Link>
                   <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">{L.chapters}</p>
                   <nav className="flex flex-col gap-0.5">
-                    {chapters.map((item) => (
+                    {decryptedChapters.map((item) => (
                       <Link key={item.slug} href={`/stories/${seriesSlug}/${item.slug}`} className={cn("flex items-start gap-2 py-1.5 px-2 rounded-md text-sm transition-colors", item.slug === chapterSlug ? "bg-muted text-foreground font-medium" : "text-muted-foreground hover:text-foreground")}>
                         <span className="shrink-0 text-xs text-muted-foreground mt-0.5 w-4 text-right">{item.part}.</span>
                         <span className="line-clamp-2">{item.title}</span>
@@ -280,7 +318,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
                       </span>
                     )}
                   </div>
-                  <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground leading-tight mb-4">{chapter.title}</h1>
+                  <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground leading-tight mb-4">{displayTitle}</h1>
                   <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                     <time dateTime={chapter.date}>{formatDate(chapter.date, lang)}</time>
                     <span>·</span>
@@ -290,7 +328,7 @@ export default function ChapterPageClient({ series: seriesSlug, chapter: chapter
 
                 <ProseContent content={displayContent} />
                 <div className="flex items-center justify-end mt-10 pt-6 border-t border-border">
-                  <ShareButton title={chapter.title} lang={lang} />
+                  <ShareButton title={displayTitle} lang={lang} />
                 </div>
 
                 <nav className="grid grid-cols-2 gap-3 mt-6">

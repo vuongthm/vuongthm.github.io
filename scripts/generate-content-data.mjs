@@ -53,14 +53,39 @@ function generateData() {
     }
   }
 
+  // Pre-detect locked status of all series by checking their localized series.md files
+  const lockedSeriesMap = {};
+  const storiesDir = path.join(contentDir, "stories");
+  if (fs.existsSync(storiesDir)) {
+    const seriesFolders = fs.readdirSync(storiesDir);
+    for (const seriesSlug of seriesFolders) {
+      const seriesPath = path.join(storiesDir, seriesSlug);
+      if (!fs.statSync(seriesPath).isDirectory()) continue;
+      
+      // Check both locale subfolders for series.md
+      for (const lang of ["en", "vi"]) {
+        const configPath = path.join(seriesPath, lang, "series.md");
+        if (fs.existsSync(configPath)) {
+          const { data } = parseFrontmatter(fs.readFileSync(configPath, "utf-8"));
+          if (data.locked === "true" || data.locked === true) {
+            lockedSeriesMap[seriesSlug] = true;
+            break; // Stop checking other locales if locked is detected
+          }
+        }
+      }
+    }
+  }
+
   if (fs.existsSync(contentDir)) {
     // 1. Scan Stories Content
-    const storiesDir = path.join(contentDir, "stories");
     if (fs.existsSync(storiesDir)) {
       const seriesFolders = fs.readdirSync(storiesDir);
       for (const seriesSlug of seriesFolders) {
         const seriesPath = path.join(storiesDir, seriesSlug);
         if (!fs.statSync(seriesPath).isDirectory()) continue;
+
+        const isSeriesLocked = !!lockedSeriesMap[seriesSlug];
+        const seriesPassword = passwordMap[seriesSlug];
 
         for (const lang of ["en", "vi"]) {
           const langPath = path.join(seriesPath, lang);
@@ -68,15 +93,20 @@ function generateData() {
             const seriesMdFile = path.join(langPath, "series.md");
             if (fs.existsSync(seriesMdFile)) {
               const { data } = parseFrontmatter(fs.readFileSync(seriesMdFile, "utf-8"));
+              
+              // Keep series description as unencrypted plaintext to prevent home page SeriesCard from showing ciphertext
+              const seriesDesc = data.description || "";
+
               allSeries.push({
                 slug: seriesSlug,
                 title: data.title || seriesSlug,
-                description: data.description || "",
+                description: seriesDesc,
                 coverImage: data.coverImage || "",
                 chapterCount: 0,
                 status: data.status || "ongoing",
                 tags: data.tags || [],
                 startDate: data.date || "",
+                isLocked: isSeriesLocked,
                 lang: lang
               });
             }
@@ -88,28 +118,29 @@ function generateData() {
               const { data, body } = parseFrontmatter(rawContent);
 
               let chapterContent = body;
-              let isLocked = false;
-              if (data.locked === "true" || data.locked === true) {
-                isLocked = true;
-                const chapterSlug = file.replace(".md", "");
-                const securePassword = passwordMap[chapterSlug];
-                
-                if (securePassword) {
-                  chapterContent = CryptoJS.AES.encrypt(body, securePassword.trim()).toString();
-                } else {
-                  console.warn(`[Encrypt] Password not found for chapter: ${seriesSlug}/${chapterSlug}`);
-                }
+              let chapterTitle = data.title || file;
+              let chapterPreview = data.preview || "";
+              let isChapterLocked = isSeriesLocked || data.locked === "true" || data.locked === true;
+
+              // Chapters in a locked series inherit the series password, otherwise use individual password
+              const lookupKey = isSeriesLocked ? seriesSlug : file.replace(".md", "");
+              const securePassword = passwordMap[lookupKey];
+
+              if (isChapterLocked && securePassword) {
+                chapterContent = CryptoJS.AES.encrypt(body, securePassword.trim()).toString();
+                chapterTitle = CryptoJS.AES.encrypt(chapterTitle, securePassword.trim()).toString();
+                chapterPreview = CryptoJS.AES.encrypt(chapterPreview, securePassword.trim()).toString();
               }
 
               allChapters.push({
                 slug: file.replace(".md", ""),
                 seriesSlug: seriesSlug,
                 part: parseInt(data.part) || 1,
-                title: data.title || file,
-                preview: data.preview || "",
+                title: chapterTitle,
+                preview: chapterPreview,
                 date: data.date || "",
                 content: chapterContent,
-                isLocked: isLocked,
+                isLocked: isChapterLocked,
                 lang: lang
               });
             }
@@ -164,7 +195,6 @@ function generateData() {
                 date: data.date || "",
                 readingTime: readingTime,
                 content: noteContent,
-                // Parse optional weight from Frontmatter (fallback to 999 if empty)
                 weight: parseInt(data.weight) || 999,
                 isLocked: isLocked,
                 lang: lang
@@ -175,13 +205,16 @@ function generateData() {
       }
     }
 
-    // 3. Scan dynamic Decoupled Albums
+    // 3. Scan dynamic Decoupled Albums (Support Page-Level Lock)
     const albumsDir = path.join(contentDir, "albums");
     if (fs.existsSync(albumsDir)) {
       const albumFolders = fs.readdirSync(albumsDir);
       for (const albumSlug of albumFolders) {
         const albumPath = path.join(albumsDir, albumSlug);
         if (!fs.statSync(albumPath).isDirectory()) continue;
+
+        const albumPagePassword = passwordMap["my-album"];
+        const isAlbumLocked = !!albumPagePassword;
 
         for (const lang of ["en", "vi"]) {
           const langPath = path.join(albumPath, lang);
@@ -238,15 +271,28 @@ function generateData() {
                 }
               }
 
+              let albumDescription = data.description || "";
+              let albumContent = body;
+              let serializedMedia = JSON.stringify(mediaItems);
+
+              // Encrypt all album metadata, narratives and media arrays into AES ciphertext at build-time
+              if (isAlbumLocked && albumPagePassword) {
+                albumDescription = CryptoJS.AES.encrypt(albumDescription, albumPagePassword.trim()).toString();
+                albumContent = CryptoJS.AES.encrypt(albumContent, albumPagePassword.trim()).toString();
+                serializedMedia = CryptoJS.AES.encrypt(serializedMedia, albumPagePassword.trim()).toString();
+              }
+
               allAlbums.push({
                 slug: albumSlug,
                 title: data.title || albumSlug,
-                description: data.description || "",
+                description: albumDescription,
                 coverImage: data.coverImage || firstImageFile || `/media/albums/${albumSlug}/photo-1.png`,
                 date: data.date || "2024-01-01",
                 lang: lang,
-                content: body,
-                media: mediaItems
+                content: albumContent,
+                media: isAlbumLocked ? serializedMedia : mediaItems,
+                isLocked: isAlbumLocked,
+                lang: lang
               });
             }
           }
@@ -267,6 +313,7 @@ export interface Series {
   status: "ongoing" | "completed";
   tags: string[];
   startDate: string;
+  isLocked?: boolean; // Added optional isLocked parameter
   lang: Lang;
 }
 
@@ -312,7 +359,8 @@ export interface Album {
   date: string;
   lang: Lang;
   content: string;
-  media: AlbumMediaItem[];
+  media: AlbumMediaItem[] | string;
+  isLocked?: boolean;
 }
 
 export interface TagInfo {
