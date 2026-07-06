@@ -21,7 +21,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # Checkout core main web repository
+      # Checkout core main web repository 
       - name: Check out main site
         uses: actions/checkout@v5
         with:
