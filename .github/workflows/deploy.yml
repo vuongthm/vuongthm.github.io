@@ -27,7 +27,7 @@ jobs:
         with:
           path: core
 
-      # Checkout content repositories (Story and Notes)
+      # Checkout content repositories (Story, Notes, and the new Album)
       - name: Check out stories content
         uses: actions/checkout@v5
         with:
@@ -40,6 +40,14 @@ jobs:
         with:
           repository: vuongthm/network-notes
           path: network-notes
+        continue-on-error: true
+
+      # Added: Automatically checkout my-album content repository during build phase on GitHub
+      - name: Check out my-album content
+        uses: actions/checkout@v5
+        with:
+          repository: vuongthm/my-album
+          path: my-album
         continue-on-error: true
 
       # Generate temporary passwords.json inside core workspace from secure GitHub secret
@@ -62,7 +70,7 @@ jobs:
         working-directory: ./core
         run: pnpm install --frozen-lockfile
 
-      # Build and export static assets (sync-dev.mjs, generate-content-data.mjs, and next build)
+      # Build and export static assets
       - name: Build site
         working-directory: ./core
         run: pnpm run build
