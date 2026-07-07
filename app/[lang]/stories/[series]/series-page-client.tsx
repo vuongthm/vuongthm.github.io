@@ -40,7 +40,15 @@ export default function SeriesPageClient({ series: seriesSlug, lang }: SeriesPag
   const rawChapters = useMemo(() => getChaptersBySeriesSlug(seriesSlug, lang), [seriesSlug, lang])
 
   // Local state for decrypted results
-  const [decryptedChapters, setDecryptedChapters] = useState<Chapter[]>([])
+  // FIXED: Synchronously initialize decryptedChapters with rawChapters if the series is not locked
+  const [decryptedChapters, setDecryptedChapters] = useState<Chapter[]>(() => {
+    return series.isLocked ? [] : rawChapters
+  })
+
+  // FIXED: Synchronously initialize decryptedDesc with raw series description if the series is not locked
+  const [decryptedDesc, setDecryptedDesc] = useState(() => {
+    return series.isLocked ? "" : series.description
+  })
 
   // --- TRẠNG THÁI GIAO DIỆN ALBUM ---
   const [activePhotoIdx, setActivePhotoIdx] = useState(0)
@@ -123,6 +131,8 @@ export default function SeriesPageClient({ series: seriesSlug, lang }: SeriesPag
     setDecryptedChapters(temp)
   }
 
+  const renderedChapters = series.isLocked ? decryptedChapters : rawChapters
+
   return (
     <>
       <Header />
@@ -157,7 +167,7 @@ export default function SeriesPageClient({ series: seriesSlug, lang }: SeriesPag
 
           {/* Series summary */}
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-            {/* FIXED: Read public/plaintext series.description directly to prevent Home page cipher text */}
+            {/* Read public/plaintext series.description directly to prevent Home page cipher text */}
             <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mb-6">
               {series.description}
             </p>
@@ -200,7 +210,7 @@ export default function SeriesPageClient({ series: seriesSlug, lang }: SeriesPag
                   {L.chapterList}
                 </h2>
                 <div className="flex flex-col">
-                  {decryptedChapters.map((chapter) => (
+                  {renderedChapters.map((chapter) => (
                     <Link 
                       key={chapter.slug} 
                       href={`/stories/${seriesSlug}/${chapter.slug}`} 

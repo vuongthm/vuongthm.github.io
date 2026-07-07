@@ -1,17 +1,15 @@
 "use client"
 
-import { use, useState, useMemo, useRef, useEffect } from "react"
+import { use, useState, useMemo, useRef } from "react"
 import Image from "next/image"
 import { Link } from "@/components/ui/link"
+import { ArrowLeft, Calendar, Tag, ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Film, Image as ImageIcon } from "lucide-react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { BackToTop } from "@/components/features/back-to-top"
 import { getVisibleAlbums, formatDate, type Album, type AlbumMediaItem } from "@/lib/data"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
-import { Lock, Unlock, KeyRound, ArrowLeft, ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Film, Image as ImageIcon } from "lucide-react"
-import CryptoJS from "crypto-js"
+import { LockedScreen } from "@/components/features/locked-screen"
 
 const LABELS = {
   en: {
@@ -30,11 +28,6 @@ const LABELS = {
     photosDesc: "Click on any file to open the cinematic split-screen detailing workspace.",
     showAll: "View All Captures",
     showLess: "Show Less",
-    lockedTitle: "Private Gallery",
-    lockedDesc: "This entire memory hub is encrypted and private. Please enter the correct password to unlock and read its content.",
-    placeholder: "Enter password...",
-    unlockBtn: "Unlock Gallery",
-    wrongPassword: "Incorrect password. Please try again."
   },
   vi: {
     heading: "Bộ sưu tập của tôi",
@@ -52,11 +45,6 @@ const LABELS = {
     photosDesc: "Bấm vào bất kỳ hình ảnh hoặc video nào để mở trình xem chi tiết ký ức.",
     showAll: "Xem tất cả ảnh & video",
     showLess: "Thu gọn",
-    lockedTitle: "Bộ sưu tập riêng tư",
-    lockedDesc: "Toàn bộ không gian lưu giữ này đã được mã hóa bảo mật. Vui lòng nhập đúng mật khẩu để mở khóa và đọc nội dung.",
-    placeholder: "Nhập mật khẩu...",
-    unlockBtn: "Mở khóa bộ sưu tập",
-    wrongPassword: "Mật khẩu không chính xác. Vui lòng thử lại."
   }
 }
 
@@ -68,12 +56,6 @@ export default function MyAlbumPage({ params }: { params: Promise<{ lang: "en" |
   const rawAlbums = useMemo(() => getVisibleAlbums(lang), [lang])
   const isLocked = rawAlbums.some((a) => a.isLocked)
 
-  // Local state for decryption password and unlocked content
-  const [password, setPassword] = useState("")
-  const [isUnlocked, setIsUnlocked] = useState(false)
-  const [error, setError] = useState(false)
-  const [decryptedAlbums, setDecryptedAlbums] = useState<Album[]>([])
-
   const [selectedAlbumSlug, setSelectedAlbumSlug] = useState<string | null>(null)
   const [visibleLimit, setVisibleLimit] = useState(6)
   const [modalOpen, setModalOpen] = useState(false)
@@ -82,79 +64,34 @@ export default function MyAlbumPage({ params }: { params: Promise<{ lang: "en" |
 
   const carouselRef = useRef<HTMLDivElement>(null)
 
-  // Auto-decrypt using session cache on component mount
-  useEffect(() => {
-    if (isLocked) {
-      const cachedPassword = sessionStorage.getItem("unlock-my-album")
-      if (cachedPassword) {
-        try {
-          const success = attemptDecryption(cachedPassword)
-          if (success) {
-            setIsUnlocked(true)
-          }
-        } catch (_) {
-          sessionStorage.removeItem("unlock-my-album")
-        }
-      }
-    } else {
-      setDecryptedAlbums(rawAlbums)
-    }
-  }, [isLocked, rawAlbums])
+  // Synchronously initialize decryptedAlbums with rawAlbums if the page is not locked
+  const [decryptedAlbums, setDecryptedAlbums] = useState<Album[]>(() => {
+    return isLocked ? [] : rawAlbums
+  })
 
-  // Core decryption method supporting deep media list JSON string parsing
-  const attemptDecryption = (passKey: string): boolean => {
-    const tempAlbums: Album[] = []
-    for (const album of rawAlbums) {
-      try {
-        const descBytes = CryptoJS.AES.decrypt(album.description, passKey.trim())
-        const decryptedDesc = descBytes.toString(CryptoJS.enc.Utf8)
+  // Map all raw album ciphertexts into a single encrypted dictionary for the LockedScreen
+  const encryptedDataMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    rawAlbums.forEach((album) => {
+      map[`desc-${album.slug}`] = album.description
+      map[`content-${album.slug}`] = album.content
+      map[`media-${album.slug}`] = album.media as string
+    })
+    return map
+  }, [rawAlbums])
 
-        const contentBytes = CryptoJS.AES.decrypt(album.content, passKey.trim())
-        const decryptedContent = contentBytes.toString(CryptoJS.enc.Utf8)
-
-        // Decrypt and parse the serialized dynamic AlbumMediaItem[] JSON string
-        const mediaBytes = CryptoJS.AES.decrypt(album.media as string, passKey.trim())
-        const decryptedMediaStr = mediaBytes.toString(CryptoJS.enc.Utf8)
-
-        if (!decryptedDesc || !decryptedContent || !decryptedMediaStr) {
-          return false
-        }
-
-        const parsedMedia: AlbumMediaItem[] = JSON.parse(decryptedMediaStr)
-        tempAlbums.push({
-          ...album,
-          description: decryptedDesc,
-          content: decryptedContent,
-          media: parsedMedia
-        })
-      } catch (_) {
-        return false
-      }
-    }
-
+  // Handle successful decryption of the entire page content
+  const handleUnlock = (decryptedMap: Record<string, string>) => {
+    const tempAlbums = rawAlbums.map((album) => ({
+      ...album,
+      description: decryptedMap[`desc-${album.slug}`],
+      content: decryptedMap[`content-${album.slug}`],
+      media: JSON.parse(decryptedMap[`media-${album.slug}`]) as AlbumMediaItem[]
+    }))
     setDecryptedAlbums(tempAlbums)
-    return true
   }
 
-  // Handle manual submission of decryption password
-  const handleUnlock = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!password.trim()) return
-
-    const success = attemptDecryption(password.trim())
-    if (!success) {
-      setError(true)
-      toast.error(L.wrongPassword)
-      return
-    }
-
-    setIsUnlocked(true)
-    setError(false)
-    sessionStorage.setItem("unlock-my-album", password.trim())
-    toast.success(lang === "en" ? "Gallery unlocked" : "Đã mở khóa bộ sưu tập")
-  }
-
-  // Resolve current active album from decrypted list
+  // Resolve current active album details
   const activeAlbum = useMemo(() => {
     const targetAlbums = isLocked ? decryptedAlbums : rawAlbums
     if (targetAlbums.length === 0) return null
@@ -164,7 +101,7 @@ export default function MyAlbumPage({ params }: { params: Promise<{ lang: "en" |
 
   const mediaList = (activeAlbum?.media as AlbumMediaItem[]) || []
 
-  // Horizontal scroll utility for top carousel
+  // Horizontal scroll utility for the top themes carousel
   const scrollThemes = (direction: "left" | "right") => {
     if (carouselRef.current) {
       const scrollAmount = 240
@@ -204,245 +141,219 @@ export default function MyAlbumPage({ params }: { params: Promise<{ lang: "en" |
       <main className="pt-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-12 pb-16">
           
-          {isLocked && !isUnlocked ? (
-            /* === LOCKED PAGE WALL SCREEN WITH STANDARD NOTE-PAGE-CLIENT STYLE === */
-            <div className="flex flex-col items-center justify-center min-h-[70vh] max-w-md mx-auto py-12 px-4">
-              <div className="size-16 rounded-2xl bg-muted border border-border flex items-center justify-center text-accent-brand mb-6 shadow-xs animate-bounce">
-                <Lock size={28} />
-              </div>
-              <h1 className="font-serif text-2xl sm:text-3xl font-semibold text-foreground text-center mb-3">
-                {L.lockedTitle}
+          <LockedScreen
+            isLocked={isLocked}
+            cacheKey="unlock-my-album"
+            encryptedData={encryptedDataMap}
+            onUnlock={handleUnlock}
+            backLink="/about"
+            backLabel={L.back}
+            lang={lang}
+          >
+            <Link
+              href="/about"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
+            >
+              <ArrowLeft size={13} />
+              {L.back}
+            </Link>
+
+            {/* Heading intro block */}
+            <div className="mb-10 text-center sm:text-left">
+              <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-foreground mb-3 text-pretty">
+                {L.heading}
               </h1>
-              <p className="text-sm text-muted-foreground text-center leading-relaxed mb-8">
-                {L.lockedDesc}
+              <p className="text-muted-foreground text-base leading-relaxed max-w-xl text-balance">
+                {L.desc}
               </p>
-              
-              <form onSubmit={handleUnlock} className="w-full flex flex-col gap-3">
-                <div className="relative w-full">
-                  <KeyRound size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={L.placeholder}
-                    className={cn(
-                      "w-full h-11 pl-10 pr-4 rounded-xl border bg-background text-foreground placeholder:text-muted-foreground text-sm outline-none focus:ring-2 transition-all",
-                      error 
-                        ? "border-destructive focus:ring-destructive/20" 
-                        : "border-border focus:ring-accent-brand/30 focus:border-accent-brand/60"
-                    )}
-                    required
-                  />
-                </div>
-                <Button type="submit" variant="default" className="h-11 rounded-xl text-sm font-medium w-full flex items-center justify-center gap-2 cursor-pointer bg-accent-brand hover:opacity-95 border-0 text-white">
-                  <Unlock size={14} />
-                  {L.unlockBtn}
-                </Button>
-              </form>
-              
-              <Link href="/about" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mt-8">
-                <ArrowLeft size={13} /> {L.back}
-              </Link>
             </div>
-          ) : (
-            /* === UNLOCKED/PUBLIC ACTIVE VIEW === */
-            <>
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
-              >
-                <ArrowLeft size={13} /> {L.back}
-              </Link>
 
-              {/* Heading intro block */}
-              <div className="mb-10 text-center sm:text-left">
-                <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-foreground mb-3 text-pretty">
-                  {L.heading}
-                </h1>
-                <p className="text-muted-foreground text-base leading-relaxed max-w-xl text-balance">
-                  {L.desc}
-                </p>
+            {/* === DẢI BĂNG CHUYỀN NGANG (HORIZONTAL CAROUSEL) CHỌN CHỦ ĐỀ ALBUM === */}
+            <section className="mb-12 relative">
+              <div className="flex items-center justify-between pb-3 border-b border-border/80 mb-5">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <ImageIcon size={12} className="text-accent-brand" />
+                  {L.overview}
+                </h2>
+
+                {/* Mũi tên trượt nhanh trên máy tính */}
+                <div className="hidden sm:flex items-center gap-1">
+                  <button
+                    onClick={() => scrollThemes("left")}
+                    className="size-7 rounded-full border border-border bg-background hover:bg-muted text-muted-foreground flex items-center justify-center cursor-pointer transition-colors"
+                  >
+                    <ChevronLeft size={14} />
+                  </button>
+                  <button
+                    onClick={() => scrollThemes("right")}
+                    className="size-7 rounded-full border border-border bg-background hover:bg-muted text-muted-foreground flex items-center justify-center cursor-pointer transition-colors"
+                  >
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
               </div>
 
-              {/* Horizontal sliding themes selection carousel */}
-              <section className="mb-12 relative">
-                <div className="flex items-center justify-between pb-3 border-b border-border/80 mb-5">
-                  <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                    <ImageIcon size={12} className="text-accent-brand" />
-                    {L.overview}
-                  </h2>
-
-                  <div className="hidden sm:flex items-center gap-1">
+              {/* Vùng lướt ngang chứa các Card phong cảnh đại diện cho Album */}
+              <div
+                ref={carouselRef}
+                className="flex gap-4 overflow-x-auto scrollbar-none py-1.5 select-none scroll-smooth"
+              >
+                {renderedAlbums.map((album) => {
+                  const isSelected = activeAlbum?.slug === album.slug
+                  return (
                     <button
-                      onClick={() => scrollThemes("left")}
-                      className="size-7 rounded-full border border-border bg-background hover:bg-muted text-muted-foreground flex items-center justify-center cursor-pointer transition-colors"
+                      key={album.slug}
+                      onClick={() => {
+                        setSelectedAlbumSlug(album.slug)
+                        setModalIdx(0)
+                        setVisibleLimit(6)
+                      }}
+                      className={cn(
+                        "relative w-64 h-36 rounded-2xl overflow-hidden shrink-0 border text-left transition-all duration-200 cursor-pointer group/card",
+                        isSelected
+                          ? "border-accent-brand ring-4 ring-accent-brand/10 scale-[1.01]"
+                          : "border-border/60 hover:border-muted-foreground/30"
+                      )}
                     >
-                      <ChevronLeft size={14} />
-                    </button>
-                    <button
-                      onClick={() => scrollThemes("right")}
-                      className="size-7 rounded-full border border-border bg-background hover:bg-muted text-muted-foreground flex items-center justify-center cursor-pointer transition-colors"
-                    >
-                      <ChevronRight size={14} />
-                    </button>
-                  </div>
-                </div>
-
-                <div
-                  ref={carouselRef}
-                  className="flex gap-4 overflow-x-auto scrollbar-none py-1.5 select-none scroll-smooth"
-                >
-                  {renderedAlbums.map((album) => {
-                    const isSelected = activeAlbum?.slug === album.slug
-                    return (
-                      <button
-                        key={album.slug}
-                        onClick={() => {
-                          setSelectedAlbumSlug(album.slug)
-                          setModalIdx(0)
-                          setVisibleLimit(6)
-                        }}
-                        className={cn(
-                          "relative w-64 h-36 rounded-2xl overflow-hidden shrink-0 border text-left transition-all duration-200 cursor-pointer group/card",
-                          isSelected
-                            ? "border-accent-brand ring-4 ring-accent-brand/10 scale-[1.01]"
-                            : "border-border/60 hover:border-muted-foreground/30"
-                        )}
-                      >
-                        <div className="absolute inset-0 bg-muted">
-                          <Image
-                            src={album.coverImage}
-                            alt=""
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover/card:scale-105"
-                            unoptimized
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
-                        </div>
-
-                        <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col gap-1 z-10">
-                          <div className="flex items-center justify-between gap-2 w-full">
-                            <span className="font-serif text-sm sm:text-base font-bold text-white line-clamp-1">
-                              {album.title}
-                            </span>
-                            <span className="text-[9px] font-mono px-2 py-0.5 rounded-md bg-white/20 text-white backdrop-blur-xs">
-                              {Array.isArray(album.media) ? album.media.length : 0}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-white/70 line-clamp-1 leading-normal font-sans">
-                            {album.description}
-                          </p>
-                        </div>
-                      </button>
-                    )
-                  })}
-                </div>
-              </section>
-
-              {/* Active selected album details & media grid */}
-              {activeAlbum && (
-                <section className="animate-fade-in flex flex-col gap-6">
-                  
-                  <div className="p-6 rounded-2xl border border-border bg-card shadow-xs">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className="inline-flex items-center gap-1 text-[10px] uppercase font-mono tracking-widest px-2.5 py-0.5 rounded-md bg-accent-brand/10 text-accent-brand">
-                        {activeAlbum.slug}
-                      </span>
-                      <span className="text-xs text-muted-foreground font-mono">
-                        {formatDate(activeAlbum.date, lang)}
-                      </span>
-                    </div>
-                    <h2 className="font-serif text-xl sm:text-2xl font-bold text-foreground mb-2">
-                      {activeAlbum.title}
-                    </h2>
-                    <p className="text-sm text-muted-foreground leading-relaxed text-pretty max-w-3xl">
-                      {activeAlbum.description}
-                    </p>
-                  </div>
-
-                  <div className="border-b border-border/60 pb-3 flex items-center justify-between">
-                    <div>
-                      <h3 className="font-serif text-base font-bold text-foreground">
-                        {L.photosHeading}
-                      </h3>
-                      <p className="text-xs text-muted-foreground hidden sm:block mt-0.5">
-                        {L.photosDesc}
-                      </p>
-                    </div>
-                    <span className="text-xs text-muted-foreground font-mono">
-                      {mediaList.length} {L.totalMedia}
-                    </span>
-                  </div>
-
-                  {mediaList.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-16 text-sm">{L.noMedia}</p>
-                  ) : (
-                    <>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        {mediaList.slice(0, visibleLimit).map((item, index) => {
-                          const isVideo = item.type === "video"
-                          return (
-                            <div
-                              key={item.filename}
-                              onClick={() => openPhotoDetail(index)}
-                              className="group relative aspect-[4/3] rounded-xl overflow-hidden border border-border bg-muted cursor-pointer hover:border-accent-brand/40 hover:shadow-md transition-all duration-200"
-                            >
-                              {isVideo ? (
-                                <div className="relative w-full h-full">
-                                  <video 
-                                    src={item.src} 
-                                    className="w-full h-full object-cover pointer-events-none"
-                                    preload="metadata"
-                                  />
-                                  <div className="absolute top-2.5 right-2.5 size-6 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-xs">
-                                    <Film size={11} />
-                                  </div>
-                                </div>
-                              ) : (
-                                <Image
-                                  src={item.src}
-                                  alt={item.title}
-                                  fill
-                                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                                  unoptimized
-                                />
-                              )}
-                              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition-colors" />
-                              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/85 via-black/45 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <p className="text-[10px] text-white/95 leading-tight font-medium font-serif truncate">
-                                  {item.title}
-                                </p>
-                              </div>
-                            </div>
-                          )
-                        })}
+                      {/* Background cover image of the album with a dark modern tint */}
+                      <div className="absolute inset-0 bg-muted">
+                        <Image
+                          src={album.coverImage}
+                          alt=""
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover/card:scale-105"
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
                       </div>
 
-                      {mediaList.length > 6 && (
-                        <div className="flex justify-center mt-6 gap-2.5">
-                          {visibleLimit < mediaList.length ? (
-                            <button
-                              onClick={() => setVisibleLimit(mediaList.length)}
-                              className="px-5 py-2.5 rounded-xl border border-border bg-background text-foreground text-xs sm:text-sm font-semibold hover:bg-muted transition-colors duration-150 cursor-pointer"
-                            >
-                              {L.showAll}
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => setVisibleLimit(6)}
-                              className="px-5 py-2.5 rounded-xl border border-border bg-background text-foreground text-xs sm:text-sm font-semibold hover:bg-muted transition-colors duration-150 cursor-pointer"
-                            >
-                              {L.showLess}
-                            </button>
-                          )}
+                      {/* Album details positioned inside the card bottom */}
+                      <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col gap-1 z-10">
+                        <div className="flex items-center justify-between gap-2 w-full">
+                          <span className="font-serif text-sm sm:text-base font-bold text-white line-clamp-1">
+                            {album.title}
+                          </span>
+                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-md bg-white/20 text-white backdrop-blur-xs">
+                            {Array.isArray(album.media) ? album.media.length : 0}
+                          </span>
                         </div>
-                      )}
-                    </>
-                  )}
-                </section>
-              )}
-            </>
-          )}
+                        <p className="text-[10px] text-white/70 line-clamp-1 leading-normal font-sans">
+                          {album.description}
+                        </p>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
+
+            {/* === KHO ẢNH & VIDEO CHỦ ĐỀ ĐANG CHỌN (100% CHIỀU RỘNG RỘNG RÃI) === */}
+            {activeAlbum && (
+              <section className="animate-fade-in flex flex-col gap-6">
+                
+                {/* Giới thiệu chi tiết Album đang chọn */}
+                <div className="p-6 rounded-2xl border border-border bg-card shadow-xs">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="inline-flex items-center gap-1 text-[10px] uppercase font-mono tracking-widest px-2.5 py-0.5 rounded-md bg-accent-brand/10 text-accent-brand">
+                      {activeAlbum.slug}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-mono">
+                      {formatDate(activeAlbum.date, lang)}
+                    </span>
+                  </div>
+                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-foreground mb-2">
+                    {activeAlbum.title}
+                  </h2>
+                  <p className="text-sm text-muted-foreground leading-relaxed text-pretty max-w-3xl">
+                    {activeAlbum.description}
+                  </p>
+                </div>
+
+                {/* Header của kho lưu trữ */}
+                <div className="border-b border-border/60 pb-3 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-serif text-base font-bold text-foreground">
+                      {L.photosHeading}
+                    </h3>
+                    <p className="text-xs text-muted-foreground hidden sm:block mt-0.5">
+                      {L.photosDesc}
+                    </p>
+                  </div>
+                  <span className="text-xs text-muted-foreground font-mono">
+                    {mediaList.length} {L.totalMedia}
+                  </span>
+                </div>
+
+                {mediaList.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-16 text-sm">{L.noMedia}</p>
+                ) : (
+                  <>
+                    {/* Grid lưới chứa danh sách tệp đa phương tiện */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {mediaList.slice(0, visibleLimit).map((item, index) => {
+                        const isVideo = item.type === "video"
+                        return (
+                          <div
+                            key={item.filename}
+                            onClick={() => openPhotoDetail(index)}
+                            className="group relative aspect-[4/3] rounded-xl overflow-hidden border border-border bg-muted cursor-pointer hover:border-accent-brand/40 hover:shadow-md transition-all duration-200"
+                          >
+                            {isVideo ? (
+                              <div className="relative w-full h-full">
+                                <video 
+                                  src={item.src} 
+                                  className="w-full h-full object-cover pointer-events-none"
+                                  preload="metadata"
+                                />
+                                <div className="absolute top-2.5 right-2.5 size-6 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-xs">
+                                  <Film size={11} />
+                                </div>
+                              </div>
+                            ) : (
+                              <Image
+                                src={item.src}
+                                alt={item.title}
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                                unoptimized
+                              />
+                            )}
+                            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition-colors" />
+                            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/85 via-black/45 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <p className="text-[10px] text-white/95 leading-tight font-medium font-serif truncate">
+                                {item.title}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* === NÚT ĐIỀU HƯỚNG XEM THÊM / THU GỌN === */}
+                    {mediaList.length > 6 && (
+                      <div className="flex justify-center mt-6 gap-2.5">
+                        {visibleLimit < mediaList.length ? (
+                          <button
+                            onClick={() => setVisibleLimit(mediaList.length)}
+                            className="px-5 py-2.5 rounded-xl border border-border bg-background text-foreground text-xs sm:text-sm font-semibold hover:bg-muted transition-colors duration-150 cursor-pointer"
+                          >
+                            {L.showAll}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setVisibleLimit(6)}
+                            className="px-5 py-2.5 rounded-xl border border-border bg-background text-foreground text-xs sm:text-sm font-semibold hover:bg-muted transition-colors duration-150 cursor-pointer"
+                          >
+                            {L.showLess}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </section>
+            )}
+          </LockedScreen>
 
         </div>
       </main>
