@@ -519,7 +519,10 @@ describe("Markdown lock field", () => {
       "dir",
     )
     const run = () =>
-      execFileSync(process.execPath, [path.join(scripts, "password.mjs")], { encoding: "utf8" })
+      execFileSync(process.execPath, [path.join(scripts, "password.mjs")], {
+        encoding: "utf8",
+        env: { ...process.env, CI: "", CONTENT_PASSWORD: "", CONTENT_PASSWORDS: "" },
+      })
     run()
     const before = fs.readFileSync(path.join(app, "passwords.json"), "utf8")
     expect(JSON.parse(before).vault.length).toBeGreaterThanOrEqual(24)
