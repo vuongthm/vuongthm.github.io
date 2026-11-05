@@ -155,10 +155,11 @@ export async function syncVault(root) {
     .catch(() => false)
   if (hasSource) {
     const passwords = loadContentPasswords(root)
+    const envVaultPassword = process.env.VAULT_PASSWORD?.trim()
     const password =
-      process.env.VAULT_PASSWORD ??
-      passwords.vault ??
-      passwords.default ??
+      envVaultPassword ||
+      passwords.vault?.trim() ||
+      passwords.default?.trim() ||
       (await fs.readFile(path.join(sourceDir, "password.txt"), "utf8")).trim()
     await packageVault({ sourceDir, outputDir: encrypted, password })
   }

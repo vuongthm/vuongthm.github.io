@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { mkdtemp, mkdir, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import path from "node:path"
@@ -8,11 +8,15 @@ import { packageVault, syncVault } from "../../scripts/vault/package.mjs"
 
 const directories: string[] = []
 afterEach(async () => {
+  vi.unstubAllEnvs()
   await Promise.all(directories.splice(0).map((dir) => rm(dir, { recursive: true, force: true })))
 })
 async function fixture() {
   const root = await mkdtemp(path.join(tmpdir(), "vuong-private-test-"))
   directories.push(root)
+  vi.stubEnv("CONTENT_PASSWORD", "")
+  vi.stubEnv("CONTENT_PASSWORDS", "")
+  vi.stubEnv("VAULT_PASSWORD", "")
   const sourceDir = path.join(root, "originals"),
     outputDir = path.join(root, "encrypted")
   await mkdir(sourceDir)
