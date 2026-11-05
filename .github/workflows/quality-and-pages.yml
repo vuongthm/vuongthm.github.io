@@ -53,6 +53,10 @@ jobs:
           CONTENT_PASSWORDS: ${{ secrets.CONTENT_PASSWORDS }}
       - name: Verify types, lint, and tests
         run: pnpm verify
+        env:
+          CONTENT_SOURCE_TOKEN: ${{ secrets.CONTENT_SOURCE_TOKEN }}
+          CONTENT_PASSWORD: ${{ secrets.CONTENT_PASSWORD }}
+          CONTENT_PASSWORDS: ${{ secrets.CONTENT_PASSWORDS }}
       - name: Build and inspect public artifact
         run: pnpm build
         env:

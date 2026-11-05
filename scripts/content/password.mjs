@@ -6,7 +6,7 @@ import { frontmatter, hasLock } from "./schema.mjs"
 import { contentLockKey, loadContentPasswords } from "./locks.mjs"
 const root = path.resolve(import.meta.dirname, "../.."),
   file = path.join(root, "passwords.json")
-if (process.env.CI)
+if (process.env.CI && !(process.env.CONTENT_PASSWORDS || process.env.CONTENT_PASSWORD))
   throw Error("Initialize per-document passwords locally; CI requires CONTENT_PASSWORDS.")
 const values = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : {},
   known = loadContentPasswords(root)
