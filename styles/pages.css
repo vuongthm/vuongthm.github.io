@@ -1,0 +1,230 @@
+/* Topic, project and personal pages share the same editorial rhythm. */
+.topics-page-grid {
+  margin-bottom: 48px;
+}
+.topics-page-grid .topic-card {
+  padding-block: 35px;
+}
+.topic-title-icon {
+  display: flex;
+  width: 64px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--tone);
+}
+.topic-paths {
+  margin-top: 40px;
+}
+.path-page-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 70px;
+  border-top: 1px solid var(--line);
+  padding-top: 25px;
+}
+.path-overview {
+  background: var(--accent-light);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 25px;
+  height: fit-content;
+  position: sticky;
+  top: 110px;
+}
+.path-overview h2 {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  margin-block: 17px;
+}
+.path-overview p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--muted);
+}
+.path-overview .button {
+  margin-top: 20px;
+}
+.stack-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 20px 0;
+}
+.stack-tags span {
+  font: 8px var(--font-mono);
+  background: var(--soft);
+  border: 1px solid var(--line);
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+.series-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  border-top: 1px solid var(--line);
+  padding-top: 30px;
+}
+.series-cover {
+  position: relative;
+  aspect-ratio: 4/3;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--soft);
+}
+.series-cover img {
+  object-fit: cover;
+}
+.series-chapters h2 {
+  font-size: 22px;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+.series-chapter {
+  display: flex;
+  gap: 20px;
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+  align-items: flex-start;
+}
+.series-chapter > span {
+  font: 11px var(--font-mono);
+  color: var(--accent);
+  padding-top: 4px;
+}
+.series-chapter > div {
+  flex: 1;
+}
+.series-chapter h3 {
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+.series-chapter p {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.series-chapter small {
+  display: block;
+  font-size: 9px;
+  color: var(--faint);
+  margin-top: 10px;
+}
+.series-chapter > svg {
+  margin-top: 6px;
+  color: var(--muted);
+}
+.saved-list {
+  border-top: 1px solid var(--line);
+}
+.saved-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+.saved-row > a {
+  flex: 1;
+}
+.saved-row h2 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.saved-row small {
+  font-size: 10px;
+  color: var(--faint);
+}
+.saved-row > .icon-button {
+  color: var(--muted);
+}
+.saved-row > .icon-button:hover {
+  color: #af6658;
+}
+.gallery-empty {
+  border: 1px dashed var(--line);
+  border-radius: 3px;
+  padding: 65px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 17px;
+}
+.gallery-empty > svg {
+  color: var(--accent);
+}
+.gallery-empty h2 {
+  font-size: 24px;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
+.gallery-empty p {
+  max-width: 530px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+.entry-fallback {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 30px;
+}
+.entry-fallback h1 {
+  font-size: 40px;
+  letter-spacing: -0.04em;
+  font-weight: 500;
+}
+.not-found {
+  max-width: 650px;
+  padding: 100px 20px;
+  margin-inline: auto;
+  text-align: center;
+}
+.not-found > span {
+  font: 70px var(--font-mono);
+  color: var(--line);
+}
+.not-found h1 {
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+.not-found p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.9;
+  margin-block: 20px;
+}
+.not-found > div {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

@@ -1,69 +1,89 @@
-"use client"
-
-import { useState } from "react"
-import { Header } from "@/components/layout/header"
-import { Footer } from "@/components/layout/footer"
-import { SeriesCard } from "@/components/content/series-card"
-import { BackToTop } from "@/components/features/back-to-top"
-import { useLang } from "@/components/providers/lang-provider"
-import { getVisibleSeries } from "@/lib/data"
-import { cn } from "@/lib/utils"
-
-const COPY = {
-  en: { heading: "Stories", description: "Personal narrative series split into chapters — childhood, the reckless years, and a journey of growth.", all: "All", ongoing: "Ongoing", completed: "Completed", noResults: "No stories found." },
-  vi: { heading: "Chuyện kể", description: "Những câu chuyện cá nhân được chia thành các chương — về tuổi thơ, những năm tháng bất kham, và hành trình trưởng thành.", all: "Tất cả", ongoing: "Đang viết", completed: "Hoàn thành", noResults: "Không tìm thấy chuyện nào." },
+import { PaginatedList } from "@/components/collections/paginated-list"
+import { CoverCard } from "@/components/collections/cover-card"
+import { copy } from "@/lib/i18n/copy"
+import { ArrowRight } from "lucide-react"
+import { notFound } from "next/navigation"
+import { getStories } from "@/lib/content/server"
+import { isLocale, localized } from "@/lib/i18n/config"
+import { metadataFor } from "@/lib/seo"
+import { messages } from "@/lib/i18n/messages"
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params
+  return isLocale(lang)
+    ? metadataFor(
+        copy(lang, "Chuyện kể", "Stories"),
+        copy(lang, "Những câu chuyện phía sau các dòng code.", "The stories behind the code."),
+        "/stories",
+        lang,
+      )
+    : {}
 }
-
-type Filter = "all" | "ongoing" | "completed"
-
-export default function StoriesPage() {
-  const { lang } = useLang()
-  const c = COPY[lang]
-  const [filter, setFilter] = useState<Filter>("all")
-
-  const filtered = getVisibleSeries(lang).filter((s) => {
-    if (filter === "all") return true
-    return s.status === filter
-  })
-
+export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params
+  if (!isLocale(lang)) notFound()
+  const stories = getStories(lang),
+    m = messages(lang)
   return (
-    <>
-      <Header />
-      <BackToTop />
-      <main className="pt-14">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-12 pb-8 sm:pt-16 sm:pb-10">
-          <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-foreground mb-3">{c.heading}</h1>
-          <p className="text-base text-muted-foreground leading-relaxed max-w-xl">{c.description}</p>
-
-          <div className="flex items-center gap-1 mt-6 p-1 rounded-lg bg-muted w-fit">
-            {(["all", "ongoing", "completed"] as Filter[]).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={cn(
-                  "px-4 py-1.5 rounded-md text-sm font-medium transition-colors duration-150",
-                  filter === f ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {c[f === "all" ? "all" : f === "ongoing" ? "ongoing" : "completed"]}
-              </button>
-            ))}
-          </div>
+    <main id="main-content">
+      <header className="wrap story-index-heading">
+        <div>
+          <span className="eyebrow">{copy(lang, "Góc lưu giữ cá nhân", "Personal archive")}</span>
+          <h1>{copy(lang, "Chuyện trên đường đi", "Stories along the way")}</h1>
+          <p>
+            {copy(
+              lang,
+              "Chuyện đi học, đi làm và lớn lên.",
+              "Stories of school, work, and growing up.",
+            )}
+          </p>
         </div>
-
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-16">
-          {filtered.length === 0 ? (
-            <p className="text-muted-foreground text-center py-16">{c.noResults}</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {filtered.map((series) => (
-                <SeriesCard key={series.slug} series={series} lang={lang} />
-              ))}
-            </div>
-          )}
+        <div className="story-index-aside">
+          <span>
+            Đại Lãnh <ArrowRight size={12} /> Đà Nẵng
+          </span>
+          <small>
+            {stories.length} {m.stories.toLocaleLowerCase(lang)} ·{" "}
+            {stories.reduce((sum, story) => sum + story.chapters.length, 0)}{" "}
+            {copy(lang, "chương", "chapters")}
+          </small>
         </div>
-      </main>
-      <Footer lang={lang} />
-    </>
+      </header>
+      {lang === "zh" && (
+        <p className="wrap content-availability">
+          介绍页面提供中文，故事正文目前提供英语与越南语版本。
+        </p>
+      )}
+      {lang === "ja" && (
+        <p className="wrap content-availability">
+          紹介ページは日本語です。ストーリー本文は英語・ベトナム語で公開しています。
+        </p>
+      )}
+      <div className="wrap">
+        <PaginatedList className="story-grid">
+          {stories.map((story) => (
+            <CoverCard
+              key={story.id}
+              href={localized(`/stories/${story.slug}`, lang)}
+              cover={story.cover}
+              title={story.title}
+              description={story.summary}
+              label={
+                story.status === "completed"
+                  ? copy(lang, "ĐÃ HOÀN THÀNH", "COMPLETED")
+                  : copy(lang, "ĐANG VIẾT", "IN PROGRESS")
+              }
+              meta={<time dateTime={story.date}>{story.date.slice(0, 4)}</time>}
+              footer={
+                <>
+                  {story.chapters.length} {copy(lang, "chương", "chapters")}
+                </>
+              }
+              encrypted={story.encrypted}
+              locale={lang}
+            />
+          ))}
+        </PaginatedList>
+      </div>
+    </main>
   )
 }

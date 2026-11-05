@@ -1,0 +1,118 @@
+import type { Locale } from "./config"
+const vi = {
+  filters: "Bộ lọc",
+  close: "Đóng bộ lọc",
+  show: "Xem {count} kết quả",
+
+  search: "Tìm tên, website, chủ đề…",
+  clear: "Xóa tìm kiếm",
+  topic: "Chủ đề",
+  all: "Tất cả",
+  sort: "Sắp xếp",
+  original: "Mặc định",
+  az: "Tên A–Z",
+  za: "Tên Z–A",
+  empty: "Chưa tìm thấy người bạn phù hợp.",
+  reset: "Xóa bộ lọc",
+
+  title: "Bạn bè & kết nối",
+  eyebrow: "Những người cùng đi",
+  headline: "Internet rộng hơn nhờ những người bạn.",
+  description:
+    "Những người mình quen, cùng học và có dịp trao đổi. Mỗi website là một góc nhìn riêng — mời bạn ghé thăm.",
+  visit: "Ghé thăm website",
+  placeholderWebsite: "Liên kết mẫu",
+  websites: "không gian cá nhân",
+  note: "Một đường dẫn nhỏ, một kết nối dài lâu.",
+  connect: "Cùng kết nối",
+  contact: "Nếu chúng mình đã có dịp trò chuyện, gửi mình website của bạn nhé.",
+  back: "Về tôi",
+}
+type Text = { [K in keyof typeof vi]: string }
+const en: Text = {
+  filters: "Filters",
+  close: "Close filters",
+  show: "Show results ({count})",
+
+  search: "Search names, websites, topics…",
+  clear: "Clear search",
+  topic: "Topic",
+  all: "All topics",
+  sort: "Sort",
+  original: "Original order",
+  az: "Name A–Z",
+  za: "Name Z–A",
+  empty: "No matching friends.",
+  reset: "Reset filters",
+
+  title: "Friends & connections",
+  eyebrow: "People along the way",
+  headline: "The internet feels bigger with friends.",
+  description:
+    "People I know, learn with and exchange ideas with. Each website offers a perspective of its own. Take a look around.",
+  visit: "Visit website",
+  placeholderWebsite: "Placeholder link",
+  websites: "personal spaces",
+  note: "A small link. A lasting connection.",
+  connect: "Let’s connect",
+  contact: "If our paths have crossed, send me your website.",
+  back: "About me",
+}
+const ja: Text = {
+  filters: "絞り込み",
+  close: "絞り込みを閉じる",
+  show: "{count} 件を表示",
+
+  search: "名前・サイト・トピックを検索…",
+  clear: "検索をクリア",
+  topic: "トピック",
+  all: "すべて",
+  sort: "並べ替え",
+  original: "登録順",
+  az: "名前 昇順",
+  za: "名前 降順",
+  empty: "該当する友人はいません。",
+  reset: "絞り込みを解除",
+
+  title: "友人とつながり",
+  eyebrow: "ともに歩む人たち",
+  headline: "友人がいると、インターネットはもっと広がる。",
+  description:
+    "知り合い、学び合い、アイデアを交わしてきた人たち。それぞれのWebサイトに、その人ならではの視点があります。",
+  visit: "Webサイトを訪れる",
+  placeholderWebsite: "仮のリンク",
+  websites: "個人のスペース",
+  note: "小さなリンクから、長く続くつながりへ。",
+  connect: "つながりましょう",
+  contact: "お話ししたことのある方は、ぜひWebサイトを教えてください。",
+  back: "自己紹介",
+}
+const zh: Text = {
+  filters: "筛选",
+  close: "关闭筛选",
+  show: "查看 {count} 个结果",
+
+  search: "搜索姓名、网站、主题…",
+  clear: "清空搜索",
+  topic: "主题",
+  all: "全部",
+  sort: "排序",
+  original: "默认顺序",
+  az: "姓名 升序",
+  za: "姓名 降序",
+  empty: "没有找到匹配的朋友。",
+  reset: "清除筛选",
+
+  title: "朋友与连接",
+  eyebrow: "同行的人",
+  headline: "因为朋友，互联网变得更广阔。",
+  description: "那些相识、共同学习、交流想法的朋友。每个网站都有自己的视角，欢迎去看看。",
+  visit: "访问网站",
+  placeholderWebsite: "暂用链接",
+  websites: "个人空间",
+  note: "一条小小的链接，一段长久的连接。",
+  connect: "一起连接",
+  contact: "如果我们曾交流过，欢迎把你的网站发给我。",
+  back: "关于我",
+}
+export const friendsMessages: Record<Locale, Text> = { vi, en, ja, zh }

@@ -1,0 +1,214 @@
+.project-directory-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 19px;
+  display: grid;
+}
+.project-preview {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  flex-direction: column;
+  transition:
+    background 0.18s,
+    border-color 0.18s;
+  display: flex;
+  overflow: hidden;
+}
+.project-preview:hover {
+  background: var(--accent-light);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+.project-preview-image {
+  aspect-ratio: 20/11;
+  border-bottom: 1px solid var(--line);
+  background: #eceeeb;
+}
+.project-preview-image img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.project-preview-copy {
+  flex-direction: column;
+  flex: 1;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 19px;
+  display: flex;
+}
+.project-preview-meta {
+  width: 100%;
+  color: var(--muted);
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10px;
+  display: flex;
+}
+.project-preview :is(h2, h3) {
+  font:
+    500 20px/1.5 var(--font-heading),
+    Georgia,
+    serif;
+  margin-top: 13px;
+}
+.project-preview p {
+  color: var(--muted);
+  flex: 1;
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.9;
+}
+.project-preview .stack-tags {
+  gap: 5px;
+  margin: 17px 0;
+}
+.project-preview .stack-tags span {
+  font-size: 9px;
+}
+.project-preview-action {
+  width: 100%;
+  color: var(--accent);
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 7px;
+  font-size: 11px;
+  display: flex;
+}
+@media (max-width: 1000px) {
+  .project-directory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .project-directory-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .project-preview :is(h2, h3) {
+    font-size: 19px;
+  }
+}
+.project-detail {
+  padding-top: 26px;
+}
+.project-detail-heading {
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  margin-block: 25px 28px;
+  display: flex;
+}
+.project-detail-heading h1 {
+  font-family: var(--font-heading), Georgia, serif;
+  letter-spacing: -0.035em;
+  margin-top: 10px;
+  font-size: clamp(28px, 3.6vw, 40px);
+  font-weight: 500;
+  line-height: 1.35;
+}
+.project-detail-heading p {
+  max-width: 650px;
+  color: var(--muted);
+  margin-top: 13px;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.project-detail-heading > .button {
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.project-cover {
+  margin: 0;
+}
+.project-cover img {
+  object-fit: contain;
+  border: 1px solid var(--line);
+  background: #eceeeb;
+  border-radius: 7px;
+  width: 100%;
+  height: auto;
+  max-height: 480px;
+  display: block;
+}
+.project-cover figcaption {
+  color: var(--muted);
+  margin-top: 9px;
+  font-size: 10px;
+}
+.project-detail-layout {
+  grid-template-columns: minmax(0, 1fr) 250px;
+  align-items: start;
+  gap: 65px;
+  margin-top: 38px;
+  display: grid;
+}
+.project-detail-body {
+  min-width: 0;
+}
+.project-detail-body .prose {
+  font-size: 14px;
+}
+.project-detail-body .prose > :first-child {
+  margin-top: 0;
+}
+.project-facts {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 21px;
+  position: sticky;
+  top: 100px;
+}
+.project-facts h2 {
+  font:
+    500 19px/1.5 var(--font-heading),
+    Georgia,
+    serif;
+}
+.project-facts dl {
+  gap: 17px;
+  margin: 18px 0;
+  display: grid;
+}
+.project-facts dt {
+  color: var(--muted);
+  font-size: 10px;
+}
+.project-facts dd {
+  margin: 5px 0 0;
+  font-size: 12px;
+}
+.project-facts .stack-tags {
+  gap: 6px;
+}
+.project-facts .stack-tags span {
+  background: var(--paper);
+}
+.project-facts .text-link {
+  font-size: 11px;
+}
+@media (max-width: 760px) {
+  .project-detail {
+    padding-top: 20px;
+  }
+  .project-detail-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    margin-block: 21px 25px;
+  }
+  .project-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    margin-top: 28px;
+  }
+  .project-facts {
+    position: static;
+  }
+  .project-detail-heading p {
+    font-size: 12px;
+  }
+}

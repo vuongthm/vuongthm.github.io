@@ -1,328 +1,178 @@
-"use client"
-
+import { copy } from "@/lib/i18n/copy"
+import Link from "next/link"
 import Image from "next/image"
-import { Link } from "@/components/ui/link"
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
-import { useState, useEffect, useCallback } from "react"
-import { useLang } from "@/components/providers/lang-provider"
-import { Header } from "@/components/layout/header"
-import { Footer } from "@/components/layout/footer"
-import { SeriesCard } from "@/components/content/series-card"
-import { NoteCard } from "@/components/content/note-card"
-import { BackToTop } from "@/components/features/back-to-top"
-import { getVisibleSeries, getVisibleNotes } from "@/lib/data"
+import { ArrowRight, MapPin } from "lucide-react"
+import { notFound } from "next/navigation"
+import { isLocale, localized } from "@/lib/i18n/config"
+import { messages } from "@/lib/i18n/messages"
+import {
+  getEntryMeta,
+  getPaths,
+  getStories,
+  getProjects,
+  getContentModules,
+} from "@/lib/content/server"
+import { topics } from "@/lib/content/topics"
+import { EditorialCard } from "@/components/knowledge/editorial-card"
+import { getJourneyPreviews } from "@/lib/content/journey"
+import { JourneyExplorer } from "@/components/journey-explorer"
+import { ProjectCard } from "@/components/projects/project-card"
+import { HomeActions } from "@/components/home-actions"
+import { metadataFor } from "@/lib/seo"
 
-const COPY = {
-  en: {
-    tagline: "Telling life stories. Sharing what I've learned.",
-    ctaStories: "Read Stories",
-    ctaNotes: "Browse Notes",
-    storiesHeading: "Stories in progress",
-    notesHeading: "Recent Notes",
-    aboutHeading: "About the author",
-    aboutExcerpt:
-      "I'm Vuong (vuongthm) — grew up in a small rural village, taught myself everything I know, and write to understand myself better. This blog is where I tell the stories I haven't had a chance to share, and pass along what I've learned along the way.",
-    aboutLink: "Read more about me",
-    viewAllStories: "View all stories",
-    viewAllNotes: "View all notes",
-  },
-  vi: {
-    tagline: "Kể chuyện cuộc đời. Chia sẻ những gì học được.",
-    ctaStories: "Đọc chuyện kể",
-    ctaNotes: "Xem ghi chú",
-    storiesHeading: "Chuyện đang viết",
-    notesHeading: "Ghi chú gần đây",
-    aboutHeading: "Về tác giả",
-    aboutExcerpt:
-      "Tôi là Vuong (vuongthm) — lớn lên ở một làng quê nhỏ, tự mày mò học mọi thứ, và viết để hiểu bản thân hơn. Blog này là nơi tôi kể những câu chuyện chưa kịp nói và chia sẻ những điều đã học được trên con đường trưởng thành.",
-    aboutLink: "Đọc thêm về tôi",
-    viewAllStories: "Xem tất cả chuyện kể",
-    viewAllNotes: "Xem tất cả ghi chú",
-  },
-}
-
-const ABOUT_CAROUSEL_IMAGES = [
-  { src: "/hometown/dai-lanh-coast.png", alt: "Dai Lanh coast at dawn" },
-  { src: "/hometown/dai-lanh-village.png", alt: "Dai Lanh fishing village" },
-  { src: "/hometown/dai-lanh-mountain.png", alt: "Dai Lanh mountain cove" },
-]
-
-function AboutCarousel() {
-  const [current, setCurrent] = useState(0)
-  const [hovered, setHovered] = useState(false)
-  const total = ABOUT_CAROUSEL_IMAGES.length
-
-  const prev = useCallback(
-    (e?: React.MouseEvent) => {
-      e?.preventDefault()
-      setCurrent((c) => (c - 1 + total) % total)
-    },
-    [total]
-  )
-
-  const next = useCallback(
-    (e?: React.MouseEvent) => {
-      e?.preventDefault()
-      setCurrent((c) => (c + 1) % total)
-    },
-    [total]
-  )
-
-  useEffect(() => {
-    if (hovered) return
-    const id = setInterval(() => setCurrent((c) => (c + 1) % total), 3500)
-    return () => clearInterval(id)
-  }, [hovered, total])
-
-  return (
-    <div
-      className="relative w-full h-full group/inner overflow-hidden"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {ABOUT_CAROUSEL_IMAGES.map((img, i) => (
-        <div
-          key={img.src}
-          className={`absolute inset-0 transition-opacity duration-500 ${
-            i === current ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
-          aria-hidden={i !== current}
-        >
-          <Image
-            src={img.src}
-            alt={img.alt}
-            fill
-            // Tối ưu hóa: object-cover kết hợp thu phóng nhẹ tạo chiều sâu cho ảnh khi di chuột vào khung
-            className="object-cover transition-transform duration-700 ease-out group-hover/carousel:scale-[1.02]"
-            sizes="(max-width: 640px) 100vw, 600px"
-          />
-        </div>
-      ))}
-
-      <button
-        onClick={prev}
-        aria-label="Previous photo"
-        className="absolute left-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover/inner:opacity-100 hover:bg-black/60 transition-all duration-200 z-10 cursor-pointer"
-      >
-        <ChevronLeft size={16} />
-      </button>
-
-      <button
-        onClick={next}
-        aria-label="Next photo"
-        className="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover/inner:opacity-100 hover:bg-black/60 transition-all duration-200 z-10 cursor-pointer"
-      >
-        <ChevronRight size={16} />
-      </button>
-
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-        {ABOUT_CAROUSEL_IMAGES.map((_, i) => (
-          <button
-            key={i}
-            onClick={(e) => {
-              e.preventDefault()
-              setCurrent(i)
-            }}
-            aria-label={`Go to photo ${i + 1}`}
-            className={`rounded-full transition-all duration-200 cursor-pointer ${
-              i === current ? "w-4 h-1.5 bg-white" : "size-1.5 bg-white/50 hover:bg-white/80"
-            }`}
-          />
-        ))}
-      </div>
-    </div>
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params
+  if (!isLocale(lang)) return {}
+  return metadataFor(
+    copy(lang, "Vuong — Công nghệ & trải nghiệm", "Vuong — Technology & experience"),
+    copy(
+      lang,
+      "Kiến thức công nghệ, dự án cá nhân và những câu chuyện trên hành trình của Vuong.",
+      "Technology notes, personal projects, and stories along Vuong’s journey.",
+    ),
+    "/",
+    lang,
   )
 }
-
-export default function HomePage() {
-  const { lang } = useLang()
-  const c = COPY[lang]
-  const featuredSeries = getVisibleSeries(lang).slice(0, 3)
-  const recentNotes = getVisibleNotes(lang).slice(0, 8)
-
+export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params
+  if (!isLocale(lang)) notFound()
+  const m = messages(lang),
+    entries = getEntryMeta(lang),
+    stories = getStories(lang),
+    projects = getProjects(lang)
+  const latest = [...entries].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)).slice(0, 4)
+  const modules = getContentModules(lang)
   return (
-    <>
-      <Header />
-      <BackToTop />
-
-      <main className="pt-14" id="main-content">
-        {/* Intro Section - Standardized container margins */}
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-16 pb-12 sm:pt-24 sm:pb-16 animate-fade-in">
-          <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-6 sm:gap-10">
-            <div className="shrink-0">
-              <div className="relative size-20 sm:size-24 rounded-full overflow-hidden border-2 border-border bg-muted">
-                <Image
-                  src="/avatar.png"
-                  alt="Vuong - author"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </div>
-
-            <div className="flex-1">
-              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-3">
-                Vuong<span className="text-accent-brand">.</span>
-              </h1>
-              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg text-pretty mb-6 mx-auto sm:mx-0">
-                {c.tagline}
-              </p>
-              <div className="flex flex-nowrap gap-2.5 justify-center sm:justify-start">
-                <Link
-                  href="/stories"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-accent-brand text-accent-brand-foreground text-[11px] sm:text-sm font-medium hover:opacity-90 transition-opacity duration-150 whitespace-nowrap"
-                >
-                  {c.ctaStories}
-                  <ArrowRight size={13} />
-                </Link>
-                <Link
-                  href="/notes"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-border text-foreground text-[11px] sm:text-sm font-medium hover:bg-muted transition-colors duration-150 whitespace-nowrap"
-                >
-                  {c.ctaNotes}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Separator Line */}
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="border-t border-border" />
+    <main id="main-content" className="home-page">
+      <section className="home-journey">
+        <div className="wrap">
+          <JourneyExplorer items={getJourneyPreviews(lang)} />
         </div>
-
-        {/* Featured Stories feed */}
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <div className="flex items-center justify-between mb-6 sm:mb-8">
-            <h2 className="font-serif text-xl sm:text-2xl font-semibold text-foreground w-full text-center sm:text-left sm:w-auto">
-              {c.storiesHeading}
-            </h2>
-            <Link
-              href="/stories"
-              className="hidden sm:flex items-center gap-1 text-sm text-muted-foreground hover:text-accent-brand transition-colors duration-150 shrink-0"
-            >
-              {c.viewAllStories}
-              <ArrowRight size={13} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-            {featuredSeries.map((series) => (
-              <SeriesCard key={series.slug} series={series} lang={lang} />
-            ))}
-          </div>
-
-          <div className="flex justify-center mt-5 sm:hidden">
-            <Link
-              href="/stories"
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-accent-brand transition-colors duration-150"
-            >
-              {c.viewAllStories}
-              <ArrowRight size={13} />
-            </Link>
-          </div>
-        </section>
-
-        {/* Separator Line */}
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="border-t border-border" />
-        </div>
-
-        {/* Recent Notes Section with responsive padding adjustment */}
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-serif text-xl sm:text-2xl font-semibold text-foreground">
-              {c.notesHeading}
-            </h2>
-            <Link
-              href="/notes"
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-accent-brand transition-colors duration-150"
-            >
-              {c.viewAllNotes}
-              <ArrowRight size={13} />
-            </Link>
-          </div>
-
-          {/* 
-            Mobile view container:
-            - Kept completely standard without extra padding to align flush with the main header on mobile.
-          */}
-          <div className="sm:hidden">
-            {recentNotes.slice(0, 4).map((note) => (
-              <NoteCard key={note.slug} note={note} lang={lang} variant="compact" />
-            ))}
-          </div>
-
-          {/* 
-            Desktop/Tablet view container:
-            - Applied sm:px-0 (no padding on tablets) and lg:px-6 (indented left and right on laptops/desktops).
-            - Keeps the column-gap spacing at gap-x-16 (64px) for beautiful layout breathing room.
-          */}
-          <div className="hidden sm:grid grid-cols-2 gap-x-16 sm:px-0 lg:px-6">
-            <div className="divide-y divide-border">
-              {recentNotes.slice(0, 4).map((note) => (
-                <NoteCard key={note.slug} note={note} lang={lang} variant="compact" />
-              ))}
+      </section>
+      <section className="home-reading" aria-labelledby="latest-title">
+        <div className="wrap home-reading-layout">
+          <div className="home-writing">
+            <div className="home-section-heading">
+              <div>
+                <span className="eyebrow">{m.knowledge}</span>
+                <h2 id="latest-title">{copy(lang, "Mới trên trang", "Latest writing")}</h2>
+              </div>
+              <Link href={localized("/notes/", lang)}>
+                {copy(lang, "Tất cả bài viết", "All articles")}
+                <ArrowRight size={14} />
+              </Link>
             </div>
-            <div className="divide-y divide-border">
-              {recentNotes.slice(4, 8).map((note) => (
-                <NoteCard key={note.slug} note={note} lang={lang} variant="compact" />
+            <div className="notebook-entries">
+              {latest.map((entry) => (
+                <EditorialCard key={entry.id} entry={entry} locale={lang} />
               ))}
             </div>
           </div>
-        </section>
-
-        {/* Separator Line */}
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="border-t border-border" />
-        </div>
-
-        {/* About card promotional teaser */}
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <Link
-            href="/about"
-            className="group/carousel block rounded-xl border border-border bg-card hover:border-accent-brand/30 hover:shadow-md transition-all duration-200 overflow-hidden"
-          >
-            <div className="flex flex-col sm:grid sm:grid-cols-9">
-              <div className="sm:col-span-3 flex flex-col justify-center gap-4 p-5 sm:p-6 lg:p-8">
-                <div className="flex items-center gap-3">
-                  <div className="relative size-12 rounded-xl overflow-hidden bg-muted border border-border shrink-0">
-                    <Image
-                      src="/avatar.png"
-                      alt="Vuong"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <p className="font-serif text-base font-semibold text-foreground group-hover/carousel:text-accent-brand transition-colors">
-                      Vuong
-                    </p>
-                    <p className="text-xs text-muted-foreground">vuongthm</p>
-                  </div>
-                </div>
-
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4 text-pretty">
-                  {c.aboutExcerpt}
-                </p>
-
-                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-accent-brand">
-                  {c.aboutLink}
-                  <ArrowRight size={13} />
-                </span>
-              </div>
-
-              {/* Tối ưu hóa: Điều chỉnh tăng chiều cao khung ảnh trên di động/tablet/máy tính & bổ sung overflow-hidden */}
-              <div className="sm:col-span-6 h-64 sm:h-[300px] lg:h-[360px] relative bg-muted overflow-hidden">
-                <AboutCarousel />
-              </div>
+          <aside className="home-library-nav" aria-label={m.topics}>
+            <div className="home-section-heading">
+              <h2>{copy(lang, "Theo chủ đề", "By subject")}</h2>
             </div>
+            <nav className="home-topic-links">
+              {topics.slice(0, 6).map((topic) => (
+                <Link href={localized(`/topics/${topic.id}/`, lang)} key={topic.id}>
+                  <span>{topic.label[lang]}</span>
+                  <small>{entries.filter((entry) => entry.topics.includes(topic.id)).length}</small>
+                </Link>
+              ))}
+            </nav>
+            {topics.length > 6 && (
+              <Link className="text-link" href={localized("/topics/", lang)}>
+                {copy(lang, "Xem thêm", "Find out more")}
+              </Link>
+            )}
+            <h3>{copy(lang, "Đọc theo lộ trình", "Reading paths")}</h3>
+            <div className="home-path-links">
+              {getPaths().map((path) => (
+                <Link key={path.slug} href={localized(`/paths/${path.slug}/`, lang)}>
+                  {path.title[lang]}
+                  <small>
+                    {path.entries.length} {m.articles}
+                  </small>
+                </Link>
+              ))}
+            </div>
+            <Link className="home-collections-link" href={localized("/modules/", lang)}>
+              {copy(lang, "Các bộ sưu tập", "Content collections")}
+              <span>{modules.length}</span>
+            </Link>
+            <HomeActions />
+          </aside>
+        </div>
+      </section>
+      <section className="home-projects" aria-labelledby="projects-title">
+        <div className="wrap">
+          <div className="home-section-heading">
+            <div>
+              <span className="eyebrow">{copy(lang, "Dự án cá nhân", "Personal projects")}</span>
+              <h2 id="projects-title">{copy(lang, "Những thứ mình xây", "Things I’m building")}</h2>
+            </div>
+            <Link href={localized("/projects/", lang)}>
+              {m.more}
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="home-project-grid">
+            {projects.slice(0, 3).map((project) => (
+              <ProjectCard
+                project={project}
+                locale={lang}
+                heading="h3"
+                variant="cover"
+                key={project.slug}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="home-personal" aria-labelledby="personal-title">
+        <div className="wrap home-personal-layout">
+          <Link className="home-personal-photo" href={localized("/my-album/", lang)}>
+            <Image
+              src="/hometown/dai-lanh-village.webp"
+              alt="Đại Lãnh, Khánh Hòa"
+              width={800}
+              height={500}
+              sizes="(max-width:700px) 100vw, 45vw"
+              unoptimized
+            />
+            <span>
+              <MapPin size={11} />
+              Đại Lãnh, Khánh Hòa
+            </span>
           </Link>
-        </section>
-      </main>
-
-      <Footer lang={lang} />
-    </>
+          <div>
+            <span className="eyebrow">
+              {copy(lang, "Ngoài công nghệ", "Away from the keyboard")}
+            </span>
+            <h2 id="personal-title">
+              {copy(lang, "Câu chuyện trên đường đi", "Stories along the way")}
+            </h2>
+            <p>
+              {copy(
+                lang,
+                "Quê ở Đại Lãnh, học ở Đà Nẵng. Ở đây còn có chuyện đi học, đi làm và những người mình gặp.",
+                "From Đại Lãnh, studying in Đà Nẵng. There are also stories about school, work, and people I meet.",
+              )}
+            </p>
+            <div className="home-story-links">
+              {stories.slice(0, 2).map((story) => (
+                <Link href={localized(`/stories/${story.slug}/`, lang)} key={story.id}>
+                  {story.title}
+                </Link>
+              ))}
+            </div>
+            <Link className="text-link" href={localized("/my-album/", lang)}>
+              {m.album}
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
   )
 }

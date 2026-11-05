@@ -1,40 +1,23 @@
-import { getNoteBySlug, getVisibleNotes } from "@/lib/data"
-import NotePageClient from "./note-page-client"
-import type { Metadata } from "next"
-
-interface PageProps {
-  params: Promise<{ lang: "en" | "vi"; slug: string }>
+import { notFound } from "next/navigation"
+import { allEntries, getEntry } from "@/lib/content/server"
+import { isLocale } from "@/lib/i18n/config"
+import { ArticlePage, articleMetadata } from "@/components/reading/article-page"
+type Params = Promise<{ lang: string; slug: string }>
+export function generateStaticParams() {
+  return allEntries()
+    .filter((entry) => !entry.seriesSlug && entry.href.startsWith(`/${entry.locale}/notes/`))
+    .map((entry) => ({ lang: entry.locale, slug: entry.slug }))
 }
-
-export const dynamic = "force-static"
-
-export async function generateStaticParams() {
-  const params: { lang: string; slug: string }[] = []
-  for (const lang of ["en", "vi"] as const) {
-    const notes = getVisibleNotes(lang)
-    if (notes.length === 0) {
-      params.push({ lang, slug: "placeholder" })
-    } else {
-      for (const note of notes) {
-        params.push({ lang, slug: note.slug })
-      }
-    }
-  }
-  return params
+export async function generateMetadata({ params }: { params: Params }) {
+  const { lang, slug } = await params
+  if (!isLocale(lang)) return {}
+  const entry = getEntry(slug, lang)
+  return entry ? articleMetadata(entry, lang) : {}
 }
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug, lang } = await params
-  const note = getNoteBySlug(slug, lang)
-  if (!note) return {}
-
-  return {
-    title: note.title,
-    description: note.description,
-  }
-}
-
-export default async function Page({ params }: PageProps) {
-  const { slug, lang } = await params
-  return <NotePageClient slug={slug} lang={lang} />
+export default async function Page({ params }: { params: Params }) {
+  const { lang, slug } = await params
+  if (!isLocale(lang)) notFound()
+  const entry = getEntry(slug, lang)
+  if (!entry) notFound()
+  return <ArticlePage entry={entry} />
 }

@@ -1,0 +1,99 @@
+/* Final optical adjustments keep supporting text readable on laptop displays. */
+.article-row p,
+.library-main .article-row p {
+  font-size: 12px;
+}
+.article-meta {
+  font-size: 10px;
+}
+.article-kicker {
+  font-size: 10px;
+}
+.article-level {
+  font-size: 9px;
+}
+.filter-option {
+  font-size: 11px;
+}
+.filter-check {
+  font-size: 11px;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.reader-grid {
+  max-width: 1120px;
+  margin-inline: auto;
+}
+.article-image img {
+  max-height: 540px;
+  object-fit: contain;
+}
+.image-caption {
+  font-size: 11px;
+}
+.article-image {
+  display: block;
+}
+.toc-list a {
+  font-size: 11px;
+}
+.toc-list .toc-nested a {
+  font-size: 10px;
+}
+.article-row.compact p {
+  display: none;
+}
+@media (max-width: 1000px) {
+  .toc-list a {
+    font-size: 10px;
+  }
+}
+@media (max-width: 760px) {
+  .article-row p,
+  .library-main .article-row p {
+    font-size: 12px;
+  }
+  .article-meta {
+    font-size: 10px;
+  }
+  .article-kicker {
+    font-size: 9px;
+  }
+  .article-header h1 {
+    font-size: 30px;
+  }
+  .article-image img {
+    max-height: 420px;
+  }
+  .filter-option {
+    font-size: 13px;
+  }
+  .filter-check {
+    font-size: 12px;
+  }
+}
+
+.filter-apply {
+  width: 100%;
+  margin-top: 20px;
+}
+
+@media (max-width: 760px) {
+  .article-actions button {
+    min-height: 40px;
+  }
+  .filter-apply {
+    min-height: 46px;
+  }
+}
+
+.article-image img {
+  margin-inline: auto;
+}
+html[data-reading-focus] [id] {
+  scroll-margin-top: 30px;
+}

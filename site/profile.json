@@ -1,0 +1,177 @@
+{
+  "portrait": "/avatar.webp",
+  "bio": [
+    {
+      "vi": "Mình lớn lên ở Đại Lãnh, Khánh Hòa. Hiện tại mình học chuyên ngành Mạng & An toàn thông tin tại Đà Nẵng.",
+      "en": "I grew up in Đại Lãnh, Khánh Hòa. I’m now studying networking and information security in Đà Nẵng.",
+      "ja": "カインホア省ダイランで育ちました。現在はダナンでネットワークと情報セキュリティを学んでいます。",
+      "zh": "我在庆和省大岭长大，目前在岘港学习网络与信息安全。"
+    },
+    {
+      "vi": "Mình thích tự tìm hiểu, làm thử và ghi lại những gì đã hiểu. Ở đây có kiến thức công nghệ, các dự án cá nhân, và cả những câu chuyện ngoài màn hình.",
+      "en": "I like figuring things out, trying them, and writing down what I learn. This space holds technology notes, personal projects, and stories beyond the screen.",
+      "ja": "仕組みを調べ、実際に試し、学んだことを書き残すのが好きです。ここには技術のノート、個人プロジェクト、画面の外の話も置いています。",
+      "zh": "我喜欢弄清原理、动手尝试，并记录学到的东西。这里有技术笔记、个人项目，也有屏幕之外的故事。"
+    }
+  ],
+  "interests": [
+    "Security",
+    "Network",
+    "Cloud",
+    "AI",
+    "Photography"
+  ],
+  "timeline": [
+    {
+      "label": "2005",
+      "title": {
+        "vi": "Nguồn cội",
+        "en": "Roots",
+        "ja": "原点",
+        "zh": "起点"
+      },
+      "description": {
+        "vi": "Lớn lên bên biển ở Đại Lãnh, Khánh Hòa, nơi bắt đầu những câu chuyện của mình.",
+        "en": "Growing up by the sea in Đại Lãnh, Khánh Hòa, where my stories begin.",
+        "ja": "カインホア省ダイランの海辺で育ちました。物語はここから始まります。",
+        "zh": "在庆和省大兰的海边长大，我的故事从这里开始。"
+      }
+    },
+    {
+      "label": "2021",
+      "title": {
+        "vi": "Lần đầu rời đi",
+        "en": "Leaving home",
+        "ja": "初めて故郷を離れる",
+        "zh": "第一次离家"
+      },
+      "description": {
+        "vi": "Rời làng để học cấp ba ở thị trấn cách nhà 25 km, bắt đầu tập sống xa gia đình.",
+        "en": "Leaving the village for high school 25 km away and learning to live away from family.",
+        "ja": "25km離れた町の高校へ。家族と離れた生活を始めました。",
+        "zh": "到25公里外的镇上读高中，开始学习独立生活。"
+      }
+    },
+    {
+      "label": "2023",
+      "title": {
+        "vi": "Bước đến Đà Nẵng",
+        "en": "Arriving in Đà Nẵng",
+        "ja": "ダナンへ",
+        "zh": "走进岘港"
+      },
+      "description": {
+        "vi": "Bắt đầu hành trình đại học tại Đà Nẵng, theo học chuyên ngành Mạng & An toàn thông tin.",
+        "en": "Starting university in Đà Nẵng, studying networking and information security.",
+        "ja": "ダナンで大学生活を始め、ネットワークと情報セキュリティを学びます。",
+        "zh": "在岘港开始大学生活，学习网络与信息安全。"
+      }
+    },
+    {
+      "label": "2024",
+      "title": {
+        "vi": "Tìm hướng đi",
+        "en": "Finding direction",
+        "ja": "進む道を探して",
+        "zh": "寻找方向"
+      },
+      "description": {
+        "vi": "Có những lúc chưa chắc về lựa chọn của mình. Mình tiếp tục học, thử làm và tìm hướng đi qua trải nghiệm.",
+        "en": "Working through uncertainty by learning, trying things, and finding direction through experience.",
+        "ja": "迷いながらも学び、実際に試すことで進む道を探しています。",
+        "zh": "在不确定中继续学习和实践，通过经历寻找方向。"
+      }
+    },
+    {
+      "label": "2026",
+      "title": {
+        "vi": "Một không gian để chia sẻ",
+        "en": "A space to share",
+        "ja": "共有する場所",
+        "zh": "一个分享的空间"
+      },
+      "description": {
+        "vi": "Xây dựng không gian này để ghi lại kiến thức, dự án và những câu chuyện trên hành trình trưởng thành.",
+        "en": "Building this space for knowledge, projects, and stories from the journey of growing up.",
+        "ja": "知識、プロジェクト、成長の記録を共有する場所を作っています。",
+        "zh": "建立这个空间，记录知识、项目与成长路上的故事。"
+      }
+    }
+  ],
+  "achievements": [
+    {
+      "category": {
+        "vi": "Trải nghiệm",
+        "en": "Experience",
+        "ja": "経験",
+        "zh": "经历"
+      },
+      "title": {
+        "vi": "Kỳ thực tập tại VNNIC",
+        "en": "Internship at VNNIC",
+        "ja": "VNNICでのインターンシップ",
+        "zh": "在 VNNIC 实习"
+      },
+      "description": {
+        "vi": "Một dấu mốc trong quá trình học, với những ghi chép riêng về môi trường và công việc thực tế.",
+        "en": "A step in my learning journey, with personal notes about a real working environment.",
+        "ja": "学びの節目となった実務経験と、現場で感じたことの記録。",
+        "zh": "学习路上的一个节点，记录真实工作环境中的体验。"
+      },
+      "href": "/stories/internship-vnnic"
+    },
+    {
+      "category": {
+        "vi": "Dự án cá nhân",
+        "en": "Personal project",
+        "ja": "個人プロジェクト",
+        "zh": "个人项目"
+      },
+      "title": {
+        "vi": "Tự xây không gian kiến thức này",
+        "en": "Building this knowledge space",
+        "ja": "この知識サイトを作る",
+        "zh": "构建这个知识空间"
+      },
+      "description": {
+        "vi": "Tổ chức bài viết, dự án và chuyện cá nhân thành một website đa ngôn ngữ có thể tiếp tục mở rộng.",
+        "en": "Organizing writing, projects, and personal stories in a multilingual website that can keep growing.",
+        "ja": "記事、プロジェクト、個人のストーリーを、拡張できる多言語サイトとして整理しています。",
+        "zh": "将文章、项目与个人故事整理为可持续扩展的多语言网站。"
+      },
+      "href": "/projects"
+    }
+  ],
+  "photos": [
+    {
+      "src": "/hometown/dai-lanh-coast.webp",
+      "title": {
+        "vi": "Nơi núi gặp biển",
+        "en": "Where mountains meet the sea",
+        "ja": "山と海が出会う場所",
+        "zh": "山与海相遇的地方"
+      },
+      "place": "Đại Lãnh, Khánh Hòa"
+    },
+    {
+      "src": "/hometown/dai-lanh-village.webp",
+      "title": {
+        "vi": "Những mái nhà bên bờ biển",
+        "en": "Homes along the coast",
+        "ja": "海沿いの家々",
+        "zh": "海岸边的家"
+      },
+      "place": "Đại Lãnh, Khánh Hòa"
+    },
+    {
+      "src": "/hometown/dai-lanh-mountain.webp",
+      "title": {
+        "vi": "Một góc nhìn từ trên cao",
+        "en": "A perspective from above",
+        "ja": "高い場所からの眺め",
+        "zh": "从高处眺望"
+      },
+      "place": "Đại Lãnh, Khánh Hòa"
+    }
+  ]
+}

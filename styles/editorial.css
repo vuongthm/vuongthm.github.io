@@ -1,0 +1,360 @@
+/* A compact publication: content sets the height, rules set the rhythm. */
+.eyebrow {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+.button {
+  min-height: 42px;
+  font-size: 12px;
+  padding: 11px 17px;
+  border-radius: 4px;
+}
+.button.primary {
+  color: #fff;
+}
+.dark .button.primary {
+  color: var(--bg);
+}
+.button.primary:hover {
+  transform: none;
+}
+.text-link {
+  font-size: 12px;
+}
+.page-heading {
+  padding-top: 34px;
+  padding-bottom: 26px;
+}
+.page-heading h1,
+.article-header h1,
+.path-overview h2,
+.series-chapters h2 {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+.page-heading h1 {
+  font-size: 32px;
+  line-height: 1.45;
+}
+.page-heading p {
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 640px;
+}
+.page-heading .eyebrow {
+  font-size: 10px;
+}
+.page-heading .eyebrow-line {
+  width: 16px;
+}
+.page-heading-row {
+  margin-top: 13px;
+}
+.back-link {
+  font-size: 12px;
+}
+
+/* Shared lists. A readable title and a short preview, without fixed-height boxes. */
+.tone-teal,
+.tone-blue,
+.tone-violet,
+.tone-sky,
+.tone-amber,
+.tone-slate,
+.dark .tone-violet,
+.dark .tone-sky,
+.dark .tone-amber,
+.dark .tone-slate {
+  --tone: var(--accent);
+}
+.article-symbol {
+  width: 25px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--faint);
+}
+.article-symbol > svg {
+  width: 17px;
+  height: 17px;
+}
+.article-row,
+.library-main .article-row {
+  gap: 13px;
+  padding-block: 18px;
+}
+.library-main .article-symbol {
+  width: 25px;
+  height: 28px;
+}
+.article-row h3,
+.library-main .article-row h3 {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: -0.02em;
+  text-wrap: initial;
+}
+.article-row p,
+.library-main .article-row p {
+  font-size: 12px;
+  line-height: 1.8;
+  -webkit-line-clamp: 1;
+  margin-top: 5px;
+}
+.article-meta {
+  font-size: 10px;
+  margin-top: 9px;
+  gap: 12px;
+}
+.article-kicker {
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+.topic-text {
+  color: var(--muted);
+}
+.article-row:hover .topic-text {
+  color: var(--accent);
+}
+.article-row-arrow {
+  width: 16px;
+  height: 16px;
+}
+.featured-dot {
+  display: none;
+}
+.library-layout {
+  grid-template-columns: 172px minmax(0, 1fr) 210px;
+  gap: 28px;
+  padding-top: 23px;
+}
+.filter-option,
+.filter-check {
+  font-size: 11px;
+  min-height: 35px;
+}
+.filter-group h2 {
+  font-size: 11px;
+}
+.filter-title .eyebrow {
+  font-size: 10px;
+}
+.library-search input {
+  font-size: 13px;
+}
+.library-toolbar {
+  font-size: 11px;
+  padding-top: 14px;
+}
+.sort-control select {
+  font-size: 11px;
+}
+.rail-note {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.rail-note h3 {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 18px;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+}
+.rail-note p {
+  font-size: 12px;
+}
+.rail-note .eyebrow,
+.rail-note .text-link {
+  font-size: 10px;
+}
+
+/* Topic pages use a small directory rather than six oversized tiles. */
+.topic-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 32px;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+.topic-card,
+.topic-card:nth-child(3n),
+.topic-card:nth-child(2n),
+.topic-card:nth-last-child(-n + 3),
+.topics-page-grid .topic-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 3px 14px;
+  padding: 20px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+}
+.topic-card-top {
+  display: contents;
+}
+.topic-card-top > svg {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  color: var(--muted);
+}
+.topic-card-top > span {
+  display: none;
+}
+.topic-card h2 {
+  font-family: var(--font-heading), sans-serif;
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.7;
+  letter-spacing: -0.02em;
+}
+.topic-card p {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 12px;
+  margin: 0;
+  line-height: 1.8;
+}
+.topic-card-bottom {
+  grid-column: 2 / 4;
+  grid-row: 3;
+  font-size: 10px;
+  margin-top: 6px;
+}
+.topic-card-bottom > svg {
+  width: 15px;
+  height: 15px;
+  color: var(--faint);
+}
+.topic-card:hover {
+  background: transparent;
+}
+.topic-card:hover h3,
+.topic-card:hover .topic-card-top > svg {
+  color: var(--accent);
+}
+.topic-title-icon {
+  width: 46px;
+  height: 46px;
+}
+.topic-title-icon > svg {
+  width: 24px;
+  height: 24px;
+}
+.path-overview {
+  background: var(--soft);
+  padding: 20px;
+}
+.path-overview h2 {
+  font-size: 18px;
+}
+
+/* Projects and stories retain useful media; remove placeholder illustrations. */
+.stack-tags {
+  margin-block: 17px;
+  gap: 7px;
+}
+.stack-tags span {
+  font-size: 10px;
+}
+.series-chapter {
+  padding-block: 19px;
+}
+
+/* Reading remains spacious; interface controls stay compact. */
+.article-header h1 {
+  font-size: 30px;
+  line-height: 1.5;
+}
+.article-header > p {
+  font-size: 15px;
+}
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-heading), sans-serif;
+  letter-spacing: -0.025em;
+}
+.reader-breadcrumb,
+.article-author {
+  font-size: 11px;
+}
+.article-actions button {
+  font-size: 10px;
+  min-height: 36px;
+}
+.toc-list a {
+  font-size: 12px;
+}
+.toc-list .toc-nested a {
+  font-size: 11px;
+}
+.reader-sidebar .eyebrow {
+  font-size: 10px;
+}
+.reader-aside-note p,
+.reader-aside-note .text-link {
+  font-size: 11px;
+}
+@media (max-width: 1100px) {
+  .library-layout {
+    grid-template-columns: 165px minmax(0, 1fr);
+    gap: 25px;
+  }
+  .library-rail {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .page-heading {
+    padding-top: 27px;
+    padding-bottom: 23px;
+  }
+  .page-heading h1 {
+    font-size: 27px;
+  }
+  .page-heading p {
+    font-size: 13px;
+  }
+  .library-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .library-sidebar.mobile-open {
+    top: var(--header-h);
+    max-height: calc(100dvh - var(--header-h));
+  }
+  .library-main .article-symbol {
+    display: none;
+  }
+  .library-main .article-row {
+    padding-block: 17px;
+  }
+  .library-main .article-row h3 {
+    font-size: 16px;
+  }
+  .library-main .article-row p {
+    -webkit-line-clamp: 2;
+  }
+  .topic-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .topic-card,
+  .topics-page-grid .topic-card {
+    padding-block: 18px;
+  }
+  .article-header h1 {
+    font-size: 24px;
+  }
+}

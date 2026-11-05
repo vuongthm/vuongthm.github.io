@@ -1,0 +1,3 @@
+# Tells GitHub Pages not to run Jekyll over the published artifact.
+# Without it, directories beginning with an underscore (Next.js ships /_next)
+# can be stripped from the output.

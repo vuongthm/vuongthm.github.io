@@ -1,0 +1,90 @@
+{
+  "articles": {
+    "osi-model": {
+      "title": "清晰理解 OSI 模型",
+      "summary": "七层模型的职责、用途与实际应用。"
+    },
+    "what-is-a-network": {
+      "title": "什么是网络？",
+      "summary": "理解共同规则、通信过程与网络规模。"
+    },
+    "tcp-ip-model": {
+      "title": "TCP/IP 模型：实用的四层结构",
+      "summary": "从应用、传输、互联网和链路四层理解实际通信。"
+    },
+    "encapsulation-and-data-flow": {
+      "title": "封装：数据如何穿过各层",
+      "summary": "发送方逐层添加信息，接收方逐层处理。"
+    },
+    "ip-addressing": {
+      "title": "IP 地址的结构与分类",
+      "summary": "IPv4、网络位与主机位、私有地址及 IPv6。"
+    },
+    "subnetting": {
+      "title": "子网划分与管理",
+      "summary": "通过例子理解子网掩码、CIDR 和 VLSM。"
+    },
+    "ports-and-sockets": {
+      "title": "端口与套接字",
+      "summary": "在同一设备中区分不同应用程序的通信。"
+    },
+    "mac-and-arp": {
+      "title": "MAC 地址与 ARP",
+      "summary": "理解链路层传递与 IPv4 地址解析。"
+    },
+    "network-devices": {
+      "title": "集线器、交换机、路由器与 AP",
+      "summary": "根据职责与转发依据区分网络设备。"
+    },
+    "ai-with-evidence": {
+      "title": "用 AI 学习，用证据理解",
+      "summary": "借助 AI 学习，同时保持结果可验证。"
+    },
+    "cloud-shared-responsibility": {
+      "title": "云安全：谁负责什么？",
+      "summary": "在部署工作负载前理解责任共享。"
+    },
+    "security-starts-with-questions": {
+      "title": "安全从提问开始",
+      "summary": "选择工具前，先理解需要保护的对象。"
+    },
+    "soc-first-investigation": {
+      "title": "SOC：从告警走向假设",
+      "summary": "在安全分析中区分信号、证据与结论。"
+    },
+    "linux-terminal-first-steps": {
+      "title": "Linux：终端入门 · 示例练习",
+      "summary": "通过示例练习查看当前位置、文件列表与系统信息。"
+    }
+  },
+  "stories": {
+    "internship-vnnic": {
+      "title": "在 VNNIC 实习的日子",
+      "summary": "在越南互联网信息中心的实习记录，初次接触支撑 DNS 与 VNIX 的真实工作。",
+      "chapters": {
+        "chapter-1": {
+          "title": "第一章：在 VNNIC 的第一次面试",
+          "summary": "一次紧张的面试，以及关于互联网基础协议的提问。"
+        },
+        "chapter-2": {
+          "title": "第二章：实习第一天",
+          "summary": "最初的印象、工作说明和机房参观。"
+        }
+      }
+    },
+    "unnamed-years": {
+      "title": "那些尚未命名的岁月",
+      "summary": "在海边村庄长大的童年，家人的支持，以及从小镇出发的梦想。",
+      "chapters": {
+        "chapter-1": {
+          "title": "被叫回家之前的日子",
+          "summary": "海边无忧无虑的童年，以及肤色背后的故事。"
+        },
+        "chapter-2": {
+          "title": "父亲的双手",
+          "summary": "父亲话不多，却总是用行动表达。"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,421 @@
+.assistant-dialog {
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 16px;
+  background: #10101270;
+}
+.assistant-dialog .dialog-panel {
+  width: min(620px, 100%);
+  max-height: none;
+  border-radius: 13px;
+  background: var(--bg);
+}
+.assistant-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 17px 20px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.assistant-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  background: var(--accent-light);
+  border-radius: 12px;
+  color: var(--accent);
+}
+.assistant-header > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.assistant-header strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+.assistant-header small {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.assistant-mode-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.assistant-header .icon-button {
+  width: 33px;
+  height: 36px;
+  border-radius: 6px;
+}
+.assistant-header .icon-button:hover {
+  background: var(--soft);
+}
+.assistant-body,
+.assistant-settings {
+  padding: 26px;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+.assistant-welcome {
+  margin: 5vh 0 0;
+}
+.assistant-welcome-label {
+  font-size: 10px;
+  color: var(--muted);
+}
+.assistant-welcome h2,
+.assistant-settings h2 {
+  font:
+    500 clamp(25px, 3vw, 31px)/1.45 var(--font-heading),
+    Georgia,
+    serif;
+  margin: 16px 0 13px;
+  letter-spacing: -0.035em;
+}
+.assistant-welcome > p {
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--muted);
+  max-width: 430px;
+}
+.assistant-prompts {
+  display: grid;
+  gap: 9px;
+  margin-top: 27px;
+}
+.assistant-prompts button {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 8px;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.assistant-prompts button span {
+  flex: 1;
+}
+.assistant-prompts button > svg {
+  color: var(--accent);
+}
+.assistant-prompts button:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+.connect-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--accent);
+  font-size: 11px;
+  line-height: 1.9;
+  text-align: left;
+  margin-top: 24px;
+  min-height: 36px;
+}
+.connect-hint > span {
+  width: 100%;
+  color: var(--muted);
+  font-size: 10px;
+  padding-left: 23px;
+}
+.assistant-conversation-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+.assistant-conversation-tools button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--muted);
+  min-height: 30px;
+}
+.assistant-messages {
+  display: grid;
+  gap: 27px;
+}
+.assistant-message {
+  min-width: 0;
+}
+.assistant-message-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.assistant-message-label button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+}
+.assistant-message-label button:hover {
+  color: var(--accent);
+  background: var(--soft);
+}
+.is-user {
+  margin-left: 36px;
+}
+.is-user .assistant-message-label {
+  justify-content: flex-end;
+}
+.question-bubble {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 10px 10px 2px 10px;
+  padding: 13px 16px;
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.assistant-answer {
+  font-size: 13px;
+  line-height: 1.95;
+  overflow-wrap: anywhere;
+}
+.assistant-answer p {
+  margin-block: 12px;
+}
+.assistant-answer p:first-child {
+  margin-top: 0;
+}
+.assistant-answer :is(ul, ol) {
+  padding-left: 20px;
+}
+.assistant-answer pre {
+  overflow-x: auto;
+  padding: 12px;
+  background: var(--soft);
+  border-radius: 6px;
+}
+.assistant-answer code {
+  font: 11px/1.8 var(--font-mono);
+}
+.assistant-answer a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.answer-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 17px;
+}
+.answer-sources > span {
+  width: 100%;
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+.answer-sources a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--paper);
+  font-size: 10px;
+}
+.assistant-loading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 24px;
+  padding: 10px 0;
+}
+.spin {
+  animation: spin 1.5s linear infinite;
+}
+.assistant-input {
+  display: flex;
+  gap: 12px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 16px 20px 8px;
+}
+.assistant-input:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+.assistant-input textarea {
+  width: 100%;
+  resize: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 13px;
+  line-height: 1.7;
+  padding: 3px;
+  max-height: 140px;
+}
+.assistant-input button {
+  align-self: flex-end;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  display: grid;
+  place-items: center;
+}
+.assistant-disclaimer {
+  color: var(--muted);
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.8;
+  padding: 0 20px 16px;
+}
+.assistant-settings label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  margin: 22px 0 9px;
+}
+.assistant-settings :is(input, select) {
+  width: 100%;
+  padding: 11px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.assistant-key-field {
+  display: flex;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.assistant-key-field input {
+  border: 0;
+  min-width: 0;
+  background: transparent;
+}
+.assistant-key-field button {
+  width: 42px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+.assistant-field-hint {
+  font-size: 10px;
+  line-height: 1.85;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.privacy-note {
+  display: flex;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 7px;
+  background: var(--soft);
+  margin: 22px 0;
+  color: var(--muted);
+}
+.privacy-note svg {
+  color: var(--accent);
+  margin-top: 2px;
+}
+.privacy-note p {
+  font-size: 10px;
+  line-height: 1.9;
+}
+.assistant-settings > .button {
+  width: 100%;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+.assistant-settings > a {
+  font-size: 11px;
+  margin-top: 12px;
+}
+.error-message {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  padding: 13px;
+  border-radius: 7px;
+  margin-top: 15px;
+  font-size: 12px;
+  line-height: 1.9;
+}
+.error-message button {
+  font-size: 11px;
+  margin-top: 8px;
+}
+@media (max-width: 760px) {
+  .assistant-dialog {
+    padding: 0;
+  }
+  .assistant-dialog .dialog-panel {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .assistant-header {
+    padding: 13px 15px;
+    gap: 9px;
+  }
+  .assistant-header small {
+    font-size: 8px;
+  }
+  .assistant-header small .assistant-mode-dot,
+  .assistant-header small .assistant-mode-dot + * {
+    display: none;
+  }
+  .assistant-body,
+  .assistant-settings {
+    padding: 22px 19px;
+  }
+  .assistant-welcome {
+    margin-top: 3vh;
+  }
+  .assistant-input {
+    margin: 12px 14px 8px;
+  }
+  .assistant-input textarea,
+  .assistant-settings input {
+    font-size: 16px;
+  }
+  .assistant-disclaimer {
+    font-size: 9px;
+    padding-bottom: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .assistant-dialog .spin {
+    animation: none;
+  }
+}

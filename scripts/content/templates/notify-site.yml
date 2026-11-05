@@ -1,0 +1,15 @@
+name: Notify website
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: notify-website-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  notify:
+    uses: vuongthm/vuongthm.github.io/.github/workflows/content-notification.yml@main
+    secrets:
+      WEBSITE_NOTIFY_KEY: ${{ secrets.WEBSITE_NOTIFY_KEY }}

@@ -1,0 +1,196 @@
+[
+  {
+    "id": "0xgunn",
+    "name": "Nguyễn Việt Tín",
+    "alias": "0xGunn",
+    "website": "https://0xgunn.github.io/",
+    "initials": "NT",
+    "topics": [
+      "Blue Team",
+      "DFIR",
+      "Security"
+    ],
+    "description": {
+      "vi": "Ghi chép thực hành về Blue Team, điều tra sự cố và những góc nhìn từ hành trình học bảo mật.",
+      "en": "Practical Blue Team notes, incident investigations and lessons from learning security.",
+      "ja": "ブルーチーム、インシデント調査、セキュリティ学習の実践ノート。",
+      "zh": "蓝队实践、事件调查与安全学习笔记。"
+    },
+    "avatar": "/friends/0xgunn.webp",
+    "avatarSource": "https://0xgunn.github.io/apple-touch-icon.png"
+  },
+  {
+    "id": "bl4ck0ut",
+    "name": "Võ Văn Phúc",
+    "alias": "bl4ck0ut",
+    "website": "https://capt-bl4ck0ut.github.io/",
+    "initials": "VP",
+    "topics": [
+      "Web Security",
+      "CTF",
+      "Research"
+    ],
+    "description": {
+      "vi": "Một nơi lưu những bài phân tích lỗ hổng, nghiên cứu bảo mật web và lời giải thử thách CTF.",
+      "en": "A collection of vulnerability analysis, web security research and CTF write-ups.",
+      "ja": "脆弱性解析、Webセキュリティ研究、CTFの解説をまとめた場所。",
+      "zh": "漏洞分析、Web 安全研究与 CTF 解题记录。"
+    },
+    "avatar": "/friends/bl4ck0ut.webp",
+    "avatarSource": "https://capt-bl4ck0ut.github.io/img/69e030b0171b9645cf0a.jpg"
+  },
+  {
+    "id": "thaihq",
+    "name": "Hồ Quốc Thái",
+    "alias": "thaihq",
+    "website": "https://thaihq.id.vn/",
+    "initials": "HT",
+    "topics": [
+      "Personal Website"
+    ],
+    "description": {
+      "vi": "Một người bạn, một góc riêng trên internet. Ghé thăm để khám phá những điều Thái chia sẻ.",
+      "en": "A friend with a corner of the internet of his own. Visit to explore what Thái shares.",
+      "ja": "友人がつくるインターネットの小さな場所。Tháiの発信を訪ねてみてください。",
+      "zh": "朋友在互联网上的一方天地，来看看 Thái 的分享。"
+    },
+    "avatar": "/friends/thaihq.webp",
+    "avatarSource": "https://thaihq.id.vn/assets/avatar.jpg"
+  },
+  {
+    "id": "huyvn",
+    "name": "Võ Nhật Huy",
+    "alias": "huyvn",
+    "website": "https://huyvn.github.io/",
+    "websitePlaceholder": true,
+    "initials": "VH",
+    "topics": [
+      "Developer"
+    ],
+    "description": {
+      "vi": "Người bạn cùng đam mê phát triển phần mềm.",
+      "en": "A friend with a shared interest in software development.",
+      "ja": "ソフトウェア開発への関心を共有する友人。",
+      "zh": "一位同样热爱软件开发的朋友。"
+    }
+  },
+  {
+    "id": "trinhhd",
+    "name": "Hoàng Đức Trình",
+    "alias": "trinhhd",
+    "website": "https://trinhhd.github.io/",
+    "websitePlaceholder": true,
+    "initials": "HT",
+    "topics": [
+      "Developer"
+    ],
+    "description": {
+      "vi": "Kết nối cùng Trình về lập trình và phát triển ứng dụng.",
+      "en": "Connecting with Trình around programming and app development.",
+      "ja": "プログラミングとアプリ開発でつながるTrình。",
+      "zh": "围绕编程与应用开发，与 Trình 保持连接。"
+    }
+  },
+  {
+    "id": "vinhdq",
+    "name": "Đặng Quang Vinh",
+    "alias": "vinhdq",
+    "website": "https://vinhdq.github.io/",
+    "websitePlaceholder": true,
+    "initials": "DV",
+    "topics": [
+      "DevOps"
+    ],
+    "description": {
+      "vi": "Người bạn trong lĩnh vực DevOps.",
+      "en": "A friend in the world of DevOps.",
+      "ja": "DevOpsの分野でつながる友人。",
+      "zh": "一位 DevOps 领域的朋友。"
+    }
+  },
+  {
+    "id": "tuandm",
+    "name": "Diệp Mạnh Tuấn",
+    "alias": "tuandm",
+    "website": "https://tuandm.github.io/",
+    "websitePlaceholder": true,
+    "initials": "DT",
+    "topics": [
+      "Security"
+    ],
+    "description": {
+      "vi": "Một kết nối trong lĩnh vực an toàn thông tin.",
+      "en": "A connection in information security.",
+      "ja": "情報セキュリティの分野でのつながり。",
+      "zh": "信息安全领域的一位朋友。"
+    }
+  },
+  {
+    "id": "thiennb",
+    "name": "Nguyễn Bá Thiện",
+    "alias": "thiennb",
+    "website": "https://thiennb.github.io/",
+    "websitePlaceholder": true,
+    "initials": "NT",
+    "topics": [
+      "IC Design"
+    ],
+    "description": {
+      "vi": "Cùng kết nối quanh chủ đề thiết kế vi mạch.",
+      "en": "Connecting around integrated circuit design.",
+      "ja": "集積回路の設計を通じたつながり。",
+      "zh": "围绕集成电路设计的交流与连接。"
+    }
+  },
+  {
+    "id": "hoatx",
+    "name": "Trịnh Xuân Hòa",
+    "alias": "hoatx",
+    "website": "https://hoatx.github.io/",
+    "websitePlaceholder": true,
+    "initials": "TH",
+    "topics": [
+      "Developer"
+    ],
+    "description": {
+      "vi": "Một người bạn trong cộng đồng lập trình.",
+      "en": "A friend in the programming community.",
+      "ja": "プログラミングのコミュニティでつながる友人。",
+      "zh": "编程社区中的一位朋友。"
+    }
+  },
+  {
+    "id": "khanhbq",
+    "name": "Bùi Quốc Khánh",
+    "alias": "khanhbq",
+    "website": "https://khanhbq.github.io/",
+    "websitePlaceholder": true,
+    "initials": "BK",
+    "topics": [
+      "Developer"
+    ],
+    "description": {
+      "vi": "Cùng chia sẻ góc nhìn về phát triển phần mềm.",
+      "en": "Sharing perspectives on software development.",
+      "ja": "ソフトウェア開発について視点を共有する友人。",
+      "zh": "一起交流软件开发的不同视角。"
+    }
+  },
+  {
+    "id": "haidx",
+    "name": "Đỗ Xuân Hải",
+    "alias": "haidx",
+    "website": "https://haidx.github.io/",
+    "websitePlaceholder": true,
+    "initials": "DH",
+    "topics": [
+      "Developer"
+    ],
+    "description": {
+      "vi": "Một kết nối để trao đổi về lập trình.",
+      "en": "A connection for conversations about programming.",
+      "ja": "プログラミングについて話せる友人。",
+      "zh": "一位可以交流编程话题的朋友。"
+    }
+  }
+]

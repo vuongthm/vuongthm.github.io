@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+<title id="title">A new chapter</title><desc id="desc">Sample illustration of a graduation cap and notebook, not a personal photograph.</desc>
+<rect width="960" height="600" fill="#e8eef8"/>
+<path d="M0 465 960 330V600H0Z" fill="#d6e1f3"/>
+<path d="m125 410 383-110 340 95-382 120Z" fill="#bdcce6"/>
+<path d="m245 375 255-74 221 59-255 82Z" fill="#fff"/>
+<path d="m466 442 255-82v18l-255 82Z" fill="#a5b9dc"/>
+<path d="m245 375 221 67v18l-221-66Z" fill="#f5f7fc"/>
+<path d="m355 227 125-40 125 40v83c-64 48-186 48-250 0Z" fill="#16365e"/>
+<path d="m480 129 210 100-210 98-210-98Z" fill="#2255bd"/>
+<path d="m480 229 172 9v116" fill="none" stroke="#8ab2ff" stroke-width="7"/>
+<circle cx="480" cy="229" r="8" fill="#a9c7ff"/>
+<path d="m645 353-6 38h25l-6-38Z" fill="#2255bd"/>
+<path d="m298 383 95 28m-75-46 96 28m102-23 86-26" stroke="#c4d2e8" stroke-width="4"/>
+</svg>

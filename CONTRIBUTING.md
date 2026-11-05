@@ -1,43 +1,97 @@
-# Contributing to Vuong's Blog Codebase
+# Đóng góp
 
-Thank you for your interest in contributing to the frontend and core engine of this website. This document outlines the guidelines for proposing changes to the Next.js codebase.
+Bạn có thể sửa lỗi, cải thiện giao diện, bổ sung bản dịch hoặc đóng góp bài kiến thức và dự án. Mở issue để mô tả vấn đề; với pull request, ghi rõ thay đổi và cách kiểm tra.
 
-## Code of Conduct
+## Mã ứng dụng
 
-Please be respectful, constructive, and helpful in all interactions. We aim to keep this workspace friendly and productive for everyone.
+- Giữ route trong `app/`, UI trong `components/`, logic/kiểu trong `lib/`, CSS trong `styles/` theo tính năng.
+- Dùng component và bản dịch hiện có. Tính năng thông thường cần hỗ trợ điện thoại, bàn phím, sáng/tối và các ngôn ngữ UI đã có.
+- Kiểm tra dữ liệu ở phía compiler trước khi xuất bản. Không đưa body của tài liệu riêng vào danh sách/tìm kiếm phía trình duyệt.
+- Chỉ commit source và tài nguyên cần thiết. Không gửi dependencies, build output, credential, dữ liệu cá nhân chưa được phép công khai hoặc bản gốc riêng tư.
 
-## How to Contribute
+## Thiết lập kiểm tra
 
-### 1. Local Setup
+Node.js 22 và pnpm:
 
-First, make sure you have pnpm installed on your machine.
+```bash
+corepack pnpm install --frozen-lockfile
+corepack pnpm test
+```
 
-1. Fork this repository on GitHub.
-2. Clone your forked copy locally.
-3. Install dependencies using the frozen lockfile:
-   pnpm install --frozen-lockfile
+Tests dùng fixture riêng; không cần yêu cầu mật khẩu hoặc dữ liệu cá nhân của maintainer. Với bộ nguồn nội dung được phép sử dụng đã cấu hình trong `content.sources.json`, kiểm tra đầy đủ:
 
-### 2. Development & Synchronization
+```bash
+corepack pnpm content
+corepack pnpm verify
+corepack pnpm build
+```
 
-Our content database is decoupled. Since you will not have the private sibling folders on your local machine, the build script will automatically run fallbacks:
+Nếu bạn không có quyền truy cập một nguồn riêng, ghi rõ giới hạn kiểm tra trong PR; maintainer kiểm tra tích hợp với bộ nguồn đó. Không gửi khóa truy cập qua issue hoặc PR.
 
-1. Run the dev command:
-   pnpm dev
-2. The compilation pipeline will automatically trigger and generate dummy asset placeholders inside the content directory.
-3. Make your modifications to the components, styling, or layouts.
+## Ghi chép kiến thức
 
-### 3. Coding Standards
+Bài viết thuộc module nội dung tương ứng. Trong module, đặt file theo ngôn ngữ, ví dụ `vi/new-note.md` và `en/new-note.md`; ảnh dùng đường dẫn tương đối tới `media/` của module.
 
-- Keep components modular, accessible, and lightweight.
-- Use native Tailwind CSS classes for styling.
-- All code comments and pull request descriptions must be in English.
-- Avoid introducing any unnecessary third-party npm packages.
+```markdown
+---
+id: example-notes:new-note
+title: Tiêu đề bài viết
+description: Nội dung bài giúp người đọc hiểu điều gì?
+date: 2026-01-01
+status: draft
+kind: note
+level: beginner
+---
 
-### 4. Submitting a Pull Request
+## Ý chính
 
-1. Create a new branch for your changes:
-   git checkout -b feature/your-feature-name
-2. Commit your changes with clear, descriptive commit messages.
-3. Push to your forked repository.
-4. Open a Pull Request pointing to the main branch of this repository.
-5. Provide a detailed summary of what was changed and why.
+Nội dung, ví dụ và nguồn tham khảo.
+```
+
+- Giữ ID/slug ổn định; bản dịch dùng chung `id` hoặc `translationKey`.
+- Ghi rõ nguồn, kiểm tra lệnh/code và quyền sử dụng hình ảnh. Không thêm dữ liệu nhạy cảm của cá nhân/tổ chức vào ví dụ.
+- Các bài cùng chủ đề dùng topic đã có trong `module.json`. Khi đề xuất chủ đề mới, gửi manifest với `id`, `adapter`, nhãn/mô tả và `topic`; maintainer quyết định đăng ký nguồn.
+- Bài độc lập không có trường `learning`. Bài thuộc lộ trình gán đúng `learning.path`, `learning.section`, `learning.step` đã được khai báo trong module.
+- Có thể chú giải bằng `[thuật ngữ](glossary:term "Giải thích ngắn")`. Link web bình thường vẫn dùng URL như Markdown thông thường.
+- Quiz dùng code fence `quiz`: mỗi câu có `id`, `question`, `options`, `answer` (chỉ số bắt đầu từ 0) và `explanation`. Câu hỏi phải bám vào nội dung bài.
+
+## Giới thiệu dự án
+
+Trong module dự án, mỗi dự án có thư mục riêng:
+
+```text
+new-project/
+  vi/index.md
+  en/index.md
+  media/cover.jpg
+```
+
+```markdown
+---
+id: new-project
+title: Tên dự án
+description: Bài toán và kết quả chính.
+status: draft
+category: Software
+stack: [TypeScript]
+repository: https://example.com/source
+cover: ../media/cover.jpg
+---
+
+## Giới thiệu
+
+Mục tiêu, tính năng, ảnh minh họa, quyết định thiết kế và cách dùng.
+```
+
+File `README.md` có frontmatter cũng có thể là nội dung giới thiệu dự án. Không bỏ những file nội dung đó chỉ vì chúng có tên README. Trạng thái draft được giữ tới khi nội dung sẵn sàng để maintainer xuất bản.
+
+## Truyện, album và Góc nhỏ
+
+Xem `CONTRIBUTING.md` trong module tương ứng để biết cấu trúc chương, gallery, bộ ảnh/video, bài nhạc hoặc ghi chép sách/phim/podcast. Dùng ảnh/nhạc/tư liệu có quyền sử dụng và giữ nguồn cần thiết.
+
+## Pull request
+
+1. Tạo nhánh có tên mô tả thay đổi.
+2. Giữ PR tập trung vào một vấn đề; không đưa output sinh tự động hoặc credential vào commit.
+3. Nêu cách kiểm tra. Thay UI kèm ảnh ở điện thoại/desktop khi hữu ích; thay nội dung kèm nguồn tham khảo.
+4. Giữ tương thích URL/ID cũ và chờ maintainer review trước khi xuất bản.

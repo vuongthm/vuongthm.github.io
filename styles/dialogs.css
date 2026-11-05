@@ -1,0 +1,112 @@
+/* Dialogs are shared by search, the assistant, and the image viewer. */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12vh 20px 30px;
+  background: #07181c66;
+  backdrop-filter: blur(5px);
+  overflow: auto;
+  animation: backdrop-in 0.15s ease-out;
+}
+.dialog-panel {
+  width: min(660px, 100%);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  animation: panel-in 0.18s ease-out;
+}
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 17px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--muted);
+}
+.search-field input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  height: 36px;
+  font-size: 14px;
+}
+.search-body {
+  padding: 20px 12px;
+  overflow: auto;
+}
+.search-body > .eyebrow {
+  padding-left: 12px;
+  font-size: 8px;
+  margin-bottom: 12px;
+  color: var(--faint);
+}
+.search-result {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 13px;
+  border-radius: 3px;
+  color: var(--muted);
+}
+.search-result.selected,
+.search-result:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+.search-result > span {
+  flex: 1;
+}
+.search-result strong {
+  font-size: 12px;
+  display: block;
+  font-weight: 500;
+  color: var(--ink);
+}
+.search-result small {
+  font-size: 9px;
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+}
+.search-bottom {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--line);
+  font-size: 9px;
+  color: var(--faint);
+}
+.search-bottom > span,
+.search-bottom > button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.search-bottom > button {
+  color: var(--accent);
+}
+.panel-loading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.panel-loading > span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

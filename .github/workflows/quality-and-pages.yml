@@ -1,0 +1,80 @@
+name: Verify and deploy website
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [content-updated]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Read private stories source
+        uses: actions/checkout@v5
+        with:
+          repository: vuongthm/stories
+          ref: main
+          path: .content-sources/stories
+          ssh-key: ${{ secrets.STORIES_SOURCE_KEY }}
+          persist-credentials: false
+      - name: Read private album source
+        uses: actions/checkout@v5
+        with:
+          repository: vuongthm/album2
+          ref: main
+          path: .content-sources/album2
+          ssh-key: ${{ secrets.ALBUM2_SOURCE_KEY }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Enable package manager
+        run: corepack enable
+      - name: Install website
+        run: pnpm install --frozen-lockfile
+      - name: Compile and validate content
+        run: pnpm content
+        env:
+          CONTENT_SOURCE_TOKEN: ${{ secrets.CONTENT_SOURCE_TOKEN }}
+          CONTENT_PASSWORD: ${{ secrets.CONTENT_PASSWORD }}
+          CONTENT_PASSWORDS: ${{ secrets.CONTENT_PASSWORDS }}
+      - name: Verify types, lint, and tests
+        run: pnpm verify
+      - name: Build and inspect public artifact
+        run: pnpm build
+        env:
+          CONTENT_SOURCE_TOKEN: ${{ secrets.CONTENT_SOURCE_TOKEN }}
+          CONTENT_PASSWORD: ${{ secrets.CONTENT_PASSWORD }}
+          CONTENT_PASSWORDS: ${{ secrets.CONTENT_PASSWORDS }}
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: verify-and-build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy verified artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

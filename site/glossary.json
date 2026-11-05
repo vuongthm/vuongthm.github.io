@@ -1,0 +1,251 @@
+[
+  {
+    "id": "osi",
+    "term": "OSI",
+    "aliases": [
+      "OSI"
+    ],
+    "definition": {
+      "vi": "Mô hình tham chiếu bảy tầng dùng để mô tả chức năng truyền thông; bản thân nó không phải một giao thức.",
+      "en": "A seven-layer reference model for describing communication functions, not a protocol.",
+      "ja": "通信機能を7層に整理する参照モデル。プロトコルそのものではありません。",
+      "zh": "描述通信功能的七层参考模型，本身不是协议。"
+    }
+  },
+  {
+    "id": "tcp",
+    "term": "TCP",
+    "aliases": [
+      "TCP"
+    ],
+    "definition": {
+      "vi": "Giao thức giao vận hướng kết nối, cung cấp luồng byte có thứ tự và cơ chế truyền lại khi cần. TCP không tự mã hóa dữ liệu.",
+      "en": "A connection-oriented transport protocol providing an ordered byte stream and retransmission. TCP does not itself encrypt data.",
+      "ja": "順序制御と再送を行うコネクション型のトランスポートプロトコル。暗号化は別の機能です。",
+      "zh": "面向连接的传输协议，提供有序字节流和重传；TCP 本身不负责加密。"
+    }
+  },
+  {
+    "id": "udp",
+    "term": "UDP",
+    "aliases": [
+      "UDP"
+    ],
+    "definition": {
+      "vi": "Giao thức giao vận gửi datagram, không tự bảo đảm dữ liệu đến nơi hay đến đúng thứ tự.",
+      "en": "A datagram transport protocol that does not itself guarantee delivery or ordering.",
+      "ja": "到達や順序を保証しないデータグラム型トランスポートプロトコル。",
+      "zh": "发送数据报的传输协议，本身不保证送达和顺序。"
+    }
+  },
+  {
+    "id": "ip",
+    "term": "IP",
+    "aliases": [
+      "IP"
+    ],
+    "definition": {
+      "vi": "Địa chỉ logic và cơ chế chuyển gói giữa các mạng. Địa chỉ IP giúp xác định đích ở tầng mạng.",
+      "en": "Logical addressing and packet delivery across networks. IP addresses identify network-layer destinations.",
+      "ja": "ネットワーク間でパケットを届ける仕組み。IPアドレスはネットワーク層の宛先を表します。",
+      "zh": "用于跨网络传送数据包的逻辑寻址机制，IP 地址表示网络层目的地。"
+    }
+  },
+  {
+    "id": "mac",
+    "term": "MAC",
+    "aliases": [
+      "MAC"
+    ],
+    "definition": {
+      "vi": "Địa chỉ ở tầng liên kết dữ liệu của giao diện mạng. Có thể bị thay đổi hoặc giả mạo; không phải định danh tuyệt đối của một người.",
+      "en": "A link-layer address of a network interface. It can be changed or spoofed and is not an absolute identity.",
+      "ja": "ネットワークインターフェースのリンク層アドレス。変更や偽装が可能です。",
+      "zh": "网络接口的链路层地址，可以修改或伪造，不是绝对身份标识。"
+    }
+  },
+  {
+    "id": "arp",
+    "term": "ARP",
+    "aliases": [
+      "ARP"
+    ],
+    "definition": {
+      "vi": "Trong mạng IPv4 cục bộ, ARP tìm địa chỉ MAC tương ứng với địa chỉ IP của next hop.",
+      "en": "ARP resolves an IPv4 next-hop address to a link-layer address on the local network.",
+      "ja": "同一リンク上でIPv4の次ホップに対応するMACアドレスを調べます。",
+      "zh": "在本地 IPv4 网络中解析下一跳 IP 对应的 MAC 地址。"
+    }
+  },
+  {
+    "id": "dns",
+    "term": "DNS",
+    "aliases": [
+      "DNS"
+    ],
+    "definition": {
+      "vi": "Hệ thống tên miền phân cấp, tra cứu tên thành các bản ghi như địa chỉ IP và thông tin dịch vụ.",
+      "en": "The hierarchical naming system that resolves names to records, including addresses and service information.",
+      "ja": "名前をアドレスやサービス情報などのレコードに対応させる階層的な仕組み。",
+      "zh": "将域名解析为地址及服务信息等记录的分层命名系统。"
+    }
+  },
+  {
+    "id": "http",
+    "term": "HTTP",
+    "aliases": [
+      "HTTP"
+    ],
+    "definition": {
+      "vi": "Giao thức trao đổi yêu cầu và phản hồi cho tài nguyên web. HTTPS bổ sung bảo vệ bằng TLS.",
+      "en": "A request/response protocol for web resources. HTTPS adds protection using TLS.",
+      "ja": "Webリソースを要求・応答で扱うプロトコル。HTTPSではTLSで保護します。",
+      "zh": "用于 Web 资源请求与响应的协议；HTTPS 使用 TLS 提供保护。"
+    }
+  },
+  {
+    "id": "cidr",
+    "term": "CIDR",
+    "aliases": [
+      "CIDR"
+    ],
+    "definition": {
+      "vi": "Cách biểu diễn tiền tố mạng, ví dụ /24 nghĩa là 24 bit đầu thuộc phần mạng của địa chỉ IPv4.",
+      "en": "Network-prefix notation: an IPv4 /24 uses the first 24 bits for the prefix.",
+      "ja": "ネットワークのプレフィックス表記。IPv4の/24は先頭24ビットを示します。",
+      "zh": "网络前缀表示法，例如 IPv4 的 /24 表示前 24 位为网络前缀。"
+    }
+  },
+  {
+    "id": "lan",
+    "term": "LAN",
+    "aliases": [
+      "LAN"
+    ],
+    "definition": {
+      "vi": "Mạng cục bộ kết nối các thiết bị trong một phạm vi quản lý tương đối nhỏ, chẳng hạn phòng làm việc.",
+      "en": "A local-area network connecting devices within a relatively limited managed area.",
+      "ja": "オフィスなど比較的狭い範囲の機器を接続するローカルネットワーク。",
+      "zh": "在办公室等较小管理范围内连接设备的局域网。"
+    }
+  },
+  {
+    "id": "vpn",
+    "term": "VPN",
+    "aliases": [
+      "VPN"
+    ],
+    "definition": {
+      "vi": "Kết nối mạng riêng qua một hạ tầng khác. Mức bảo mật phụ thuộc giao thức và cấu hình, không tự làm mọi hoạt động trở nên an toàn.",
+      "en": "A private network connection over another network. Its security depends on protocol and configuration.",
+      "ja": "別のネットワーク上に構成するプライベート接続。安全性は方式と設定に依存します。",
+      "zh": "通过其他网络建立的专用连接，安全性取决于协议与配置。"
+    }
+  },
+  {
+    "id": "soc",
+    "term": "SOC",
+    "aliases": [
+      "SOC",
+      "Security Operations Center"
+    ],
+    "definition": {
+      "vi": "Trung tâm vận hành an toàn thông tin: con người, quy trình và công cụ phối hợp để giám sát, phân tích và ứng phó sự kiện bảo mật.",
+      "en": "A Security Operations Center combines people, processes and tools to monitor, analyze and respond to security events.",
+      "ja": "人・手順・ツールを組み合わせ、セキュリティイベントを監視・分析・対応する組織。",
+      "zh": "结合人员、流程和工具，对安全事件进行监控、分析和响应的安全运营中心。"
+    }
+  },
+  {
+    "id": "siem",
+    "term": "SIEM",
+    "aliases": [
+      "SIEM"
+    ],
+    "definition": {
+      "vi": "Nền tảng tập hợp và phân tích sự kiện bảo mật từ nhiều nguồn để hỗ trợ phát hiện, điều tra và xử lý cảnh báo.",
+      "en": "A platform collecting and analyzing security events from multiple sources to support detection and investigation.",
+      "ja": "複数の情報源からセキュリティイベントを集約・分析し、検知と調査を支援する基盤。",
+      "zh": "汇集并分析多种来源的安全事件，支持检测、告警和调查的平台。"
+    }
+  },
+  {
+    "id": "edr",
+    "term": "EDR",
+    "aliases": [
+      "EDR"
+    ],
+    "definition": {
+      "vi": "Công cụ giám sát hoạt động và hỗ trợ phát hiện, điều tra, ứng phó trên thiết bị đầu cuối.",
+      "en": "Endpoint monitoring that supports detection, investigation and response on endpoint devices.",
+      "ja": "エンドポイントの活動を監視し、検知・調査・対応を支援する仕組み。",
+      "zh": "监控终端活动并支持检测、调查和响应的工具。"
+    }
+  },
+  {
+    "id": "soar",
+    "term": "SOAR",
+    "aliases": [
+      "SOAR"
+    ],
+    "definition": {
+      "vi": "Nền tảng điều phối quy trình bảo mật và tự động hóa các tác vụ theo playbook có kiểm soát.",
+      "en": "Security orchestration and controlled automation of response tasks through playbooks.",
+      "ja": "プレイブックに従い、セキュリティ対応手順を連携・自動化する仕組み。",
+      "zh": "通过剧本协调安全流程并受控地自动化响应任务的平台。"
+    }
+  },
+  {
+    "id": "ids",
+    "term": "IDS",
+    "aliases": [
+      "IDS"
+    ],
+    "definition": {
+      "vi": "Hệ thống phát hiện dấu hiệu xâm nhập và tạo cảnh báo. Việc chặn lưu lượng không mặc nhiên là chức năng của mọi IDS.",
+      "en": "An intrusion detection system identifies suspicious activity and alerts; blocking is not inherent to every IDS.",
+      "ja": "侵入の兆候を検知して通知するシステム。すべてのIDSが遮断するわけではありません。",
+      "zh": "检测可疑入侵活动并告警的系统，并非所有 IDS 都负责阻断。"
+    }
+  },
+  {
+    "id": "ioc",
+    "term": "IOC",
+    "aliases": [
+      "IOC",
+      "IoC"
+    ],
+    "definition": {
+      "vi": "Dấu hiệu có thể liên quan đến sự xâm nhập. Cần đối chiếu ngữ cảnh và bằng chứng khác trước khi kết luận.",
+      "en": "An indicator potentially associated with compromise; context and corroborating evidence are still required.",
+      "ja": "侵害に関連する可能性のある兆候。文脈と他の証拠による確認が必要です。",
+      "zh": "可能与入侵有关的指标，仍需结合上下文和其他证据判断。"
+    }
+  },
+  {
+    "id": "cti",
+    "term": "CTI",
+    "aliases": [
+      "CTI"
+    ],
+    "definition": {
+      "vi": "Thông tin về mối đe dọa được phân tích và đặt trong ngữ cảnh để hỗ trợ quyết định phòng thủ.",
+      "en": "Analyzed, contextual threat information used to inform defensive decisions.",
+      "ja": "防御上の判断を支える、分析・文脈付けされた脅威情報。",
+      "zh": "经分析并结合上下文、用于支持防御决策的威胁情报。"
+    }
+  },
+  {
+    "id": "ai",
+    "term": "AI",
+    "aliases": [
+      "AI"
+    ],
+    "definition": {
+      "vi": "Trí tuệ nhân tạo. Câu trả lời của mô hình cần được kiểm chứng bằng nguồn và thử nghiệm phù hợp với nhiệm vụ.",
+      "en": "Artificial intelligence. Model outputs require sources and task-appropriate verification.",
+      "ja": "人工知能。モデルの出力は情報源と適切な検証で確認する必要があります。",
+      "zh": "人工智能。模型输出需要通过可靠来源和适当测试验证。"
+    }
+  }
+]

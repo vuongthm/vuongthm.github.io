@@ -1,14 +1,39 @@
+# Dependencies and generated output
 node_modules/
 .next/
 out/
-.DS_Store
+generated/
+.content-sources/
+public/media/
+public/vault-data/
 tsconfig.tsbuildinfo
 
-# Tệp sinh ra tự động trong quá trình đồng bộ cục bộ (Không push lên repo)
-content/notes/
-content/stories/
-public/media/notes/
-public/media/stories/
-lib/content.generated.ts
+# Local secrets and private originals
+.env*
+!.env.example
 passwords.json
+.private-vault/
+vault-encrypted.staging/
 
+# Tooling and test caches
+.cache/
+coverage/
+.vitest/
+.eslintcache
+.DS_Store
+
+# Generated image variants; authored photographs remain source assets
+public/**/*.webp
+!public/personal/**/*.webp
+!public/friends/**/*.webp
+
+# Owner-only local instructions (not publication source)
+.local-docs/
+/OWNER-NOTES.md
+/GITHUB-PUSH-GUIDE.md
+/REPOSITORY.md
+/DEPLOYMENT.md
+/CLEANUP.md
+
+# Legacy folder for owner guides
+/docs/

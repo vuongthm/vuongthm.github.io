@@ -1,0 +1,108 @@
+{
+  "version": 3,
+  "locales": [
+    "vi",
+    "en",
+    "ja",
+    "zh"
+  ],
+  "privateContent": "exclude",
+  "moduleRoots": [
+    "../content"
+  ],
+  "site": {
+    "profile": "site/profile.json",
+    "paths": "site/paths.json",
+    "imageVariants": [
+      {
+        "source": "/avatar.png",
+        "target": "/avatar.webp",
+        "width": 600
+      },
+      {
+        "source": "/hometown/dai-lanh-coast.png",
+        "target": "/hometown/dai-lanh-coast.webp",
+        "width": 1600
+      },
+      {
+        "source": "/hometown/dai-lanh-village.png",
+        "target": "/hometown/dai-lanh-village.webp",
+        "width": 1600
+      },
+      {
+        "source": "/hometown/dai-lanh-mountain.png",
+        "target": "/hometown/dai-lanh-mountain.webp",
+        "width": 1600
+      }
+    ],
+    "photoJournal": "site/photo-journal.md"
+  },
+  "sources": [],
+  "repositories": [
+    {
+      "id": "ai-notes",
+      "repository": "vuongthm/ai-notes",
+      "ref": "main"
+    },
+    {
+      "id": "cloud-notes",
+      "repository": "vuongthm/cloud-notes",
+      "ref": "main"
+    },
+    {
+      "id": "journey",
+      "repository": "vuongthm/journey",
+      "ref": "main"
+    },
+    {
+      "id": "learning-notes",
+      "repository": "vuongthm/learning-notes",
+      "ref": "main"
+    },
+    {
+      "id": "linux-notes",
+      "repository": "vuongthm/linux-notes",
+      "ref": "main"
+    },
+    {
+      "id": "network-notes",
+      "repository": "vuongthm/network-notes",
+      "ref": "main"
+    },
+    {
+      "id": "projects",
+      "repository": "vuongthm/projects",
+      "ref": "main"
+    },
+    {
+      "id": "security-notes",
+      "repository": "vuongthm/security-notes",
+      "ref": "main"
+    },
+    {
+      "id": "soc-notes",
+      "repository": "vuongthm/soc-notes",
+      "ref": "main"
+    },
+    {
+      "id": "stories",
+      "repository": "vuongthm/stories",
+      "ref": "main"
+    },
+    {
+      "id": "album1",
+      "repository": "vuongthm/album1",
+      "ref": "main"
+    },
+    {
+      "id": "album2",
+      "repository": "vuongthm/album2",
+      "ref": "main"
+    },
+    {
+      "id": "my-corner",
+      "repository": "vuongthm/my-corner",
+      "ref": "main"
+    }
+  ]
+}

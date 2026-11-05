@@ -1,0 +1,138 @@
+/* Reader controls and mobile sheet, after the shared responsive rules. */
+
+.reader-mobile-tools {
+  display: none;
+}
+.reader-toc-sheet {
+  align-items: flex-end;
+  padding: 0;
+}
+.reader-toc-sheet .dialog-panel {
+  width: 100%;
+  height: clamp(180px, 28dvh, 300px);
+  max-height: 40dvh;
+  border-radius: 12px 12px 0 0;
+  border: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: reader-sheet-enter 0.2s ease-out;
+}
+.reader-sheet-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 15px;
+}
+.reader-sheet-heading h2 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.reader-sheet-heading .icon-button {
+  width: 34px;
+  height: 34px;
+}
+.reader-sheet-content {
+  overflow: auto;
+  overscroll-behavior: contain;
+  flex: 1;
+  padding: 0 16px 12px;
+  scrollbar-width: thin;
+}
+.reader-sheet-content .toc-list {
+  border: 0;
+}
+.reader-sheet-content .toc-list a {
+  padding: 8px 10px;
+  font-size: 12px;
+  min-height: 35px;
+  border-radius: 4px;
+}
+.reader-sheet-content .toc-list .toc-nested a {
+  padding-left: 23px;
+  font-size: 11px;
+}
+.reader-bottom-nav a strong {
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.reader-bottom-nav a:hover {
+  background: var(--accent-light);
+}
+@keyframes reader-sheet-enter {
+  from {
+    transform: translateY(24px);
+    opacity: 0.5;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (max-width: 760px) {
+  .reader-mobile-tools {
+    display: flex;
+    position: fixed;
+    right: 17px;
+    bottom: calc(15px + env(safe-area-inset-bottom));
+    gap: 7px;
+    z-index: 35;
+  }
+  .reader-mobile-tools button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--accent);
+    box-shadow: 0 4px 18px #11182718;
+  }
+  .reader-mobile-tools button:hover,
+  .reader-mobile-tools button.active {
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+  .reader-bottom-nav {
+    gap: 8px;
+  }
+  .reader-bottom-nav a {
+    padding: 10px;
+  }
+  .reader-bottom-nav a strong {
+    font-size: 10px;
+    line-height: 1.65;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reader-toc-sheet .dialog-panel {
+    animation: none;
+  }
+}
+@media print {
+  .reader-mobile-tools {
+    display: none;
+  }
+}
+.content-language {
+  font-size: 9px;
+  color: var(--accent);
+  padding: 1px 5px;
+  background: var(--accent-light);
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.content-availability {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+  margin-block: 0 18px;
+}
+
+@media (max-width: 760px) {
+  body:has(.reader-mobile-tools) .site-footer {
+    padding-bottom: 60px;
+  }
+}

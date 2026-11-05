@@ -1,0 +1,24 @@
+name: Notify website from content module
+on:
+  workflow_call:
+    secrets:
+      WEBSITE_NOTIFY_KEY:
+        required: true
+permissions:
+  contents: read
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: vuongthm/vuongthm.github.io
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Signal content update
+        run: node scripts/content/notify-website.mjs
+        env:
+          WEBSITE_NOTIFY_KEY: ${{ secrets.WEBSITE_NOTIFY_KEY }}

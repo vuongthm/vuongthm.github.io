@@ -1,0 +1,90 @@
+{
+  "articles": {
+    "osi-model": {
+      "title": "OSIモデルをわかりやすく整理する",
+      "summary": "7つの層の役割、モデルが必要な理由、実際のネットワークでの使い方。"
+    },
+    "what-is-a-network": {
+      "title": "ネットワークとは何か",
+      "summary": "共通の規則、通信の流れ、ネットワークの規模を整理した概要。"
+    },
+    "tcp-ip-model": {
+      "title": "TCP/IPモデルの4層",
+      "summary": "実際の通信を、アプリケーション、トランスポート、インターネット、リンクの4層で整理。"
+    },
+    "encapsulation-and-data-flow": {
+      "title": "カプセル化とデータの流れ",
+      "summary": "送信側が情報を付け、受信側が順に取り外す仕組みを整理。"
+    },
+    "ip-addressing": {
+      "title": "IPアドレスの構造と種類",
+      "summary": "IPv4、ネットワーク部とホスト部、プライベートアドレス、IPv6の基本。"
+    },
+    "subnetting": {
+      "title": "サブネットを分けて管理する",
+      "summary": "サブネットマスク、CIDR、ホスト数、VLSMを例で確認。"
+    },
+    "ports-and-sockets": {
+      "title": "ポートとソケット",
+      "summary": "同じ機器の中でアプリケーションを識別する仕組み。"
+    },
+    "mac-and-arp": {
+      "title": "MACアドレスとARP",
+      "summary": "同一リンク上の配送とIPv4アドレスの解決を整理。"
+    },
+    "network-devices": {
+      "title": "ハブ・スイッチ・ルーター・AP",
+      "summary": "機器の見た目ではなく、判断に使う情報と役割を比べる。"
+    },
+    "ai-with-evidence": {
+      "title": "AIで学び、証拠で理解を確かめる",
+      "summary": "AIを学習に使いながら、説明を検証できる形に保つ手順。"
+    },
+    "security-starts-with-questions": {
+      "title": "セキュリティは問いから始まる",
+      "summary": "ツールを選ぶ前に、守る対象を理解するための脅威モデリング入門。"
+    },
+    "cloud-shared-responsibility": {
+      "title": "クラウドでは誰が何を守るのか",
+      "summary": "最初のワークロードを配置する前に、責任共有の境界を確認する。"
+    },
+    "soc-first-investigation": {
+      "title": "SOC：アラートから仮説へ",
+      "summary": "セキュリティ分析を学ぶときに、兆候、証拠、結論を分ける。"
+    },
+    "linux-terminal-first-steps": {
+      "title": "Linux：ターミナルの第一歩・サンプル演習",
+      "summary": "現在地、ファイル一覧、システム情報を確認するサンプル演習。"
+    }
+  },
+  "stories": {
+    "internship-vnnic": {
+      "title": "VNNICでのインターンシップ",
+      "summary": "ベトナムインターネット情報センターで過ごした日々の記録。国の.vn DNSやインターネット接続点VNIXを支える現場から。",
+      "chapters": {
+        "chapter-1": {
+          "title": "第1章：VNNICで初めての面接",
+          "summary": "VNNIC支部での緊張した面接と、インターネットの基礎に関する質問。"
+        },
+        "chapter-2": {
+          "title": "第2章：インターンシップの初日",
+          "summary": "初日の印象、職場での説明、サーバー室の見学。"
+        }
+      }
+    },
+    "unnamed-years": {
+      "title": "まだ名前のない日々",
+      "summary": "海辺の村で育った子ども時代。裸足で歩いた道、家族の静かな支え、小さな町の向こうへ広がる夢。",
+      "chapters": {
+        "chapter-1": {
+          "title": "家に帰れと呼ばれるまでの日々",
+          "summary": "海辺で遊び続けた子ども時代と、生まれつきの肌の色の話。"
+        },
+        "chapter-2": {
+          "title": "父の手",
+          "summary": "口数は少なく、手にはたくさんのたこがあった父。言葉よりも行動で語る人だった。"
+        }
+      }
+    }
+  }
+}
