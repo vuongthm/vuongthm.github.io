@@ -35,7 +35,8 @@
         "width": 1600
       }
     ],
-    "photoJournal": "site/photo-journal.md"
+    "photoJournal": "site/photo-journal.md",
+    "shelf": "site/shelf.md"
   },
   "sources": [],
   "repositories": [

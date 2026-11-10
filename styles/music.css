@@ -61,7 +61,7 @@
   position: absolute;
   inset: auto 0 0;
   height: 35%;
-  background: linear-gradient(transparent, #0008);
+  background: #0006;
   pointer-events: none;
 }
 .music-artwork-label {

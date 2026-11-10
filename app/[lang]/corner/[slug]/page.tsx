@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react"
 import { notFound } from "next/navigation"
 import { isLocale, localeCodes, localized, contentLanguage } from "@/lib/i18n/config"
 import { cornerMessages } from "@/lib/i18n/corner"
+import { editorial } from "@/lib/i18n/editorial"
 import { getCornerItems } from "@/lib/content/server"
 import { metadataFor } from "@/lib/seo"
 import { Markdown } from "@/components/reading/markdown"
@@ -33,9 +34,9 @@ export default async function Page({ params }: { params: Params }) {
   if (!item) notFound()
   return (
     <main id="main-content" className="wrap corner-detail">
-      <Link className="back-link" href={localized("/corner/", lang)}>
+      <Link className="back-link" href={localized("/shelf/", lang)}>
         <ArrowLeft size={14} />
-        {text.back}
+        {editorial[lang].shelf}
       </Link>
       <div className="corner-detail-layout">
         <div>

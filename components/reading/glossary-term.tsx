@@ -16,6 +16,7 @@ export function GlossaryTerm({
     id = useId(),
     trigger = useRef<HTMLButtonElement>(null),
     note = useRef<HTMLSpanElement>(null),
+    pinned = useRef(false),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [open, setOpen] = useState(false),
     [position, setPosition] = useState<{ top: number; left: number } | null>(null)
@@ -29,7 +30,7 @@ export function GlossaryTerm({
   }
   function hide() {
     cancel()
-    timer.current = setTimeout(() => setOpen(false), 120)
+    if (!pinned.current) timer.current = setTimeout(() => setOpen(false), 120)
   }
   useEffect(() => {
     if (!open) return
@@ -53,12 +54,15 @@ export function GlossaryTerm({
       if (
         !trigger.current?.contains(event.target as Node) &&
         !note.current?.contains(event.target as Node)
-      )
+      ) {
+        pinned.current = false
         setOpen(false)
+      }
     }
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.stopPropagation()
+        pinned.current = false
         setOpen(false)
       }
     }
@@ -95,11 +99,19 @@ export function GlossaryTerm({
         onFocus={() => {
           if (trigger.current?.matches(":focus-visible")) show()
         }}
-        onBlur={hide}
+        onBlur={() => {
+          pinned.current = false
+          hide()
+        }}
         onClick={() => {
           cancel()
-          if (open) setOpen(false)
-          else show()
+          if (pinned.current) {
+            pinned.current = false
+            setOpen(false)
+          } else {
+            pinned.current = true
+            show()
+          }
         }}
       >
         {children}

@@ -1,15 +1,18 @@
 "use client"
 import { useRef, useState, type CSSProperties, type KeyboardEvent } from "react"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, ArrowUpRight, Compass } from "lucide-react"
 import { Gallery } from "@/components/gallery"
 import { useSite } from "@/components/providers/site-provider"
 import { copy } from "@/lib/i18n/copy"
 import { journeyLayout } from "@/lib/content/journey-layout"
 import type { JourneyPreview } from "@/lib/content/types"
+import { experience } from "@/lib/i18n/experience"
+import { localized } from "@/lib/i18n/config"
 
 export function JourneyExplorer({ items }: { items: JourneyPreview[] }) {
   const { locale, dictionary: m } = useSite()
+  const t = experience[locale]
   const [selected, setSelected] = useState(0)
   const nodes = useRef<(HTMLAnchorElement | null)[]>([])
   const scroll = useRef<HTMLDivElement>(null)
@@ -47,7 +50,8 @@ export function JourneyExplorer({ items }: { items: JourneyPreview[] }) {
       <header className="journey-heading">
         <div>
           <span className="journey-kicker">
-            vuongthm. / {copy(locale, "Dấu mốc", "Milestones")}
+            <span className="status-dot" />
+            {t.smallWorld}
           </span>
           <h1 id="journey-title">{copy(locale, "Hành trình của Vuong.", "Vuong’s journey.")}</h1>
           <p>
@@ -57,6 +61,21 @@ export function JourneyExplorer({ items }: { items: JourneyPreview[] }) {
               "Places, lessons, and things I’m building.",
             )}
           </p>
+          <div className="journey-heading-actions">
+            <Link href={localized("/notes/", locale)}>
+              {t.startReading}
+              <ArrowRight size={15} />
+            </Link>
+            <Link href={localized("/about/", locale)}>
+              {t.aboutMe}
+              <ArrowUpRight size={14} />
+            </Link>
+          </div>
+        </div>
+        <div className="journey-compass" aria-hidden="true">
+          <span>16°03′N / 108°12′E</span>
+          <Compass size={62} strokeWidth={0.8} />
+          <span>ĐÀ NẴNG, VIỆT NAM</span>
         </div>
       </header>
       <div className="journey-map">

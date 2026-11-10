@@ -1,4 +1,5 @@
 "use client"
+import { localeName } from "@/lib/i18n/english-names.mjs"
 /* eslint-disable @next/next/no-img-element -- Supports local images and decrypted Blob URLs. */
 import { useRef, useState, type ReactNode } from "react"
 import { Play } from "lucide-react"
@@ -85,7 +86,7 @@ function PhotoGrid({ photos, start }: { photos: GalleryPhoto[]; start: number })
             )}
             <span className="album-photo-caption">
               <strong>{photo.title[locale]}</strong>
-              {photo.place && <small>{photo.place}</small>}
+              {photo.place && <small>{localeName(photo.place, locale)}</small>}
             </span>
           </button>
         ))}

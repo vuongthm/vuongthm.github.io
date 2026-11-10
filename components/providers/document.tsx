@@ -8,7 +8,8 @@ const policy = [
   "script-src 'self' 'unsafe-inline' https://www.youtube.com https://s.ytimg.com" +
     (process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""),
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://i.ytimg.com",
+  "img-src 'self' data: blob: https://i.ytimg.com https://tiles.openfreemap.org",
+  "worker-src 'self' blob:",
   "font-src 'self' data:",
   // BYOK gateways are user-configurable HTTPS origins; local development uses a loopback relay.
   "connect-src 'self' https: http://127.0.0.1:* http://localhost:*",
@@ -20,7 +21,7 @@ const policy = [
 ].join("; ")
 export function Document({ locale, children }: { locale: Locale; children: ReactNode }) {
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <meta httpEquiv="Content-Security-Policy" content={policy} />
         <meta name="referrer" content="strict-origin-when-cross-origin" />

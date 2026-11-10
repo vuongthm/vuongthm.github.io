@@ -1,10 +1,12 @@
 "use client"
+import { Dialog } from "@/components/search/dialog"
+import { ChoiceSelect } from "@/components/ui/choice-select"
 import { copy } from "@/lib/i18n/copy"
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Fuse from "fuse.js"
-import { ArrowDownWideNarrow, ArrowRight, BookOpen, Check, Filter, Search, X } from "lucide-react"
+import { ArrowRight, BookOpen, Check, Filter, Search, X } from "lucide-react"
 import { useSite } from "@/components/providers/site-provider"
 import { topics } from "@/lib/content/topics"
 import type { EntryMeta, LearningPath } from "@/lib/content/types"
@@ -49,18 +51,13 @@ export function Library({
   const params = useMemo(() => new URLSearchParams(search), [search])
   const [mobileFilters, setMobileFilters] = useState(false)
   useEffect(() => {
-    if (!mobileFilters) return
-    const overflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-    const key = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMobileFilters(false)
+    const viewport = matchMedia("(min-width: 761px)")
+    const close = () => {
+      if (viewport.matches) setMobileFilters(false)
     }
-    document.addEventListener("keydown", key)
-    return () => {
-      document.body.style.overflow = overflow
-      document.removeEventListener("keydown", key)
-    }
-  }, [mobileFilters])
+    viewport.addEventListener("change", close)
+    return () => viewport.removeEventListener("change", close)
+  }, [])
   const query = params.get("q") ?? "",
     topic = initialTopic ?? params.get("topic") ?? "all",
     kind = params.get("kind") ?? "all",
@@ -103,132 +100,130 @@ export function Library({
   const path =
     paths.find((item) => item.topic === (topic === "all" ? "networking" : topic)) ?? paths[0]
   const active = topic !== "all" || kind !== "all" || level !== "all" || !!query || study !== "all"
+  const filters = (
+    <aside
+      className={`library-sidebar ${mobileFilters ? "mobile-open" : ""}`}
+      aria-label={m.filter}
+    >
+      <div className="filter-title">
+        <span className="eyebrow">{m.filter}</span>
+        <button
+          className="icon-button mobile-only"
+          onClick={() => setMobileFilters(false)}
+          aria-label={m.close}
+        >
+          <X size={17} />
+        </button>
+      </div>
+      {!initialTopic && (
+        <div className="filter-group">
+          <h2>{m.topics}</h2>
+          <button
+            className={topic === "all" ? "filter-option active" : "filter-option"}
+            aria-pressed={topic === "all"}
+            onClick={() => update("topic", "all")}
+          >
+            <BookOpen size={17} />
+            <span>{m.all}</span>
+            <small>{entries.length}</small>
+          </button>
+          {topics.map((item) => {
+            const count = entries.filter((entry) => entry.topics.includes(item.id)).length
+            return (
+              <button
+                key={item.id}
+                className={`filter-option ${topic === item.id ? "active" : ""}`}
+                aria-pressed={topic === item.id}
+                onClick={() => update("topic", item.id)}
+              >
+                <TopicIcon id={item.id} size={17} />
+                <span>{item.label[locale]}</span>
+                <small>{count}</small>
+              </button>
+            )
+          })}
+        </div>
+      )}
+      <div className="filter-group">
+        <h2>{m.type}</h2>
+        {["all", "note", "guide", "lab", "writeup", "reference"].map((value) => (
+          <button
+            key={value}
+            disabled={!!course}
+            className={`filter-check ${kind === value ? "active" : ""}`}
+            aria-pressed={kind === value}
+            onClick={() => update("kind", value)}
+          >
+            <span className="check-box">{kind === value && <Check size={11} />}</span>
+            {value === "all" ? m.all : m[value as "note"]}
+          </button>
+        ))}
+      </div>
+      <div className="filter-group">
+        <h2>{m.level}</h2>
+        <ChoiceSelect
+          label={m.level}
+          value={level}
+          onChange={(value) => update("level", value)}
+          options={[
+            { value: "all", label: m.all },
+            ...["beginner", "intermediate", "advanced"].map((value) => ({
+              value,
+              label: m[value as "beginner"],
+            })),
+          ]}
+        />
+      </div>
+      {active && (
+        <button
+          className="text-link"
+          onClick={() => {
+            navigateQuery(pathname)
+          }}
+        >
+          <X size={13} />
+          {m.reset}
+        </button>
+      )}
+      <button
+        className="button primary mobile-only filter-apply"
+        onClick={() => setMobileFilters(false)}
+      >
+        {copy(locale, "Xem", "Show")} {filtered.length} {m.articles}
+      </button>
+    </aside>
+  )
   return (
     <div className={`library-layout${path ? "" : " no-path"}${course ? " course-selected" : ""}`}>
-      {!course && (
-        <aside
-          className={`library-sidebar ${mobileFilters ? "mobile-open" : ""}`}
-          aria-label={m.filter}
-        >
-          <div className="filter-title">
-            <span className="eyebrow">{m.filter}</span>
-            <button
-              className="icon-button mobile-only"
-              onClick={() => setMobileFilters(false)}
-              aria-label={m.close}
-            >
-              <X size={17} />
-            </button>
-          </div>
-          {!initialTopic && (
-            <div className="filter-group">
-              <h2>{m.topics}</h2>
-              <button
-                className={topic === "all" ? "filter-option active" : "filter-option"}
-                aria-pressed={topic === "all"}
-                onClick={() => update("topic", "all")}
-              >
-                <BookOpen size={17} />
-                <span>{m.all}</span>
-                <small>{entries.length}</small>
-              </button>
-              {topics.map((item) => {
-                const count = entries.filter((entry) => entry.topics.includes(item.id)).length
-                return (
-                  <button
-                    key={item.id}
-                    className={`filter-option ${topic === item.id ? "active" : ""}`}
-                    aria-pressed={topic === item.id}
-                    onClick={() => update("topic", item.id)}
-                  >
-                    <TopicIcon id={item.id} size={17} />
-                    <span>{item.label[locale]}</span>
-                    <small>{count}</small>
-                  </button>
-                )
-              })}
-            </div>
-          )}
-          <div className="filter-group">
-            <h2>{m.type}</h2>
-            {["all", "note", "guide", "lab", "writeup", "reference"].map((value) => (
-              <button
-                key={value}
-                disabled={!!course}
-                className={`filter-check ${kind === value ? "active" : ""}`}
-                aria-pressed={kind === value}
-                onClick={() => update("kind", value)}
-              >
-                <span className="check-box">{kind === value && <Check size={11} />}</span>
-                {value === "all" ? m.all : m[value as "note"]}
-              </button>
-            ))}
-          </div>
-          <div className="filter-group">
-            <h2>{m.level}</h2>
-            <select
-              aria-label={m.level}
-              disabled={!!course}
-              value={level}
-              onChange={(event) => update("level", event.target.value)}
-            >
-              <option value="all">{m.all}</option>
-              {["beginner", "intermediate", "advanced"].map((value) => (
-                <option value={value} key={value}>
-                  {m[value as "beginner"]}
-                </option>
-              ))}
-            </select>
-          </div>
-          {active && (
-            <button
-              className="text-link"
-              onClick={() => {
-                navigateQuery(pathname)
-              }}
-            >
-              <X size={13} />
-              {m.reset}
-            </button>
-          )}
-          <button
-            className="button primary mobile-only filter-apply"
-            onClick={() => setMobileFilters(false)}
+      {!course &&
+        (mobileFilters ? (
+          <Dialog
+            label={m.filter}
+            className="library-filter-dialog"
+            onClose={() => setMobileFilters(false)}
           >
-            {copy(locale, "Xem", "Show")} {filtered.length} {m.articles}
-          </button>
-        </aside>
-      )}
+            {filters}
+          </Dialog>
+        ) : (
+          filters
+        ))}
       <div className="library-main">
-        <div className="study-mode">
-          <label>
-            <span>{learningText.study}</span>
-            <select
-              value={study}
-              aria-label={learningText.study}
-              onChange={(event) => update("path", event.target.value)}
-            >
-              <option value="all">{learningText.all}</option>
-              <option value="standalone">{learningText.standalone}</option>
-              {courses.map((item) => (
-                <option key={item.slug} value={item.slug}>
-                  {item.title[locale]}
-                </option>
-              ))}
-            </select>
-          </label>
-          {!course &&
-            courses.map((item) => (
-              <button
-                key={item.slug}
-                className="study-path-link"
-                onClick={() => update("path", item.slug)}
-              >
-                <BookOpen size={15} />
-                <span>{item.title[locale]}</span>
-                <ArrowRight size={13} />
-              </button>
-            ))}
+        <div className="study-mode" id="reading-paths">
+          <span className="study-mode-label">{learningText.study}</span>
+          <ChoiceSelect
+            label={learningText.study}
+            value={study}
+            onChange={(value) => update("path", value)}
+            options={[
+              { value: "all", label: learningText.all },
+              { value: "standalone", label: learningText.standalone },
+              ...courses.map((item) => ({
+                value: item.slug,
+                label: item.title[locale],
+                detail: `${item.entries.length} ${m.articles}`,
+              })),
+            ]}
+          />
         </div>
         <div className="library-search">
           <Search size={18} />
@@ -239,7 +234,11 @@ export function Library({
             value={query}
             onChange={(event) => update("q", event.target.value)}
           />
-          <kbd>/</kbd>
+          {query && (
+            <button className="search-clear" aria-label={m.reset} onClick={() => update("q", "")}>
+              <X size={16} />
+            </button>
+          )}
         </div>
         <div className="library-toolbar">
           <span>
@@ -259,18 +258,16 @@ export function Library({
             {course ? (
               <span className="study-order">{learningText.readInOrder}</span>
             ) : (
-              <label className="sort-control">
-                <ArrowDownWideNarrow size={14} />
-                <select
-                  disabled={!!course}
-                  aria-label={m.sort}
-                  value={sort}
-                  onChange={(event) => update("sort", event.target.value)}
-                >
-                  <option value="learning">{m.recommended}</option>
-                  <option value="newest">{m.newest}</option>
-                </select>
-              </label>
+              <ChoiceSelect
+                compact
+                label={m.sort}
+                value={sort}
+                onChange={(value) => update("sort", value)}
+                options={[
+                  { value: "learning", label: m.recommended },
+                  { value: "newest", label: m.newest },
+                ]}
+              />
             )}
           </div>
         </div>

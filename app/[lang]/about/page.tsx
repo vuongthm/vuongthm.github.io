@@ -1,3 +1,4 @@
+import { localeName } from "@/lib/i18n/english-names.mjs"
 import { copy } from "@/lib/i18n/copy"
 import { Github } from "@/components/brand/github"
 import Link from "next/link"
@@ -9,7 +10,8 @@ import { metadataFor, jsonLd } from "@/lib/seo"
 import { siteConfig } from "@/lib/site.config"
 import { authorProfile as profile } from "@/lib/content/profile"
 import { friendsMessages } from "@/lib/i18n/friends"
-import { Gallery } from "@/components/gallery"
+import { DistanceMap } from "@/components/experience/distance-map"
+import { studio } from "@/lib/i18n/studio"
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   return isLocale(lang)
@@ -28,6 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   if (!isLocale(lang)) notFound()
+  const art = studio[lang]
   return (
     <main id="main-content" className="about-folio">
       <script
@@ -65,6 +68,21 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
               <p key={i}>{paragraph[lang]}</p>
             ))}
           </div>
+          <section className="folio-curiosities" aria-labelledby="interests-title">
+            <h2 id="interests-title">{art.interests}</h2>
+            <div className="folio-interests">
+              {profile.interests.map((interest) => (
+                <span key={interest}>{interest}</span>
+              ))}
+            </div>
+            <p>
+              {copy(
+                lang,
+                "Từ mạng máy tính đến nhiếp ảnh — mình thích tìm hiểu những điều kết nối con người với thế giới.",
+                "From computer networks to photography — I like exploring what connects us to the world.",
+              )}
+            </p>
+          </section>
           <div className="folio-contact-links">
             <a href={siteConfig.github} target="_blank" rel="noreferrer">
               <Github size={16} /> GitHub <ArrowUpRight size={13} />
@@ -95,132 +113,76 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
           <figcaption>
             <span>vuong.</span>
             <span>
-              Đại Lãnh <ArrowRight size={12} /> Đà Nẵng
+              {localeName("Đại Lãnh", lang)} <ArrowRight size={12} /> {localeName("Đà Nẵng", lang)}
             </span>
           </figcaption>
         </figure>
       </section>
-      <div className="wrap folio-index">
-        <div className="folio-interests">
-          {profile.interests.map((interest) => (
-            <span key={interest}>{interest}</span>
+      <DistanceMap />
+      <section className="wrap about-offscreen" aria-labelledby="offscreen-title">
+        <header>
+          <span className="eyebrow">{copy(lang, "Ngoài màn hình", "Beyond the screen")}</span>
+          <h2 id="offscreen-title">
+            {copy(lang, "Một chút nơi mình bắt đầu.", "A little of where it all began.")}
+          </h2>
+          <p>{profile.timeline[0].description[lang]}</p>
+          <Link className="text-link" href={localized("/my-album/", lang)}>
+            {copy(lang, "Ghé góc ảnh", "Visit the photo journal")}
+            <ArrowUpRight size={15} />
+          </Link>
+        </header>
+        <div className="about-contact-sheet">
+          {profile.photos.map((photo, index) => (
+            <figure key={photo.src}>
+              <div>
+                <Image
+                  src={photo.src}
+                  alt={photo.title[lang]}
+                  fill
+                  sizes="(max-width:760px) 75vw, 30vw"
+                  unoptimized
+                />
+              </div>
+              <figcaption>
+                <small>0{index + 1}</small>
+                <span>{photo.title[lang]}</span>
+              </figcaption>
+            </figure>
           ))}
         </div>
-        <nav aria-label={copy(lang, "Nội dung giới thiệu", "About sections")}>
-          <a href="#journey">{copy(lang, "Hành trình", "Journey")}</a>
-          <a href="#achievements">{copy(lang, "Dấu mốc", "Milestones")}</a>
-          <a href="#photographs">{copy(lang, "Góc ảnh", "Photographs")}</a>
-        </nav>
-      </div>
-      <section className="folio-journey-band" id="journey" aria-labelledby="journey-title">
-        <div className="wrap folio-section-layout">
-          <div className="folio-section-heading">
-            <span className="folio-kicker">{copy(lang, "Từ đâu đến đây", "How I got here")}</span>
-            <h2 id="journey-title">{copy(lang, "Hành trình", "Journey")}</h2>
-            <p>
-              {copy(
-                lang,
-                "Từ một làng chài ở Khánh Hòa đến những trải nghiệm đầu tiên với công nghệ.",
-                "From a fishing village in Khánh Hòa to my first experiences with technology.",
-              )}
-            </p>
-          </div>
-          <div className="folio-timeline">
-            {profile.timeline.map((item) => (
-              <article key={item.label}>
-                <span className="folio-year">{item.label}</span>
-                <div>
-                  <h3>{item.title[lang]}</h3>
-                  <p>{item.description[lang]}</p>
-                  {item.href && (
-                    <Link href={localized(item.href, lang)}>
-                      {copy(lang, "Đọc câu chuyện", "Read the story")}
-                    </Link>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
       </section>
-      <section
-        className="wrap folio-achievements"
-        id="achievements"
-        aria-labelledby="achievements-title"
-      >
-        <div className="folio-section-heading">
-          <span className="folio-kicker">
-            {copy(lang, "Những điều đã làm", "Work and experiences")}
-          </span>
-          <h2 id="achievements-title">
-            {copy(lang, "Dấu mốc & thành tích.", "Milestones & achievements.")}
+      <section className="wrap about-in-practice" aria-labelledby="practice-title">
+        <header>
+          <span className="eyebrow">{copy(lang, "Học bằng cách làm", "Learning by doing")}</span>
+          <h2 id="practice-title">
+            {copy(lang, "Những điều thành trải nghiệm.", "Things that became experiences.")}
           </h2>
-        </div>
-        <div className="folio-achievement-grid">
-          {profile.achievements.map((item) => (
+        </header>
+        <div>
+          {profile.achievements.map((item, index) => (
             <article key={item.title.en}>
-              <span className="folio-kicker">{item.category[lang]}</span>
-              <h3>{item.title[lang]}</h3>
-              <p>{item.description[lang]}</p>
-              {item.href && (
-                <Link href={localized(item.href, lang)}>
-                  {copy(lang, "Xem thêm", "Find out more")}
-                </Link>
-              )}
+              <span className="practice-number">0{index + 1}</span>
+              <div>
+                <span className="eyebrow">{item.category[lang]}</span>
+                <h3>{item.title[lang]}</h3>
+                <p>{item.description[lang]}</p>
+                {item.href && (
+                  <Link className="text-link" href={localized(item.href, lang)}>
+                    {copy(lang, "Đọc thêm một chút", "A little more")}
+                    <ArrowUpRight size={15} />
+                  </Link>
+                )}
+              </div>
             </article>
           ))}
         </div>
       </section>
-      <section className="wrap folio-photographs" id="photographs" aria-labelledby="photos-title">
-        <div className="folio-photo-heading">
-          <div className="folio-section-heading">
-            <span className="folio-kicker">
-              {copy(lang, "Bộ sưu tập cá nhân", "A personal collection")}
-            </span>
-            <h2 id="photos-title">{copy(lang, "Góc ảnh", "Photo journal")}</h2>
-          </div>
-          <Link href={localized("/my-album", lang)} className="text-link">
-            {copy(lang, "Mở góc ảnh", "Open photo journal")}
-          </Link>
-        </div>
-        <Gallery photos={profile.photos} variant="portfolio" />
-      </section>
-      <section className="wrap" aria-labelledby="contact-title">
-        <div className="folio-outro">
-          <div>
-            <span className="folio-kicker">{copy(lang, "Kết nối", "Connect")}</span>
-            <h2 id="contact-title">
-              {copy(lang, "Cùng trao đổi một ý tưởng.", "Let’s exchange ideas.")}
-            </h2>
-            <p>
-              {copy(
-                lang,
-                "Một câu chuyện, một ý tưởng, hay đơn giản là lời chào.",
-                "A story, an idea, or simply a hello.",
-              )}
-            </p>
-          </div>
-          <div className="folio-contact-actions">
-            <a href={`mailto:${siteConfig.email}`} className="folio-email-card">
-              <Mail size={20} strokeWidth={1.5} aria-hidden="true" />
-              <span>
-                <small>{copy(lang, "Viết cho mình", "Say hello")}</small>
-                <strong>{siteConfig.email}</strong>
-              </span>
-              <ArrowUpRight size={17} aria-hidden="true" />
-            </a>
-            <a
-              href={siteConfig.github}
-              target="_blank"
-              rel="noreferrer"
-              className="folio-github-link"
-            >
-              <Github size={15} aria-hidden="true" />
-              GitHub
-              <ArrowUpRight size={13} aria-hidden="true" />
-            </a>
-          </div>
-        </div>
+      <section className="wrap about-postscript" aria-labelledby="contact-title">
+        <h2 id="contact-title">{art.contact}</h2>
+        <a href={`mailto:${siteConfig.email}`}>
+          {siteConfig.email}
+          <ArrowUpRight size={18} />
+        </a>
       </section>
     </main>
   )

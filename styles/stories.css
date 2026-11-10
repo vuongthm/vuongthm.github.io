@@ -91,7 +91,7 @@
 .story-hero-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #121214e0, #1212149c 60%, #12121430);
+  background: #121214a8;
 }
 .story-detail-intro {
   position: relative;

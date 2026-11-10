@@ -1,4 +1,5 @@
 "use client"
+import { useScrollLock } from "@/lib/hooks/use-scroll-lock"
 import { useEffect, useRef, type ReactNode, type RefObject } from "react"
 import { ArrowLeft } from "lucide-react"
 import { useSite } from "@/components/providers/site-provider"
@@ -18,18 +19,16 @@ export function PasswordDialog({
   onClose: () => void
   children: ReactNode
 }) {
+  useScrollLock(true)
   const ref = useRef<HTMLDialogElement>(null)
   const { locale } = useSite()
   useEffect(() => {
     const dialog = ref.current
     if (!dialog) return
-    const overflow = document.body.style.overflow
     dialog.showModal()
-    document.body.style.overflow = "hidden"
     initialFocus.current?.focus({ preventScroll: true })
     return () => {
       if (dialog.open) dialog.close()
-      document.body.style.overflow = overflow
     }
   }, [initialFocus])
   return (

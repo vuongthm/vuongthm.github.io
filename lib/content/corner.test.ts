@@ -4,6 +4,7 @@ import os from "node:os"
 import path from "node:path"
 import { buildContent } from "../../scripts/content/build.mjs"
 import { loadContentConfig } from "../../scripts/content/config.mjs"
+import { decryptString } from "@/lib/crypto.mjs"
 import { compileMusic } from "../../scripts/content/corner.mjs"
 const folders: string[] = []
 afterEach(() => {
@@ -109,7 +110,7 @@ describe("independent personal-corner modules", () => {
     expect(JSON.parse(raw).corners[0].bodies.vi).toMatch(/^v2:/)
     expect(
       JSON.parse(fs.readFileSync(path.join(f.app, "generated/access.json"), "utf8")),
-    ).toContainEqual(expect.objectContaining({ href: "/vi/corner/locked/", back: "/vi/corner/" }))
+    ).toContainEqual(expect.objectContaining({ href: "/vi/corner/locked/", back: "/vi/shelf/" }))
   })
   it("rejects duplicate track IDs, ambiguous audio sources and invalid category metadata", async () => {
     const f = fixture()
@@ -135,5 +136,75 @@ describe("independent personal-corner modules", () => {
     const f = fixture()
     f.writeTracks([{ ...f.track, lock: true }])
     expect(() => compileMusic(f.source())).toThrow(/private media vault/)
+  })
+})
+
+describe("password protected reading shelf", () => {
+  function configure(app: string, locked = true) {
+    const file = path.join(app, "content.sources.json"),
+      config = JSON.parse(fs.readFileSync(file, "utf8"))
+    config.site.shelf = "site/shelf.md"
+    fs.writeFileSync(file, JSON.stringify(config))
+    fs.writeFileSync(
+      path.join(app, "site/shelf.md"),
+      `---\ntitle: Reading shelf\nlock: ${locked}\n---\n`,
+    )
+    vi.stubEnv("CONTENT_PASSWORD", "")
+  }
+  it("encrypts the shelf and public article bodies, and groups both route aliases and detail access", async () => {
+    const f = fixture()
+    configure(f.app)
+    f.article("book-one", "", "PRIVATE_SHELF_SENTINEL")
+    vi.stubEnv("CONTENT_PASSWORDS", JSON.stringify({ "site/shelf": "fixture-shelf-secret" }))
+    await buildContent(f.app)
+    const raw = fs.readFileSync(path.join(f.app, "generated/content.json"), "utf8"),
+      db = JSON.parse(raw)
+    expect(raw).not.toContain("PRIVATE_SHELF_SENTINEL")
+    expect(db.corners[0].encrypted).toBe(true)
+    expect(await decryptString("fixture-shelf-secret", db.corners[0].bodies.vi)).toContain(
+      "PRIVATE_SHELF_SENTINEL",
+    )
+    const pages = JSON.parse(fs.readFileSync(path.join(f.app, "generated/site-pages.json"), "utf8"))
+    expect(JSON.stringify(pages)).not.toContain("book-one")
+    expect(
+      JSON.parse((await decryptString("fixture-shelf-secret", pages.shelf.bodies.vi))!),
+    ).toEqual([expect.objectContaining({ href: "/vi/corner/book-one/", category: "books" })])
+    const rules = JSON.parse(fs.readFileSync(path.join(f.app, "generated/access.json"), "utf8"))
+    for (const href of ["/vi/shelf/", "/vi/corner/", "/vi/corner/book-one/"])
+      expect(rules).toContainEqual(expect.objectContaining({ href, scope: "/vi/shelf/" }))
+  }, 15000)
+  it("preserves an individual book password inside the locked shelf", async () => {
+    const f = fixture()
+    configure(f.app)
+    f.article("private-book", "lock: true", "INDIVIDUAL_BOOK_SENTINEL")
+    vi.stubEnv(
+      "CONTENT_PASSWORDS",
+      JSON.stringify({
+        "site/shelf": "fixture-shelf-secret",
+        "my-corner/private-book": "fixture-book-secret",
+      }),
+    )
+    await buildContent(f.app)
+    const db = JSON.parse(fs.readFileSync(path.join(f.app, "generated/content.json"), "utf8"))
+    expect(await decryptString("fixture-book-secret", db.corners[0].bodies.vi)).toContain(
+      "INDIVIDUAL_BOOK_SENTINEL",
+    )
+    expect(await decryptString("fixture-shelf-secret", db.corners[0].bodies.vi)).toBeNull()
+    const rule = JSON.parse(
+      fs.readFileSync(path.join(f.app, "generated/access.json"), "utf8"),
+    ).find((r: { href: string }) => r.href === "/vi/corner/private-book/")
+    expect(rule.scope).toBeUndefined()
+  }, 15000)
+  it("leaves an explicitly public shelf public and fails closed for a missing shelf password", async () => {
+    const f = fixture()
+    configure(f.app, false)
+    f.article("public-book", "", "PUBLIC_BOOK_CONTENT")
+    vi.stubEnv("CONTENT_PASSWORDS", "{}")
+    await buildContent(f.app)
+    expect(fs.readFileSync(path.join(f.app, "generated/content.json"), "utf8")).toContain(
+      "PUBLIC_BOOK_CONTENT",
+    )
+    configure(f.app, true)
+    await expect(buildContent(f.app)).rejects.toThrow()
   })
 })

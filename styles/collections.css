@@ -78,7 +78,7 @@
   justify-content: flex-end;
   padding: 22px;
   color: #fff;
-  background: linear-gradient(180deg, #10101108 5%, #1010115c 35%, #101011e8 100%);
+  background: none;
 }
 .cover-card-meta {
   display: flex;

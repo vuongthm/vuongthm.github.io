@@ -24,7 +24,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
   const { lang } = await params
   if (!isLocale(lang)) notFound()
   return (
-    <main id="main-content">
+    <main id="main-content" className="projects-page">
       <PageHeading
         eyebrow={copy(lang, "Dự án cá nhân", "Personal projects")}
         title={copy(lang, "Những thứ mình đang làm.", "Things I’m working on.")}

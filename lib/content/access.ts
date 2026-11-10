@@ -3,5 +3,6 @@ export interface AccessRule {
   back: string
   title: string
   kind: "content" | "vault"
+  scope?: string
   probe?: string
 }
