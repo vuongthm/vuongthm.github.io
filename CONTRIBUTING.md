@@ -89,6 +89,8 @@ Trước khi bỏ component, xác nhận không còn import trực tiếp, impor
 
 ## Pull request
 
+Các nhánh `content-updates/*` do workflow của repo nội dung tạo chỉ dùng để thông báo cập nhật. Workflow `Receive content update` tự kích hoạt build từ `main`, nơi compiler lấy nội dung mới. Không cần mở hoặc merge pull request từ những nhánh thông báo này; pull request thông thường vẫn dành cho thay đổi mã nguồn cần review.
+
 1. Tạo nhánh có tên mô tả thay đổi.
 2. Giữ PR tập trung vào một vấn đề; không đưa output sinh tự động hoặc credential vào commit.
 3. Nêu cách kiểm tra. Thay UI kèm ảnh ở điện thoại/desktop khi hữu ích; thay nội dung kèm nguồn tham khảo.

@@ -10,6 +10,21 @@ export function notificationBranch(repository) {
   return `content-updates/${repository.split("/")[1]}`
 }
 
+export function createNotificationCommit(git, main, previous, message) {
+  const tree = git("rev-parse", `${main}^{tree}`)
+  // Main must be an ancestor so comparing this branch never proposes old code.
+  // Retaining the previous notification as a parent permits a normal fast-forward push.
+  return git(
+    "commit-tree",
+    tree,
+    "-p",
+    main,
+    ...(previous && previous !== main ? ["-p", previous] : []),
+    "-m",
+    message,
+  )
+}
+
 export async function notifyWebsite(env = process.env) {
   const branch = notificationBranch(env.GITHUB_REPOSITORY)
   if (!/^[a-f0-9]{40}$/.test(env.GITHUB_SHA ?? "")) throw new Error("Invalid source commit")
@@ -56,20 +71,17 @@ export async function notifyWebsite(env = process.env) {
     git("remote", "add", "origin", "git@github.com:vuongthm/vuongthm.github.io.git")
     git("fetch", "--quiet", "--depth=1", "origin", "main")
     const main = git("rev-parse", "FETCH_HEAD")
-    const tree = git("rev-parse", `${main}^{tree}`)
     const previous = git("ls-remote", "--heads", "origin", `refs/heads/${branch}`)
-    let parent = main
+    let previousCommit
     if (previous) {
       git("fetch", "--quiet", "--depth=1", "origin", branch)
-      parent = git("rev-parse", "FETCH_HEAD")
+      previousCommit = git("rev-parse", "FETCH_HEAD")
     }
     // Append an empty notification commit; website main is never modified.
-    const commit = git(
-      "commit-tree",
-      tree,
-      "-p",
-      parent,
-      "-m",
+    const commit = createNotificationCommit(
+      git,
+      main,
+      previousCommit,
       `Content update: ${env.GITHUB_REPOSITORY}@${env.GITHUB_SHA}`,
     )
     git("push", "--quiet", "origin", `${commit}:refs/heads/${branch}`)

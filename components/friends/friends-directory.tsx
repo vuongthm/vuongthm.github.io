@@ -60,10 +60,6 @@ export function FriendsDirectory({ friends, locale }: { friends: Friend[]; local
   }, [])
   useEffect(() => {
     if (!hop || !hopPath.current || !spark.current) return
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setHop(null)
-      return
-    }
     const path = hopPath.current,
       dot = spark.current,
       length = path.getTotalLength(),
@@ -90,7 +86,11 @@ export function FriendsDirectory({ friends, locale }: { friends: Friend[]; local
     const candidates = visible.filter((friend) => friend.id !== selected.id)
     const next = candidates[Math.floor(Math.random() * candidates.length)]
     setSelectedId(next.id)
-    setHop({ from: selected.id, to: next.id })
+    setHop(
+      matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? null
+        : { from: selected.id, to: next.id },
+    )
   }
   return (
     <section className="friend-network" aria-label={t.network}>
