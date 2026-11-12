@@ -1,6 +1,6 @@
 import fs from "node:fs"
 import path from "node:path"
-import { frontmatter, publishPolicy, hasLock } from "./schema.mjs"
+import { frontmatter, publishPolicy, hasLock, normalizeDate } from "./schema.mjs"
 
 export function compileCollection(
   source,
@@ -120,6 +120,24 @@ export function compileCollection(
           throw Error(`Invalid corner shelf status: ${id}`)
         if (base.data.source && !/^https?:\/\//.test(base.data.source))
           throw Error(`Invalid corner source URL: ${id}`)
+        const readingProgress = base.data.readingProgress
+        if (
+          readingProgress !== undefined &&
+          (typeof readingProgress !== "number" ||
+            !Number.isFinite(readingProgress) ||
+            readingProgress < 0 ||
+            readingProgress > 100)
+        )
+          throw Error(`Reading progress must be a number from 0 to 100: ${id}`)
+        const keepsakes = text("keepsakes", [])
+        if (
+          Object.values(keepsakes).some(
+            (notes) =>
+              !Array.isArray(notes) ||
+              notes.some((note) => typeof note !== "string" || !note.trim()),
+          )
+        )
+          throw Error(`Book keepsakes must be a list of non-empty strings: ${id}`)
         return {
           ...common,
           slug: id,
@@ -128,6 +146,8 @@ export function compileCollection(
           cover: base.data.cover ? transformPhoto(base.data.cover, base.file) : "",
           sample: base.data.sample === true,
           shelfStatus,
+          ...(readingProgress !== undefined ? { readingProgress } : {}),
+          keepsakes,
           ...(base.data.source ? { source: base.data.source } : {}),
         }
       }
@@ -200,6 +220,12 @@ export function compileCollection(
         ...common,
         slug: id,
         repository,
+        ...(base.data.publishedAt || base.data.date
+          ? { publishedAt: normalizeDate(base.data.publishedAt ?? base.data.date, base.file) }
+          : {}),
+        ...(base.data.updatedAt
+          ? { updatedAt: normalizeDate(base.data.updatedAt, base.file) }
+          : {}),
         cover: base.data.cover ? transformPhoto(base.data.cover, base.file) : "",
         photos: (encrypted ? [] : (base.data.photos ?? [])).map((photo) => {
           const value = typeof photo === "string" ? { src: photo } : photo

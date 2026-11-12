@@ -1,6 +1,5 @@
 "use client"
 import { useEffect, useState } from "react"
-import { LockKeyhole, ShieldCheck } from "lucide-react"
 import { usePageAccess } from "@/components/providers/page-access"
 import { useSite } from "@/components/providers/site-provider"
 import { contentLockMessages } from "@/lib/i18n/content-lock"
@@ -8,7 +7,7 @@ import type { CornerItem } from "@/lib/content/types"
 import { CornerShelf } from "./shelf"
 
 export function LockedShelf({ payload }: { payload: string }) {
-  const { session, relock } = usePageAccess(),
+  const { session } = usePageAccess(),
     { locale } = useSite()
   const text = contentLockMessages[locale]
   const [items, setItems] = useState<Omit<CornerItem, "body">[] | null>(null)
@@ -31,7 +30,7 @@ export function LockedShelf({ payload }: { payload: string }) {
           )
         )
           throw Error("Invalid reading shelf")
-        if (active) setItems(value)
+        if (active) setItems(value.filter((item) => item.category === "books"))
       })
       .catch(() => {
         if (active) setFailed(true)
@@ -46,19 +45,5 @@ export function LockedShelf({ payload }: { payload: string }) {
         {failed ? text.failed : text.busy}
       </p>
     )
-  return (
-    <>
-      <div className="content-unlocked-bar">
-        <span>
-          <ShieldCheck size={15} />
-          {text.unlocked}
-        </span>
-        <button type="button" data-ui-sound="lock" onClick={relock}>
-          <LockKeyhole size={13} />
-          {text.relock}
-        </button>
-      </div>
-      <CornerShelf items={items} />
-    </>
-  )
+  return <CornerShelf items={items} />
 }

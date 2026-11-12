@@ -74,14 +74,6 @@ export default async function Page({ params }: { params: Params }) {
               <dd>{item.category}</dd>
             </div>
             <div>
-              <dt>{copy(lang, "Trạng thái", "Status")}</dt>
-              <dd>
-                {item.status === "active"
-                  ? copy(lang, "Đang phát triển", "In progress")
-                  : copy(lang, "Đang tìm hiểu", "Exploring")}
-              </dd>
-            </div>
-            <div>
               <dt>{copy(lang, "Công nghệ", "Technology")}</dt>
               <dd className="stack-tags">
                 {item.stack.map((tool) => (

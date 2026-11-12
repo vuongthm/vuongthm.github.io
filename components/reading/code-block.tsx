@@ -31,7 +31,7 @@ export function CodeBlock({
           {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? m.copied : m.copy}
         </button>
       </div>
-      <pre>
+      <pre tabIndex={0}>
         <code className={language ? `language-${language}` : undefined}>{children}</code>
       </pre>
       {error && <span role="status">{m.copy}: Ctrl/Cmd+C</span>}

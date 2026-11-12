@@ -4,10 +4,9 @@ import { useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
+  ArrowRight,
   ArrowUpRight,
   BookOpen,
-  ChevronDown,
-  FolderOpen,
   Headphones,
   LibraryBig,
   Images,
@@ -24,26 +23,24 @@ import { editorial } from "@/lib/i18n/editorial"
 import { localized } from "@/lib/i18n/config"
 import { siteConfig } from "@/lib/site.config"
 import { friendsMessages } from "@/lib/i18n/friends"
+import { designMessages } from "@/lib/i18n/design"
+import { knowledgeMessages } from "@/lib/i18n/knowledge"
 
-function useNavigationLinks(shelfLocked: boolean) {
+function useNavigationLinks(shelfLocked: boolean, journeyLocked: boolean) {
   const { locale, dictionary: m } = useSite()
   const t = experience[locale],
-    e = editorial[locale]
+    e = editorial[locale],
+    d = designMessages[locale],
+    k = knowledgeMessages[locale]
   return {
     knowledge: [
-      { href: "/notes/", title: m.knowledge, description: t.notesDescription, icon: BookOpen },
-      { href: "/topics/", title: m.topics, description: t.topicsDescription, icon: Layers },
+      { href: "/notes/", title: d.articles, description: k.notesMenu, icon: BookOpen },
+      { href: "/topics/", title: m.topics, description: k.topicsMenu, icon: Layers },
       {
-        href: "/notes/#reading-paths",
-        title: e.footerPaths,
-        description: t.pathsDescription,
+        href: "/paths/",
+        title: d.paths,
+        description: k.pathsMenu,
         icon: Route,
-      },
-      {
-        href: "/modules/",
-        title: e.collections,
-        description: t.collectionsDescription,
-        icon: FolderOpen,
       },
     ],
     personal: [
@@ -51,7 +48,7 @@ function useNavigationLinks(shelfLocked: boolean) {
       { href: "/my-album/", title: m.album, icon: Images },
       { href: "/music/", title: t.music, icon: Headphones },
       { href: "/shelf/", title: e.shelf, icon: LibraryBig, locked: shelfLocked },
-      { href: "/journey/", title: t.journey, icon: Map },
+      { href: "/journey/", title: t.journey, icon: Map, locked: journeyLocked },
       { href: "/friends/", title: friendsMessages[locale].title, icon: Users },
     ],
   }
@@ -59,18 +56,18 @@ function useNavigationLinks(shelfLocked: boolean) {
 
 export function SiteNavigation({
   shelfLocked = false,
+  journeyLocked = false,
   open,
   onOpenChange: setOpen,
 }: {
   shelfLocked?: boolean
+  journeyLocked?: boolean
   open: "knowledge" | "corner" | null
   onOpenChange: (menu: "knowledge" | "corner" | null) => void
 }) {
   const { locale, dictionary: m } = useSite()
-  const e = editorial[locale],
-    t = experience[locale],
-    path = usePathname()
-  const { knowledge, personal } = useNavigationLinks(shelfLocked)
+  const path = usePathname()
+  const { knowledge, personal } = useNavigationLinks(shelfLocked, journeyLocked)
   const ref = useRef<HTMLElement>(null),
     trigger = useRef<HTMLButtonElement | null>(null)
   const keyboardOpen = useRef(false)
@@ -104,6 +101,39 @@ export function SiteNavigation({
       document.removeEventListener("keydown", escape)
     }
   }, [setOpen])
+  function panel(menu: "knowledge" | "corner") {
+    const links = menu === "knowledge" ? knowledge : personal
+    return (
+      <div
+        className={`navigation-panel ${menu === "knowledge" ? "knowledge-panel" : "personal-panel"}${open === menu ? " is-open" : ""}`}
+        id={`navigation-${menu}`}
+        inert={open !== menu}
+      >
+        <div className="navigation-menu-list">
+          {links.map((item) => (
+            <Link key={item.href} href={localized(item.href, locale)} onClick={() => setOpen(null)}>
+              <ArrowRight size={15} aria-hidden="true" />
+              <span>
+                {item.title}
+                {"locked" in item && item.locked === true && (
+                  <LockKeyhole size={11} aria-hidden="true" />
+                )}
+              </span>
+            </Link>
+          ))}
+        </div>
+        <div className="navigation-menu-foot">
+          <Link
+            href={localized(menu === "knowledge" ? "/saved/" : "/about/", locale)}
+            onClick={() => setOpen(null)}
+          >
+            {menu === "knowledge" ? m.saved : m.about}
+          </Link>
+          <MenuNotebook />
+        </div>
+      </div>
+    )
+  }
   return (
     <nav
       className="desktop-nav"
@@ -151,7 +181,6 @@ export function SiteNavigation({
                 }}
               >
                 {m[item.key]}
-                <ChevronDown size={12} />
               </button>
             ) : (
               <Link
@@ -162,61 +191,10 @@ export function SiteNavigation({
                 {m[item.key]}
               </Link>
             )}
+            {hasMenu && panel(item.key as "knowledge" | "corner")}
           </div>
         )
       })}
-      <div
-        className={`navigation-panel knowledge-panel${open === "knowledge" ? " is-open" : ""}`}
-        id="navigation-knowledge"
-        inert={open !== "knowledge"}
-      >
-        <div className="navigation-panel-intro">
-          <span className="eyebrow">{e.general}</span>
-          <h2>{m.knowledge}</h2>
-          <p>{t.notesDescription}</p>
-          <MenuConstellation />
-        </div>
-        <div className="navigation-card-grid">
-          {knowledge.map(({ href, title, description, icon: Icon }) => (
-            <Link href={localized(href, locale)} key={href} onClick={() => setOpen(null)}>
-              <span className="navigation-link-icon">
-                <Icon size={20} />
-              </span>
-              <span>
-                <strong>{title}</strong>
-                <small>{description}</small>
-              </span>
-              <ArrowUpRight size={14} />
-            </Link>
-          ))}
-        </div>
-      </div>
-      <div
-        className={`navigation-panel personal-panel${open === "corner" ? " is-open" : ""}`}
-        id="navigation-corner"
-        inert={open !== "corner"}
-      >
-        <div className="navigation-panel-intro personal-panel-intro">
-          <span className="eyebrow">{t.smallWorld}</span>
-          <h2>{m.corner}</h2>
-          <p>{t.personalDescription}</p>
-          <MenuConstellation />
-        </div>
-        <div className="personal-panel-links">
-          {personal.map(({ href, title, icon: Icon, locked }) => (
-            <Link key={href} href={localized(href, locale)} onClick={() => setOpen(null)}>
-              <span className="navigation-link-icon">
-                <Icon size={18} />
-              </span>
-              <span className="navigation-link-title">
-                {title}
-                {locked && <LockKeyhole size={12} aria-hidden="true" />}
-              </span>
-              <ArrowUpRight size={14} />
-            </Link>
-          ))}
-        </div>
-      </div>
     </nav>
   )
 }
@@ -224,52 +202,66 @@ export function SiteNavigation({
 export function MobileNavigation({
   onClose,
   shelfLocked = false,
+  journeyLocked = false,
 }: {
   onClose: () => void
   shelfLocked?: boolean
+  journeyLocked?: boolean
 }) {
   const { locale, dictionary: m } = useSite()
-  const e = editorial[locale],
-    path = usePathname()
-  const { knowledge, personal } = useNavigationLinks(shelfLocked)
-  const main = [
-    ...knowledge,
+  const path = usePathname()
+  const { knowledge, personal } = useNavigationLinks(shelfLocked, journeyLocked)
+  const primary = [
+    { href: "/", title: m.home },
     { href: "/projects/", title: m.projects },
     { href: "/about/", title: m.about },
   ]
+  function active(href: string) {
+    return path.replace(/\/$/, "") === localized(href, locale).replace(/\/$/, "")
+  }
   return (
     <div className="mobile-menu" id="mobile-navigation">
       <div className="mobile-menu-heading">
         <span>{m.menu}</span>
-        <span className="mobile-menu-kicker">vuong.</span>
       </div>
-      <nav aria-label={m.menu}>
+      <nav className="mobile-primary-links" aria-label={m.menu}>
+        {primary.map((item) => (
+          <Link
+            href={localized(item.href, locale)}
+            key={item.href}
+            onClick={onClose}
+            aria-current={active(item.href) ? "page" : undefined}
+          >
+            {item.title}
+          </Link>
+        ))}
+      </nav>
+      <nav className="mobile-menu-groups" aria-label={m.explore}>
         {[
-          { title: e.general, links: main },
-          { title: m.corner, links: personal },
+          { title: m.knowledge, links: knowledge, id: "knowledge" },
+          { title: m.corner, links: personal, id: "corner" },
         ].map((group) => (
-          <section key={group.title}>
+          <section key={group.id} className={`mobile-link-group mobile-link-group-${group.id}`}>
             <h2>{group.title}</h2>
-            {group.links.map((item) => (
-              <Link
-                key={item.href}
-                href={localized(item.href, locale)}
-                aria-current={
-                  path.replace(/\/$/, "") === localized(item.href, locale).replace(/\/$/, "")
-                    ? "page"
-                    : undefined
-                }
-                onClick={onClose}
-              >
-                <span>
-                  {item.title}
-                  {"locked" in item && item.locked === true && (
-                    <LockKeyhole size={12} aria-hidden="true" />
-                  )}
-                </span>
-                <ArrowUpRight size={13} />
-              </Link>
-            ))}
+            <div>
+              {group.links.map((item) => (
+                <Link
+                  key={item.href}
+                  href={localized(item.href, locale)}
+                  onClick={onClose}
+                  aria-current={active(item.href) ? "page" : undefined}
+                >
+                  <item.icon size={16} strokeWidth={1.6} aria-hidden="true" />
+                  <span>
+                    {item.title}
+                    {"locked" in item && item.locked === true && (
+                      <LockKeyhole size={10} aria-hidden="true" />
+                    )}
+                  </span>
+                  {group.id === "knowledge" && <ArrowUpRight size={12} aria-hidden="true" />}
+                </Link>
+              ))}
+            </div>
           </section>
         ))}
       </nav>
@@ -286,16 +278,27 @@ export function MobileNavigation({
   )
 }
 
-function MenuConstellation() {
+function MenuNotebook() {
   return (
-    <svg className="menu-constellation" viewBox="0 0 180 105" fill="none" aria-hidden="true">
-      <path className="menu-orbit" d="M8 77C40 17 123 9 166 53S80 107 36 58" />
-      <path d="m38 61 50-32 53 45M88 29l-8 54" />
-      <circle cx="38" cy="61" r="8" />
-      <circle cx="88" cy="29" r="12" />
-      <circle cx="141" cy="74" r="6" />
-      <circle cx="80" cy="83" r="4" />
-      <path className="menu-spark" d="M147 17v12m-6-6h12M15 40v8m-4-4h8" />
+    <svg className="menu-notebook" viewBox="0 0 90 90" fill="none" aria-hidden="true">
+      <path d="m23 20 44-6 8 58-44 7Z" fill="var(--menu-book-spine)" />
+      <path d="m31 13 44 5-6 61-44-5Z" fill="var(--menu-book-cover)" />
+      <path d="m35 20 32 4-1 8-32-4Z" fill="var(--paper)" opacity=".9" />
+      <path d="m50 22 7 1-2 16-3-3-4 2Z" fill="var(--menu-book-mark)" />
+      <circle cx="40" cy="46" r="2" fill="var(--menu-book-eye)" />
+      <circle cx="55" cy="48" r="2" fill="var(--menu-book-eye)" />
+      <path
+        d="M43 54q4 6 8 1"
+        stroke="var(--menu-book-eye)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="m24 75-8 5m53-1 7 4"
+        stroke="var(--menu-book-spine)"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
     </svg>
   )
 }

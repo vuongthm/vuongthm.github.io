@@ -1,5 +1,8 @@
 import fs from "node:fs"
 import path from "node:path"
+import { contentModules } from "./structure.mjs"
+import { localizedText } from "./localized.mjs"
+export { localizedText } from "./localized.mjs"
 const adapters = new Set([
   "notes",
   "articles",
@@ -9,18 +12,6 @@ const adapters = new Set([
   "albums",
   "corner",
 ])
-export function localizedText(value, locales, fallback = "") {
-  if (typeof value === "string") return Object.fromEntries(locales.map((locale) => [locale, value]))
-  if (!value || typeof value !== "object" || Array.isArray(value)) value = {}
-  const base =
-    value.en ??
-    value.vi ??
-    Object.values(value).find((item) => typeof item === "string") ??
-    fallback
-  return Object.fromEntries(
-    locales.map((locale) => [locale, typeof value[locale] === "string" ? value[locale] : base]),
-  )
-}
 const moduleId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const excludedModule = (source) =>
   source.enabled === false ||
@@ -103,6 +94,7 @@ export function loadContentConfig(root, { allowMissingRepositories = false } = {
       throw Error(`Invalid media namespace: ${source.id}`)
     source.order = Number(source.order ?? 999)
     if (!Number.isFinite(source.order)) throw Error(`Invalid module order: ${source.id}`)
+    source.modules = contentModules(source, config.locales)
     if (["articles", "notes"].includes(source.adapter) && !source.topic)
       source.topic = {
         id: source.defaultTopics?.[0] ?? source.id,
@@ -139,5 +131,6 @@ export function moduleMetadata(source) {
     description: source.description,
     order: source.order,
     topics: source.defaultTopics ?? [],
+    modules: source.modules ?? [],
   }
 }

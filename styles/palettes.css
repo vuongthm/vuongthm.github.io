@@ -1,0 +1,373 @@
+/* Saturated inks on clear surfaces. Dark reading areas stay neutral. */
+:root {
+  --bg: #ffffff;
+  --paper: #ffffff;
+  --ink: #172330;
+  --muted: #4c5c6d;
+  --faint: #566577;
+  --line: #dce3ed;
+  --soft: #f1f5fb;
+  --accent: #005bda;
+  --accent-hover: #003fa6;
+  --accent-light: #e7f0ff;
+  --secondary: #c33162;
+  --studio-sky: #91d3ef;
+  --studio-cloud: #b5e1f5;
+  --studio-warm: #f4e7d8;
+  --map-ocean: #e8eff0;
+  --map-land: #c3d2d0;
+  --map-grid: #a8bfc4;
+  --flight-ink: #c33162;
+  --tone-teal: #007b6b;
+  --tone-coral: #c33162;
+  --tone-amber: #886000;
+  --tone-cyan: #006f8b;
+  --shadow: 0 16px 50px #263d4912;
+  --blue: var(--accent);
+  --grid: var(--line);
+}
+:root[data-palette="spring"] {
+  --bg: #fffefa;
+  --paper: #fffefb;
+  --ink: #20352d;
+  --muted: #506157;
+  --line: #dbe4db;
+  --soft: #f0f5ee;
+  --accent: #076951;
+  --accent-hover: #004b39;
+  --accent-light: #e2f3e9;
+  --secondary: #ae3359;
+  --studio-sky: #b9e3cc;
+  --studio-cloud: #d5eddc;
+  --studio-warm: #f8e5db;
+  --map-ocean: #e8f1ec;
+  --map-land: #c1d6c6;
+  --flight-ink: #ae3359;
+  --tone-teal: #076951;
+  --tone-coral: #ae3359;
+  --sea-water: #e2f1e9;
+}
+:root[data-palette="summer"] {
+  --bg: #fffef9;
+  --accent: #214aa0;
+  --accent-hover: #14347b;
+  --accent-light: #fff1aa;
+  --secondary: #876000;
+  --studio-sky: #ffda47;
+  --studio-cloud: #ffe990;
+  --studio-warm: #fff5ce;
+  --map-ocean: #e4eff7;
+  --map-land: #becfd9;
+  --flight-ink: #214aa0;
+  --tone-teal: #006a7a;
+  --tone-coral: #a34526;
+}
+:root[data-palette="autumn"] {
+  --bg: #fffdfa;
+  --paper: #fffefb;
+  --ink: #302922;
+  --muted: #655b53;
+  --line: #e4ddd2;
+  --soft: #f6f0e8;
+  --accent: #ad4a08;
+  --accent-hover: #843400;
+  --accent-light: #fff0dd;
+  --secondary: #006a80;
+  --studio-sky: #ffd094;
+  --studio-cloud: #ffe4b9;
+  --studio-warm: #edf4f6;
+  --map-ocean: #e5f1f4;
+  --map-land: #c6d8d9;
+  --flight-ink: #ad4a08;
+  --tone-teal: #006a80;
+  --tone-coral: #b1373b;
+  --sea-water: #e2edf0;
+}
+:root.dark {
+  --bg: #101214;
+  --paper: #191c1f;
+  --ink: #f1f4f7;
+  --muted: #bec9d4;
+  --faint: #a4b1c0;
+  --line: #303840;
+  --soft: #20262b;
+  --accent: #80b5ff;
+  --accent-hover: #b8d5ff;
+  --accent-light: #172c49;
+  --secondary: #ff7b9c;
+  --studio-sky: #112432;
+  --studio-cloud: #18384b;
+  --studio-warm: #322c24;
+  --map-ocean: #1c2528;
+  --map-land: #425453;
+  --map-grid: #607574;
+  --flight-ink: #ff7b9c;
+  --tone-teal: #49dbc4;
+  --tone-coral: #ff7b9c;
+  --tone-amber: #f3c34a;
+  --tone-cyan: #60d6f3;
+  --shadow: 0 16px 50px #0004;
+  --sea-water: #0c1b27;
+}
+:root.dark[data-palette="spring"] {
+  --accent: #86d4af;
+  --accent-hover: #b5ecd1;
+  --accent-light: #21332b;
+  --secondary: #f4a3ba;
+  --studio-sky: #202a26;
+  --studio-cloud: #304238;
+  --studio-warm: #352b2b;
+  --map-ocean: #1b2825;
+  --map-land: #425c50;
+  --flight-ink: #f4a3ba;
+  --tone-teal: #86d4af;
+  --tone-coral: #f4a3ba;
+  --sea-water: #172723;
+}
+:root.dark[data-palette="summer"] {
+  --accent: #ffdd58;
+  --accent-hover: #ffe999;
+  --accent-light: #383017;
+  --secondary: #8bbcff;
+  --studio-sky: #292b21;
+  --studio-cloud: #454535;
+  --studio-warm: #34301e;
+  --map-ocean: #18252e;
+  --map-land: #3e5562;
+  --flight-ink: #ffdd58;
+}
+:root.dark[data-palette="autumn"] {
+  --accent: #ffc16e;
+  --accent-hover: #ffdbab;
+  --accent-light: #382a18;
+  --secondary: #6cd6ea;
+  --studio-sky: #30291f;
+  --studio-cloud: #4e3c28;
+  --studio-warm: #192d34;
+  --map-ocean: #182930;
+  --map-land: #3c5960;
+  --flight-ink: #ffc16e;
+  --sea-water: #222929;
+}
+.project-sign,
+.dark .project-sign {
+  --sign-bg: var(--accent-light);
+  --sign-ink: var(--accent);
+}
+.project-sign.sign-tone-1,
+.dark .project-sign.sign-tone-1 {
+  --sign-bg: color-mix(in srgb, var(--tone-teal) 11%, var(--paper));
+  --sign-ink: var(--tone-teal);
+}
+.project-sign.sign-tone-2,
+.dark .project-sign.sign-tone-2 {
+  --sign-bg: color-mix(in srgb, var(--secondary) 11%, var(--paper));
+  --sign-ink: var(--secondary);
+}
+.project-signpost::before,
+.dark .project-signpost::before {
+  background: color-mix(in srgb, var(--accent) 18%, var(--paper));
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+  box-shadow: inset -4px 0 0 color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.palette-toggle {
+  position: relative;
+}
+.palette-indicator {
+  position: absolute;
+  right: 4px;
+  bottom: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--secondary);
+  box-shadow: 0 0 0 2px var(--paper);
+}
+.appearance-dialog .dialog-panel {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.appearance-heading {
+  display: flex;
+  justify-content: space-between;
+}
+.appearance-heading .eyebrow {
+  font-size: 9px;
+  color: var(--secondary);
+  letter-spacing: 0.12em;
+}
+.appearance-heading p {
+  color: var(--muted);
+}
+.appearance-dialog fieldset {
+  border: 0;
+  padding: 0;
+  margin: 24px 0 0;
+  min-width: 0;
+}
+.appearance-dialog legend {
+  padding: 0;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.palette-option {
+  border: 1px solid var(--line);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition:
+    border-color 180ms,
+    background 180ms;
+}
+.palette-option:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+.palette-option:hover {
+  border-color: var(--accent);
+}
+.palette-option:has(input:focus-visible),
+.appearance-mode label:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.palette-option input,
+.appearance-mode input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+}
+.palette-sample {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  overflow: hidden;
+  background: #ffffff;
+}
+.palette-spring .palette-sample {
+  --sample-ink: #076951;
+  --sample-second: #c44c72;
+  background: #edf6e9;
+}
+.palette-summer .palette-sample {
+  --sample-ink: #214aa0;
+  --sample-second: #ffda47;
+  background: #fff6be;
+}
+.palette-summer .palette-sample i:first-child {
+  background: #ffda47;
+}
+.palette-summer .palette-sample i:nth-child(2) {
+  background: #214aa0;
+}
+.palette-autumn .palette-sample {
+  --sample-ink: #ad4a08;
+  --sample-second: #006a80;
+}
+.palette-sample i {
+  width: 6px;
+  height: 100%;
+  background: var(--sample-ink);
+}
+.palette-sample i:nth-child(2) {
+  width: 4px;
+  background: var(--sample-second);
+}
+.palette-sample i:nth-child(3) {
+  width: 3px;
+  background: #d9bf82;
+}
+.palette-sample > span {
+  align-self: center;
+  font: italic 28px var(--font-heading);
+  color: var(--sample-ink);
+}
+.palette-description {
+  flex: 1;
+  min-width: 0;
+}
+.palette-description strong {
+  display: block;
+}
+.palette-description small {
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 3px;
+  color: var(--muted);
+}
+.palette-check {
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.palette-option:has(input:checked) .palette-check {
+  border-color: var(--accent);
+}
+.appearance-mode > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.appearance-mode label {
+  position: relative;
+  min-width: 0;
+  cursor: pointer;
+  border-radius: 7px;
+}
+.appearance-mode label > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.appearance-mode input:checked + span {
+  color: var(--accent);
+  background: var(--accent-light);
+  border-color: var(--accent);
+}
+.appearance-saved {
+  color: var(--faint);
+}
+@media (max-width: 480px) {
+  .appearance-dialog {
+    padding: 12px;
+  }
+  .appearance-dialog .dialog-panel {
+    padding: 20px;
+    max-height: calc(100dvh - 24px);
+  }
+  .appearance-heading h2 {
+    font-size: 23px;
+  }
+  .palette-option {
+    padding: 10px;
+    gap: 10px;
+  }
+  .palette-sample {
+    width: 48px;
+  }
+  .palette-sample > span {
+    font-size: 24px;
+    margin-left: 4px;
+  }
+}
+
+/* Photo mounts stay light; saturated ink is reserved for actions and text. */
+:root {
+  --photo-frame: color-mix(in srgb, var(--accent) 7%, var(--paper));
+}
+:root.dark {
+  --photo-frame: color-mix(in srgb, var(--accent) 6%, var(--paper));
+}
+.photo-viewer-thumbnails button[aria-current="true"] {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}

@@ -28,7 +28,7 @@ export default async function Page({ params }: { params: Params }) {
   const item = getAlbums().find((item) => item.slug === album)
   if (!item) notFound()
   return (
-    <main id="main-content">
+    <main id="main-content" className="album-detail-page">
       <PageHeading
         eyebrow={messages(lang).album}
         title={item.title[lang]}

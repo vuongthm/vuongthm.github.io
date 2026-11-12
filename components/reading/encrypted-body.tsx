@@ -2,7 +2,7 @@
 import { usePageAccess } from "@/components/providers/page-access"
 import { contentLockMessages as labels } from "@/lib/i18n/content-lock"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
-import { LockKeyhole, ShieldCheck } from "lucide-react"
+import { LockKeyhole } from "lucide-react"
 import { useSite } from "@/components/providers/site-provider"
 import { headingsFor } from "@/lib/content/markdown"
 import { parseUnlockedDocument } from "@/lib/content/unlock"
@@ -47,7 +47,7 @@ function ContentLock({ payload, view }: { payload: string; view: "article" | "ga
     request = useRef(0),
     ownedUrls = useRef<string[]>([]),
     alive = useRef(true),
-    result = useRef<HTMLDivElement>(null)
+    result = useRef<HTMLElement>(null)
   const revoke = useCallback(() => {
     for (const url of ownedUrls.current) URL.revokeObjectURL(url)
     ownedUrls.current = []
@@ -148,17 +148,7 @@ function ContentLock({ payload, view }: { payload: string; view: "article" | "ga
   }, [pageSession])
   if (document)
     return (
-      <section className="unlocked-document" aria-label={text.unlocked}>
-        <div className="content-unlocked-bar" ref={result} tabIndex={-1}>
-          <span>
-            <ShieldCheck size={15} />
-            {text.unlocked}
-          </span>
-          <button type="button" onClick={lock}>
-            <LockKeyhole size={13} />
-            {text.relock}
-          </button>
-        </div>
+      <section className="unlocked-document" ref={result} tabIndex={-1} aria-label={text.unlocked}>
         {view === "gallery" ? (
           <Gallery
             variant="journal"

@@ -27,7 +27,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
   const stories = getStories(lang),
     m = messages(lang)
   return (
-    <main id="main-content">
+    <main id="main-content" className="stories-salon">
       <header className="wrap story-index-heading">
         <div>
           <span className="eyebrow">{copy(lang, "Góc lưu giữ cá nhân", "Personal archive")}</span>
@@ -64,7 +64,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
       <div className="wrap">
         <PaginatedList className="story-exhibition" pageSize={8}>
           {stories.map((story, index) => (
-            <article className="story-exhibit" key={story.id}>
+            <article className="story-exhibit" id={`story-${story.slug}`} key={story.id}>
               <Link
                 className="story-exhibit-image"
                 href={localized(`/stories/${story.slug}`, lang)}

@@ -22,31 +22,33 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
   if (!isLocale(lang)) notFound()
   const text = friendsMessages[lang]
   const publicRoot = path.resolve(process.cwd(), "public")
-  const directory = friends.map((friend) => {
-    const avatarPath = friend.avatar ? path.resolve(publicRoot, `.${friend.avatar}`) : undefined
-    return {
-      ...friend,
-      avatar:
-        avatarPath && avatarPath.startsWith(`${publicRoot}${path.sep}`) && existsSync(avatarPath)
-          ? friend.avatar
-          : undefined,
-    }
-  })
+  const directory = friends
+    .filter((friend) => !friend.websitePlaceholder)
+    .map((friend) => {
+      const avatarPath = friend.avatar ? path.resolve(publicRoot, `.${friend.avatar}`) : undefined
+      return {
+        ...friend,
+        avatar:
+          avatarPath && avatarPath.startsWith(`${publicRoot}${path.sep}`) && existsSync(avatarPath)
+            ? friend.avatar
+            : undefined,
+      }
+    })
   return (
-    <main id="main-content" className="wrap friends-page">
+    <main id="main-content" className="wrap friends-page friend-network-page">
       <Link className="back-link" href={localized("/about/", lang)}>
         <ArrowLeft size={14} />
         {text.back}
       </Link>
       <header className="friends-heading">
         <div>
-          <span className="eyebrow">{text.eyebrow}</span>
-          <h1>{text.headline}</h1>
+          <span className="eyebrow">{text.title}</span>
+          <h1>{text.eyebrow}</h1>
           <p>{text.description}</p>
         </div>
         <div className="friends-count">
           <Network size={24} strokeWidth={1.25} />
-          <strong>{String(friends.length).padStart(2, "0")}</strong>
+          <strong>{String(directory.length).padStart(2, "0")}</strong>
           <span>{text.websites}</span>
         </div>
       </header>
@@ -54,7 +56,6 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
       <section className="friends-invite">
         <div>
           <span className="eyebrow">{text.connect}</span>
-          <h2>{text.note}</h2>
           <p>{text.contact}</p>
         </div>
         <a className="text-link" href={`mailto:${siteConfig.email}`}>

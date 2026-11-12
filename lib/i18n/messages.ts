@@ -22,7 +22,7 @@ const vi = {
   updated: "Cập nhật",
   newest: "Mới nhất",
   recommended: "Theo lộ trình",
-  empty: "Chưa có nội dung ở đây.",
+  empty: "Không tìm thấy nội dung phù hợp.",
   reset: "Xóa bộ lọc",
   results: "kết quả",
   back: "Quay lại",

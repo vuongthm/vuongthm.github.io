@@ -21,7 +21,9 @@ export default async function Shelf({ params }: { params: Promise<{ lang: string
   const { lang } = await params
   if (!isLocale(lang)) notFound()
   const text = cornerMessages[lang]
-  const items = getCornerItems(lang).map(({ body: _body, ...meta }) => meta)
+  const items = getCornerItems(lang)
+    .filter((item) => item.category === "books")
+    .map(({ body: _body, ...meta }) => meta)
   return (
     <main id="main-content" className="shelf-page">
       <PageHeading

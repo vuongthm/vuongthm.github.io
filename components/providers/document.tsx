@@ -2,6 +2,7 @@
 import type { ReactNode } from "react"
 import type { Locale } from "@/lib/i18n/config"
 import fontPreloads from "@/site/font-preloads.json"
+import { paletteBootstrap } from "@/lib/appearance"
 import "@/styles/site-styles"
 const policy = [
   "default-src 'self'",
@@ -25,6 +26,7 @@ export function Document({ locale, children }: { locale: Locale; children: React
       <head>
         <meta httpEquiv="Content-Security-Policy" content={policy} />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
+        <script dangerouslySetInnerHTML={{ __html: paletteBootstrap }} />
         {fontPreloads.map((href) => (
           <link
             key={href}

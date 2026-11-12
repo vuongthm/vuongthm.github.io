@@ -1,0 +1,88 @@
+/* The header and the drawing share their sky; the foreground meets the article surface. */
+.studio-hero {
+  height: clamp(225px, 22vw, 305px);
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--studio-sky);
+}
+.home-seascape {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.sea-far {
+  fill: var(--studio-cloud);
+}
+.sea-middle {
+  fill: var(--sea-water, #d8eef9);
+}
+.sea-front {
+  fill: var(--bg);
+}
+.dark .sea-middle {
+  fill: var(--sea-water, #0c1b27);
+}
+.site-header:has(~ .site-content .studio-hero) {
+  background: var(--studio-sky);
+}
+.site-header[data-hero-passed="true"]:has(~ .site-content .studio-hero) {
+  background: #fff;
+  border: 0;
+}
+.dark .site-header[data-hero-passed="true"]:has(~ .site-content .studio-hero) {
+  background: var(--bg);
+}
+.journal-layout {
+  padding-top: 4px;
+}
+.journal-home .section-label {
+  color: var(--secondary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+}
+.journal-posts {
+  margin-top: 27px;
+}
+.site-footer :is(.compact-footer-links a, .compact-footer-base, .compact-footer-tools) {
+  color: var(--ink);
+}
+.site-footer .compact-footer-links a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.site-header:has(~ .site-content .studio-hero):not([data-hero-passed])
+  :is(.navigation-trigger, .desktop-nav > .navigation-item > a) {
+  color: var(--ink);
+}
+.site-header:has(~ .site-content .studio-hero):not([data-hero-passed]) .navigation-trigger::after {
+  background: var(--ink);
+}
+@media (min-width: 1101px) {
+  .journal-layout {
+    grid-template-columns: minmax(0, 1fr) 285px;
+    column-gap: 45px;
+  }
+}
+@media (max-width: 760px) {
+  .studio-hero {
+    height: 165px;
+  }
+  .journal-layout {
+    padding-top: 4px;
+  }
+  .journal-home .section-label {
+    font-size: 10px;
+  }
+  .journal-posts {
+    margin-top: 23px;
+  }
+  .journal-post > p {
+    font-size: 12px;
+    line-height: 1.95;
+  }
+}

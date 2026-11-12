@@ -8,7 +8,7 @@ const vi = {
   sections: "phần",
   steps: "bước",
   available: "bài đã có",
-  planned: "Sắp có ghi chép",
+  planned: "Đề cương",
   start: "Bắt đầu học",
   viewPath: "Xem lộ trình",
   source: "Nguồn tham khảo",
@@ -35,7 +35,7 @@ const vi = {
   mark: "Đánh dấu đã học",
   unmark: "Bỏ đánh dấu",
   progress: "Tiến độ trên thiết bị này",
-  pending: "Ghi chép này chưa được xuất bản.",
+  pending: "Nội dung trong đề cương lộ trình.",
 }
 type Text = { [K in keyof typeof vi]: string }
 const en: Text = {
@@ -47,7 +47,7 @@ const en: Text = {
   sections: "sections",
   steps: "steps",
   available: "available notes",
-  planned: "Notes coming soon",
+  planned: "Outline",
   start: "Start learning",
   viewPath: "View learning path",
   source: "Reference",
@@ -74,7 +74,7 @@ const en: Text = {
   mark: "Mark as learned",
   unmark: "Remove learned mark",
   progress: "Progress on this device",
-  pending: "This note has not been published yet.",
+  pending: "A topic in the learning route outline.",
 }
 const ja: Text = {
   study: "学び方",
@@ -85,7 +85,7 @@ const ja: Text = {
   sections: "セクション",
   steps: "ステップ",
   available: "公開済みノート",
-  planned: "ノート準備中",
+  planned: "概要",
   start: "学習を始める",
   viewPath: "コースを見る",
   source: "参考資料",
@@ -111,7 +111,7 @@ const ja: Text = {
   mark: "学習済みにする",
   unmark: "学習済みを解除",
   progress: "この端末での進捗",
-  pending: "このノートはまだ公開されていません。",
+  pending: "学習ルートの概要にある項目。",
 }
 const zh: Text = {
   study: "学习方式",
@@ -122,7 +122,7 @@ const zh: Text = {
   sections: "章节",
   steps: "步骤",
   available: "已发布笔记",
-  planned: "笔记准备中",
+  planned: "大纲",
   start: "开始学习",
   viewPath: "查看路线",
   source: "参考来源",
@@ -148,6 +148,6 @@ const zh: Text = {
   mark: "标记为已学习",
   unmark: "取消学习标记",
   progress: "此设备上的进度",
-  pending: "这篇笔记尚未发布。",
+  pending: "学习路线大纲中的主题。",
 }
 export const learningMessages: Record<Locale, Text> = { vi, en, ja, zh }

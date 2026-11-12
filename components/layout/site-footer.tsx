@@ -10,6 +10,7 @@ import { useSite } from "@/components/providers/site-provider"
 import { editorial } from "@/lib/i18n/editorial"
 import { localized } from "@/lib/i18n/config"
 import { siteConfig } from "@/lib/site.config"
+import { AppearancePicker } from "@/components/experience/appearance-picker"
 
 export function SiteFooter() {
   const { locale, dictionary: m } = useSite()
@@ -49,6 +50,7 @@ export function SiteFooter() {
             <Rss size={17} />
           </a>
           <SoundToggle />
+          <AppearancePicker />
           <ThemeToggle />
         </div>
       </div>

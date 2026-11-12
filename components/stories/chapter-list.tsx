@@ -48,7 +48,7 @@ export function ChapterList({ chapters, locale }: { chapters: EntryMeta[]; local
   return (
     <div className="chapter-browser">
       <div className="chapter-tools">
-        <label className="chapter-search">
+        <label className="chapter-search" data-search-field>
           <Search size={15} aria-hidden="true" />
           <input
             type="search"

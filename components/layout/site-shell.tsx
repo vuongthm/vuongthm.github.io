@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { usePathname } from "next/navigation"
-import { ChevronDown, Check, Menu, Search } from "lucide-react"
+import { Check, Menu, Search } from "lucide-react"
 import { BrandLockup } from "@/components/brand/logo"
 import { LanguageFlag } from "@/components/brand/language-flag"
 import { useSite } from "@/components/providers/site-provider"
@@ -31,9 +31,11 @@ const Assistant = dynamic(
 export function SiteShell({
   children,
   shelfLocked = false,
+  journeyLocked = false,
 }: {
   children: ReactNode
   shelfLocked?: boolean
+  journeyLocked?: boolean
 }) {
   const { locale, dictionary: m, setSearchOpen, setAiOpen, searchOpen, aiOpen } = useSite()
   const path = usePathname()
@@ -104,7 +106,7 @@ export function SiteShell({
           !target.isContentEditable)
       if (searchShortcut) {
         event.preventDefault()
-        if (menuOpen) return
+        if (menuOpen || document.querySelector(".path-preview-dialog")) return
         setDesktopMenu(null)
         setLanguageOpen(false)
         setAiOpen(false)
@@ -166,6 +168,7 @@ export function SiteShell({
           </Link>
           <SiteNavigation
             shelfLocked={shelfLocked}
+            journeyLocked={journeyLocked}
             open={desktopMenu}
             onOpenChange={setDesktopMenu}
           />
@@ -199,7 +202,6 @@ export function SiteShell({
                 }}
               >
                 <LanguageFlag locale={locale} />
-                <ChevronDown size={12} />
               </button>
               {languageOpen && (
                 <div className="dropdown" id="locale-menu">
@@ -256,7 +258,11 @@ export function SiteShell({
           onClose={() => setMenuOpen(false)}
           className="mobile-navigation-dialog"
         >
-          <MobileNavigation shelfLocked={shelfLocked} onClose={() => setMenuOpen(false)} />
+          <MobileNavigation
+            shelfLocked={shelfLocked}
+            journeyLocked={journeyLocked}
+            onClose={() => setMenuOpen(false)}
+          />
         </Dialog>
       )}
       <div className="site-content" ref={contentRef} inert={navigationOpen}>

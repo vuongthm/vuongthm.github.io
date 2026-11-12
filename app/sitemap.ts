@@ -1,4 +1,4 @@
-import { photoJournal } from "@/lib/content/site-pages"
+import { journeyPage, photoJournal, readingShelf } from "@/lib/content/site-pages"
 import type { MetadataRoute } from "next"
 import {
   allEntries,
@@ -18,21 +18,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "/",
     "/notes/",
+    "/paths/",
     "/topics/",
     "/projects/",
-    "/modules/",
-    "/journey/",
     "/stories/",
     "/about/",
     "/music/",
-    "/corner/",
     "/friends/",
     ...(!photoJournal?.encrypted ? ["/my-album/"] : []),
+    ...(!journeyPage?.encrypted ? ["/journey/"] : []),
+    ...(!readingShelf?.encrypted ? ["/shelf/", "/corner/"] : []),
     ...topics.map((topic) => `/topics/${topic.id}/`),
     ...getPaths().map((path) => `/paths/${path.slug}/`),
   ]
   return [
-    ...localeCodes.flatMap((locale) => getCornerItems(locale).filter((item) => !item.encrypted).map((item) => ({ url: siteConfig.url + item.href }))),
+    ...localeCodes.flatMap((locale) =>
+      getCornerItems(locale)
+        .filter((item) => !item.encrypted)
+        .map((item) => ({ url: siteConfig.url + item.href })),
+    ),
     ...localeCodes.flatMap((locale) =>
       getAlbums()
         .filter((album) => !album.encrypted)

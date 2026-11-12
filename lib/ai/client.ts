@@ -1,7 +1,6 @@
 import { copy } from "@/lib/i18n/copy"
 import type { AIProvider } from "./providers"
 import aiConfig from "@/site/ai.json"
-export const defaultModel = "gemini-3.5-flash-lite"
 export interface AIRequest {
   key: string
   model: string

@@ -27,8 +27,13 @@ export function entryForStep(
   )
 }
 export function filterStudy(entries: EntryMeta[], mode: string, paths: LearningPath[]) {
-  if (mode === "standalone") return entries.filter((entry) => !entry.learning)
-  const path = paths.find((item) => item.slug === mode && item.sections)
+  if (mode === "standalone") {
+    const assigned = new Set(
+      paths.flatMap((path) => pathEntries(path, entries)).map((entry) => entry.translationKey),
+    )
+    return entries.filter((entry) => !assigned.has(entry.translationKey) && !entry.learning)
+  }
+  const path = paths.find((item) => item.slug === mode)
   if (!path) return entries
-  return pathEntries(path, entries).filter((entry) => entry.learning?.path === path.slug)
+  return pathEntries(path, entries)
 }

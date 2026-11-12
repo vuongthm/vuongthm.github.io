@@ -12,7 +12,7 @@ const messages = {
     videos: "Video",
     private: "Bộ sưu tập riêng",
     more: "Xem thêm bộ sưu tập",
-    empty: "Chưa có nội dung trong mục này.",
+    empty: "Không tìm thấy ảnh phù hợp.",
     open: "Mở bộ ảnh",
     count: "khung hình",
     collection: "bộ ảnh",

@@ -1,13 +1,25 @@
 "use client"
-import { useSyncExternalStore } from "react"
+import { useId, useRef, useSyncExternalStore } from "react"
 import Link from "next/link"
-import { ArrowRight, BookOpen, Check, ChevronDown, ExternalLink, Route } from "lucide-react"
+import {
+  ArrowRight,
+  ArrowUpRight,
+  BookOpen,
+  Check,
+  ChevronDown,
+  ExternalLink,
+  Route,
+  X,
+} from "lucide-react"
 import { useSite } from "@/components/providers/site-provider"
 import type { EntryMeta, LearningPath } from "@/lib/content/types"
 import { learningMessages } from "@/lib/i18n/learning"
-import { entryForStep, pathEntries } from "@/lib/learning/paths"
+import { designMessages } from "@/lib/i18n/design"
+import { entryForStep } from "@/lib/learning/paths"
+import { learningProgress } from "@/lib/learning/progress"
 import { searchText } from "@/lib/collections/search"
 import { LockBadge } from "@/components/reading/lock-badge"
+import { PathMark } from "./path-mark"
 const subscribe = (callback: () => void) => {
   window.addEventListener("storage", callback)
   window.addEventListener("vuong:learning-progress", callback)
@@ -22,16 +34,23 @@ export function LearningPathView({
   query = "",
   compact = false,
   currentHref,
+  matchingIds,
+  onClose,
 }: {
   path: LearningPath
   entries: EntryMeta[]
   query?: string
   compact?: boolean
   currentHref?: string
+  matchingIds?: string[]
+  onClose?: () => void
 }) {
   const { locale, dictionary } = useSite(),
     text = learningMessages[locale],
-    key = `vuong:learning:${path.slug}`
+    design = designMessages[locale]
+  const key = `vuong:learning:${path.slug}`,
+    titleId = useId(),
+    syllabus = useRef<HTMLDivElement>(null)
   const saved = useSyncExternalStore(
     subscribe,
     () => {
@@ -43,176 +62,257 @@ export function LearningPathView({
     },
     () => "[]",
   )
-  let completed: string[] = []
-  try {
-    const parsed = JSON.parse(saved)
-    if (Array.isArray(parsed)) completed = parsed.filter((item) => typeof item === "string")
-  } catch {}
-  const available = pathEntries(path, entries),
-    total =
-      path.sections?.reduce((sum, section) => sum + section.steps.length, 0) ?? available.length
-  const done =
-    path.sections
-      ?.flatMap((section) => section.steps)
-      .filter((step) => step.entry && completed.includes(step.id)).length ?? 0
+  const progress = learningProgress(path, entries, saved),
+    available = progress.available.map(({ entry }) => entry)
+  const Heading = compact ? "h3" : "h1"
+  const discovery =
+    path.outcomes?.map((outcome) => outcome[locale]) ??
+    path.sections?.slice(0, 4).map((section) => section.title[locale]) ??
+    []
+  function matches(
+    step: { title: Record<typeof locale, string>; entry?: string; translationKey?: string },
+    section: string,
+  ) {
+    if (!query.trim()) return true
+    const entry = entryForStep(step, available)
+    if (entry && matchingIds) return matchingIds.includes(entry.id)
+    return searchText(
+      `${step.title[locale]} ${section} ${entry?.title ?? ""} ${entry?.summary ?? ""}`,
+    ).includes(searchText(query))
+  }
   function toggle(step: string) {
-    const next = completed.includes(step)
-      ? completed.filter((item) => item !== step)
-      : [...completed, step]
+    const next = new Set(progress.completed)
+    if (next.has(step)) next.delete(step)
+    else next.add(step)
     try {
-      localStorage.setItem(key, JSON.stringify(next))
+      localStorage.setItem(key, JSON.stringify([...next]))
       window.dispatchEvent(new Event("vuong:learning-progress"))
     } catch {}
   }
   return (
     <section
-      className={`learning-path-view${compact ? " is-compact" : ""}`}
-      aria-label={path.title[locale]}
+      className={`learning-path-view path-overview path-tone-${path.slug}${compact ? " is-compact" : ""}`}
+      aria-labelledby={titleId}
     >
-      <header className="course-overview">
-        <div className="course-overview-title">
-          <Route size={23} strokeWidth={1.5} aria-hidden="true" />
-          <div>
-            <span className="eyebrow">{text.overview}</span>
-            <h2>{compact ? path.title[locale] : text.overview}</h2>
-          </div>
+      <header className="path-overview-heading">
+        <div>
+          <span className="eyebrow">{design.overview}</span>
+          <Heading id={titleId}>{path.title[locale]}</Heading>
         </div>
-        <p>{path.description[locale]}</p>
-        {!compact && path.outcomes && (
-          <ul className="course-outcomes">
-            {path.outcomes.map((outcome, index) => (
-              <li key={index}>
-                <Check size={14} aria-hidden="true" />
-                {outcome[locale]}
-              </li>
-            ))}
-          </ul>
-        )}
-        <div className="course-counts">
-          <span>
-            {path.sections?.length ?? 1} {text.sections}
-          </span>
-          <span>
-            {total} {text.steps}
-          </span>
-          <span>
-            {available.length} {text.available}
-          </span>
-        </div>
-        <div className="course-progress">
-          <progress max={total || 1} value={done} aria-label={text.progress} />
-          <span>
-            {done} / {total} · {text.progress}
-          </span>
-        </div>
-        {!compact && (
-          <div className="course-overview-actions">
-            {available[0] && (
-              <Link className="button primary" href={available[0].href}>
-                {text.start}
-                <ArrowRight size={15} />
-              </Link>
-            )}
-            {path.source && (
-              <a
-                className="text-link"
-                href={path.source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {text.source}: {path.source.title}
-                <ExternalLink size={13} />
-              </a>
-            )}
-          </div>
+        {onClose ? (
+          <button
+            className="icon-button path-overview-close"
+            onClick={onClose}
+            aria-label={design.close}
+          >
+            <X size={21} />
+          </button>
+        ) : (
+          !compact && (
+            <Link className="path-back" href={`/${locale}/paths/`}>
+              <ArrowUpRight size={16} />
+              <span>{design.back}</span>
+            </Link>
+          )
         )}
       </header>
-      <div className="course-sections">
-        {path.sections?.map((section, index) => {
-          const items = section.steps.filter(
-            (step) =>
-              !query ||
-              searchText(`${step.title[locale]} ${section.title[locale]}`).includes(
-                searchText(query),
-              ),
-          )
-          if (!items.length) return null
-          return (
-            <details
-              className="course-section"
-              key={section.id}
-              open={
-                !!query ||
-                section.steps.some((step) => entryForStep(step, available)?.href === currentHref) ||
-                index === 0
-              }
+      <div className="path-overview-layout">
+        <aside className="path-sidebar">
+          <div className="path-identity">
+            <PathMark slug={path.slug} />
+            <div className="path-identity-caption">
+              <span>{design.notes}</span>
+              <strong>{design.notesDetail}</strong>
+            </div>
+          </div>
+          <div className="path-facts">
+            <span>
+              <strong>{path.sections?.length ?? 0}</strong>
+              {design.modules}
+            </span>
+            <span>
+              <strong>{progress.total}</strong>
+              {design.lessons}
+            </span>
+          </div>
+          {discovery.length > 0 && (
+            <div className="path-discover">
+              <h2>{design.discover}</h2>
+              <ul>
+                {discovery.map((item, index) => (
+                  <li key={index}>
+                    <Check size={13} />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {path.source && (
+            <a
+              className="path-source"
+              href={path.source.url}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <summary>
-                <span className="course-section-number">{String(index + 1).padStart(2, "0")}</span>
-                <h3>{section.title[locale]}</h3>
-                <span>{items.length}</span>
-                <ChevronDown size={16} aria-hidden="true" />
-              </summary>
-              <ol>
-                {items.map((step) => {
-                  const entry = entryForStep(step, available),
-                    learned = completed.includes(step.id)
-                  return (
-                    <li
-                      key={step.id}
-                      id={`step-${step.id}`}
-                      className={entry ? "course-step" : "course-step is-planned"}
-                    >
-                      <button
-                        className="course-step-check"
-                        type="button"
-                        disabled={!entry}
-                        aria-pressed={learned}
-                        aria-label={`${learned ? text.unmark : text.mark}: ${step.title[locale]}`}
-                        onClick={() => toggle(step.id)}
-                      >
-                        {learned ? <Check size={15} /> : <span />}
-                      </button>
-                      {entry ? (
-                        <Link
-                          href={entry.href}
-                          aria-current={entry.href === currentHref ? "step" : undefined}
+              {text.source}
+              <span>
+                {path.source.title}
+                <ExternalLink size={12} />
+              </span>
+            </a>
+          )}
+          <span className="path-signature" aria-hidden="true">
+            vuong<span>.</span>
+          </span>
+        </aside>
+        <div className="path-syllabus" ref={syllabus}>
+          <div className="path-introduction">
+            <span className="eyebrow">{design.introduction}</span>
+            <h2>{text.readInOrder}</h2>
+            <p>{path.description[locale]}</p>
+          </div>
+          <div className="course-sections">
+            {path.sections?.map((section, index) => {
+              const items = section.steps.filter((step) => matches(step, section.title[locale]))
+              if (!items.length) return null
+              return (
+                <details
+                  className="course-section"
+                  key={section.id}
+                  open={
+                    !compact ||
+                    !!query ||
+                    index === 0 ||
+                    section.steps.some(
+                      (step) => entryForStep(step, available)?.href === currentHref,
+                    )
+                  }
+                >
+                  <summary>
+                    <span className="course-section-number">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <span className="course-module-label">
+                        {design.module} {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <h3>{section.title[locale]}</h3>
+                    </div>
+                    <span className="course-module-count">{items.length}</span>
+                    <ChevronDown size={15} />
+                  </summary>
+                  <ol>
+                    {items.map((step, position) => {
+                      const entry = entryForStep(step, available),
+                        learned = progress.completed.has(step.id)
+                      return (
+                        <li
+                          key={step.id}
+                          id={`${onClose || compact ? titleId + "-" : ""}step-${step.id}`}
+                          className={`course-step${entry ? "" : " is-planned"}`}
                         >
-                          <span>
-                            <strong>
-                              {step.title[locale]}
-                              {entry.encrypted && <LockBadge locale={locale} />}
-                            </strong>
-                            <small>
-                              {entry.href === currentHref
-                                ? text.reading
-                                : `${entry.readingTime} ${dictionary.minutes}`}
-                            </small>
+                          <span className="course-step-symbol" aria-hidden="true">
+                            <BookOpen size={17} strokeWidth={1.5} />
+                            <small>{String(position + 1).padStart(2, "0")}</small>
                           </span>
-                          <ArrowRight size={15} aria-hidden="true" />
-                        </Link>
-                      ) : (
-                        <span className="course-step-pending">
-                          <strong>{step.title[locale]}</strong>
-                          <small>{text.planned}</small>
-                        </span>
-                      )}
-                    </li>
-                  )
-                })}
-              </ol>
-            </details>
-          )
-        })}
+                          {entry ? (
+                            <Link
+                              href={entry.href}
+                              onClick={onClose}
+                              aria-current={entry.href === currentHref ? "step" : undefined}
+                            >
+                              <span>
+                                <strong>
+                                  {step.title[locale]}
+                                  {entry.encrypted && <LockBadge locale={locale} />}
+                                </strong>
+                                <small>
+                                  {entry.href === currentHref
+                                    ? text.reading
+                                    : `${entry.readingTime} ${dictionary.minutes}`}
+                                </small>
+                              </span>
+                              <ArrowUpRight size={16} />
+                            </Link>
+                          ) : (
+                            <span className="course-step-pending">
+                              <strong>{step.title[locale]}</strong>
+                            </span>
+                          )}
+                          {entry ? (
+                            <button
+                              className="course-step-check"
+                              aria-pressed={learned}
+                              aria-label={`${learned ? text.unmark : text.mark}: ${step.title[locale]}`}
+                              onClick={() => toggle(step.id)}
+                            >
+                              {learned ? <Check size={15} /> : <span />}
+                            </button>
+                          ) : (
+                            <span className="course-step-state">{design.draft}</span>
+                          )}
+                        </li>
+                      )
+                    })}
+                  </ol>
+                </details>
+              )
+            })}
+          </div>
+          {query &&
+            !path.sections?.some((section) =>
+              section.steps.some((step) => matches(step, section.title[locale])),
+            ) && <p className="course-no-results">{dictionary.noResults}</p>}
+        </div>
       </div>
-      {query &&
-        !path.sections?.some((section) =>
-          section.steps.some((step) =>
-            searchText(`${step.title[locale]} ${section.title[locale]}`).includes(
-              searchText(query),
-            ),
-          ),
-        ) && <p className="course-no-results">{text.pending}</p>}
+      {!compact && (
+        <footer className="path-actionbar">
+          <div className="path-progress">
+            <span>
+              {design.progress}
+              <strong>
+                {progress.done} / {progress.total}
+              </strong>
+            </span>
+            <progress max={progress.total || 1} value={progress.done} aria-label={text.progress} />
+          </div>
+          <div className="path-actionbar-links">
+            {onClose && (
+              <Link
+                className="path-open-page"
+                href={`/${locale}/paths/${path.slug}/`}
+                data-path-preview-skip
+                onClick={onClose}
+              >
+                {design.openPage}
+                <ArrowUpRight size={13} />
+              </Link>
+            )}
+            {progress.next ? (
+              <Link className="button primary" href={progress.next.entry.href} onClick={onClose}>
+                {progress.done ? design.resume : text.start}
+                <ArrowRight size={16} />
+              </Link>
+            ) : (
+              <button
+                className="button primary"
+                onClick={() =>
+                  syllabus.current?.scrollIntoView({
+                    behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+                      ? "auto"
+                      : "smooth",
+                    block: "start",
+                  })
+                }
+              >
+                {design.explore}
+                <ArrowRight size={16} />
+              </button>
+            )}
+          </div>
+        </footer>
+      )}
     </section>
   )
 }

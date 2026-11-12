@@ -10,11 +10,14 @@ import { compileMusic } from "./corner.mjs"
 import { compileCollection } from "./collections.mjs"
 import { compileLearningPaths, learningAssignment, validateQuizBlocks } from "./learning.mjs"
 import { learningMarkdown } from "../../lib/learning/markdown.mjs"
+import { articleStructure, validateArticleStructure } from "./structure.mjs"
+import { contentFiles, isInboxPath } from "./files.mjs"
 
 export async function buildContent(root) {
   const config = loadContentConfig(root)
   const output = path.join(root, "generated")
   const entries = [],
+    outline = [],
     stories = [],
     usedMedia = new Map(),
     sources = [],
@@ -25,7 +28,8 @@ export async function buildContent(root) {
     journey = [],
     localRoutes = new Map(),
     entryFiles = new Map(),
-    storyFiles = new Map()
+    storyFiles = new Map(),
+    privateShelfDetails = new Map()
   const collectionRoute = (item) =>
     albums.includes(item)
       ? "my-album"
@@ -79,19 +83,13 @@ export async function buildContent(root) {
     if (shelfAccess.mode === "exclude")
       throw Error("The reading shelf must be public or password protected.")
   }
-  function files(dir) {
-    return fs
-      .readdirSync(dir, { withFileTypes: true })
-      .flatMap((item) =>
-        item.name.startsWith(".") ||
-        item.isSymbolicLink() ||
-        item.name === "media" ||
-        item.name === "assets"
-          ? []
-          : item.isDirectory()
-            ? files(path.join(dir, item.name))
-            : [path.join(dir, item.name)],
-      )
+  let journeyAccess
+  if (config.site.journey) {
+    const file = path.resolve(root, config.site.journey)
+    const { data } = frontmatter(fs.readFileSync(file, "utf8"), file)
+    journeyAccess = publication(data, { id: "site" }, "journey", "journey", file)
+    if (journeyAccess.mode === "exclude")
+      throw Error("The journey page must be public or password protected.")
   }
   function rememberMedia(source, group, category, body, cover) {
     const urls = [...body.matchAll(/!\[[^\]]*\]\(([^\s)]+)\)/g)].map((match) => match[1])
@@ -101,6 +99,8 @@ export async function buildContent(root) {
       const relative = url.slice(`/media/${group}/`.length)
       const parts = relative.split("/")
       const sourcePath = path.resolve(source, parts[0] || category, "media", ...parts.slice(1))
+      if (isInboxPath(path.relative(source, sourcePath)))
+        throw Error(`Move inbox media into a content module before publishing: ${url}`)
       if (!sourcePath.startsWith(path.resolve(source) + path.sep))
         throw new Error(`Unsafe asset: ${url}`)
       if (fs.existsSync(sourcePath)) {
@@ -125,6 +125,8 @@ export async function buildContent(root) {
     const absolute = fs.realpathSync(path.resolve(path.dirname(file), decodeURIComponent(url)))
     const base = fs.realpathSync(source.path)
     if (!absolute.startsWith(base + path.sep)) throw Error(`Media escapes its module: ${url}`)
+    if (isInboxPath(path.relative(base, absolute)))
+      throw Error(`Move inbox media into a content module before publishing: ${url}`)
     const target = `/media/${group}/${path.relative(base, absolute).split(path.sep).join("/")}`
     if (usedMedia.has(target) && usedMedia.get(target) !== absolute)
       throw Error(`Asset URL collision: ${target}`)
@@ -198,7 +200,7 @@ export async function buildContent(root) {
         throw new Error(`Required content source missing: ${source.id} (${base})`)
       continue
     }
-    const sourceFiles = files(base).filter((file) => file.endsWith(".md"))
+    const sourceFiles = contentFiles(base).filter((file) => file.endsWith(".md"))
     sources.push({ id: source.id, files: sourceFiles.length })
     if (source.adapter === "notes" || source.adapter === "articles") {
       for (const file of sourceFiles) {
@@ -211,11 +213,40 @@ export async function buildContent(root) {
         const locale = data.locale ?? locatedLocale ?? source.defaultLocale ?? config.locales[0]
         if (!config.locales.includes(locale)) throw Error(`Unknown content locale: ${locale}`)
         const slug = data.slug ?? path.basename(file, ".md")
+        if (data.outline === true && data.status !== "draft" && data.visibility !== "private") {
+          const prose = body
+            .replace(/<!--[\s\S]*?-->/g, "")
+            .replace(/^#{1,6} .+$/gm, "")
+            .trim()
+          if (!String(data.summary ?? data.description ?? "").trim() || !prose)
+            throw Error(
+              `${relative}: complete the description and article body before publishing this outline draft`,
+            )
+        }
         const access = publication(data, source, data.id ?? slug, slug, file)
+        if (
+          data.status === "draft" &&
+          data.outline === true &&
+          data.visibility !== "private" &&
+          !hasLock(data)
+        ) {
+          const metadata = meta(data, "", locale, slug, source.id, relative, source.defaultTopics)
+          outline.push({
+            id: metadata.id,
+            translationKey: metadata.translationKey,
+            slug,
+            locale,
+            moduleId: source.id,
+            title: metadata.title,
+            topics: metadata.topics,
+            ...articleStructure(source, relative, data, config.topics),
+          })
+        }
         if (access.mode === "exclude") continue
         validateQuizBlocks(body, relative)
         const entry = {
           ...meta(data, body, locale, slug, source.id, relative, source.defaultTopics),
+          ...articleStructure(source, relative, data, config.topics),
           body,
         }
         const prefix =
@@ -239,18 +270,38 @@ export async function buildContent(root) {
         (body, file) => transformBody(body, source, file),
         (url, file) => registerAsset(url, source, file),
         (data, id, file) =>
-          source.adapter === "corner" && shelfAccess?.mode === "encrypt" && !hasLock(data)
+          ((source.adapter === "corner" && shelfAccess?.mode === "encrypt") ||
+            (source.adapter === "journey" && journeyAccess?.mode === "encrypt")) &&
+          !hasLock(data)
             ? "encrypt"
             : publication(data, source, id, id, file).mode,
       )
       for (const item of items)
         if (item.encrypted) {
-          const grouped =
-            source.adapter === "corner" && !item._lockData && shelfAccess?.mode === "encrypt"
+          const parent =
+            source.adapter === "corner"
+              ? shelfAccess
+              : source.adapter === "journey"
+                ? journeyAccess
+                : undefined
+          const grouped = !item._lockData && parent?.mode === "encrypt"
           const access = grouped
-            ? shelfAccess
+            ? parent
             : publication(item._lockData, source, item.id, item.id, item._lockFile)
-          lockedCollections.set(item, { source, password: access.password, shelf: grouped })
+          lockedCollections.set(item, {
+            source,
+            password: access.password,
+            group: grouped ? (source.adapter === "corner" ? "shelf" : "journey") : undefined,
+          })
+          if (source.adapter === "corner") {
+            if (grouped)
+              privateShelfDetails.set(item.id, {
+                readingProgress: item.readingProgress,
+                keepsakes: item.keepsakes,
+              })
+            delete item.readingProgress
+            delete item.keepsakes
+          }
         }
       ;(source.adapter === "corner"
         ? corners
@@ -372,8 +423,9 @@ export async function buildContent(root) {
       }
     } else throw new Error(`Unknown content adapter: ${source.adapter}`)
   }
-  for (const collection of [entries, stories, projects, journey, albums, corners])
+  for (const collection of [entries, outline, stories, projects, journey, albums, corners])
     for (const item of collection) Object.assign(item, englishFields(item))
+  validateArticleStructure([...entries, ...outline])
   entries.sort((a, b) => a.weight - b.weight || b.publishedAt.localeCompare(a.publishedAt))
   const sitePaths = englishFields(
     JSON.parse(fs.readFileSync(path.resolve(root, config.site.paths), "utf8")),
@@ -455,7 +507,7 @@ export async function buildContent(root) {
           lock.password,
           item.title[locale],
           corners.includes(item) ? `/${locale}/shelf/` : `/${locale}/${collectionRoute(item)}/`,
-          lock.shelf ? `/${locale}/shelf/` : undefined,
+          lock.group ? `/${locale}/${lock.group}/` : undefined,
         )
       }
     }
@@ -469,7 +521,17 @@ export async function buildContent(root) {
     for (const topic of entry.topics)
       if (!config.topics.some((item) => item.id === topic))
         throw Error(`Unregistered topic ${topic} in ${entry.id}`)
-  const paths = compileLearningPaths(config, entries, sitePaths)
+  const paths = compileLearningPaths(config, entries, sitePaths, outline)
+  const topicAvailability = config.topics.map((topic) => ({
+    ...topic,
+    available:
+      entries.some((entry) => !entry.seriesSlug && entry.topics.includes(topic.id)) ||
+      paths.some(
+        (course) =>
+          course.topics.includes(topic.id) &&
+          (course.sections?.some((section) => section.steps.length) || course.entries.length > 0),
+      ),
+  }))
   // Only assets of published entries are emitted. Never sync an entire private repository.
   const collectionBodies = [...journey, ...projects, ...albums, ...corners].flatMap((item) =>
     config.locales.map((locale) => ({
@@ -524,14 +586,27 @@ export async function buildContent(root) {
       fs.writeFileSync(target, text)
   }
   const sitePages = {}
+  if (journeyAccess) sitePages.journey = { encrypted: journeyAccess.mode === "encrypt" }
+  if (journeyAccess?.mode === "encrypt")
+    for (const locale of config.locales)
+      await protect(
+        `/${locale}/journey/`,
+        journeyAccess.password,
+        { vi: "Hành trình", en: "Journey", ja: "歩み", zh: "旅程" }[locale] ?? "Journey",
+        `/${locale}/`,
+        `/${locale}/journey/`,
+      )
   if (shelfAccess?.mode === "encrypt") {
     sitePages.shelf = { encrypted: true, bodies: {} }
     for (const locale of config.locales) {
-      const items = corners.map(({ bodies: _bodies, bodyLocales, ...meta }) => ({
-        ...meta,
-        bodyLocale: bodyLocales[locale],
-        href: `/${locale}/corner/${meta.slug}/`,
-      }))
+      const items = corners
+        .filter((item) => item.category === "books")
+        .map(({ bodies: _bodies, bodyLocales, ...meta }) => ({
+          ...meta,
+          ...privateShelfDetails.get(meta.id),
+          bodyLocale: bodyLocales[locale],
+          href: `/${locale}/corner/${meta.slug}/`,
+        }))
       sitePages.shelf.bodies[locale] = await encryptString(
         shelfAccess.password,
         JSON.stringify(items),
@@ -540,7 +615,7 @@ export async function buildContent(root) {
         await protect(
           `/${locale}/${route}/`,
           shelfAccess.password,
-          "Books, Films & Podcasts",
+          { vi: "Đọc sách", en: "Reading", ja: "読書", zh: "读书" }[locale] ?? "Reading",
           `/${locale}/`,
           `/${locale}/shelf/`,
         )
@@ -594,11 +669,16 @@ export async function buildContent(root) {
   writeIfChanged("music.json", music)
   writeIfChanged("site-pages.json", sitePages)
   writeIfChanged("profile.json", profile)
-  writeIfChanged("topics.json", config.topics)
+  writeIfChanged("topics.json", topicAvailability)
   writeIfChanged(
     "modules.json",
     config.sources.map((source) => ({
       ...moduleMetadata(source),
+      available:
+        !["notes", "articles"].includes(source.adapter) ||
+        source.defaultTopics?.some((id) =>
+          topicAvailability.some((topic) => topic.id === id && topic.available),
+        ) === true,
       count:
         source.adapter === "corner"
           ? corners.filter((item) => item.moduleId === source.id).length +

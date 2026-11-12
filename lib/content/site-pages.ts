@@ -8,3 +8,5 @@ export const photoJournal = (
 export const readingShelf = (
   pages as { shelf?: { encrypted: boolean; bodies: Partial<Record<Locale, string>> } }
 ).shelf
+
+export const journeyPage = (pages as { journey?: { encrypted: boolean } }).journey

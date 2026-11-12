@@ -15,7 +15,7 @@ export function distanceKm(a: Coordinates, b: Coordinates) {
   return 6371.0088 * 2 * Math.asin(Math.sqrt(Math.min(1, Math.max(0, h))))
 }
 
-/** Same equirectangular projection as public/illustrations/world-dots.svg. */
+/** Equirectangular projection shared by the fallback map and flight diagram. */
 export function mapPoint({ latitude, longitude }: Coordinates) {
   return {
     x: ((longitude + 180) / 360) * 600,

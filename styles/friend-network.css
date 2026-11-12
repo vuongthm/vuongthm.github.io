@@ -1,0 +1,313 @@
+.friend-network-page .friends-heading {
+  gap: 35px;
+  padding-bottom: 30px;
+}
+.friend-network-page .friends-heading p {
+  margin-top: 13px;
+  max-width: 580px;
+}
+.network-tools {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 25px;
+}
+.network-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  max-width: 760px;
+}
+.network-topics > button {
+  min-height: 34px;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  color: var(--muted);
+  font-size: 10px;
+  transition:
+    background 200ms,
+    border-color 200ms,
+    color 200ms;
+}
+.network-topics > button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.network-topics > button:hover {
+  border-color: var(--accent);
+}
+.network-random {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 0 6px 8px;
+  font-size: 11px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.network-random:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.network-hint {
+  font-size: 11px;
+  line-height: 1.9;
+  color: var(--muted);
+  margin: 18px 0 8px;
+}
+.network-canvas {
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+}
+.network-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.network-lines path {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+  transition:
+    stroke 300ms,
+    stroke-width 300ms;
+}
+.network-lines path.is-connected {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  opacity: 0.7;
+}
+.network-lines .network-hop-route {
+  stroke: var(--secondary);
+  stroke-width: 1;
+  stroke-dasharray: 2 7;
+  opacity: 0.35;
+}
+.network-spark {
+  fill: var(--accent);
+  stroke: var(--bg);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 5px var(--accent));
+}
+.friend-node {
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg);
+  transform: translate(-50%, -50%);
+  color: var(--accent);
+  transition:
+    box-shadow 300ms,
+    border-color 300ms;
+}
+.friend-node.tone-1 {
+  color: var(--tone-coral);
+}
+.friend-node.tone-2 {
+  color: var(--tone-teal);
+}
+.friend-node .friend-avatar {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  font-size: 17px;
+  background: var(--soft);
+  color: inherit;
+}
+.friend-node .friend-avatar img {
+  object-fit: cover;
+}
+.friend-node-label {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  font: var(--type-caption)/1.5 var(--font-ui);
+  max-width: 108px;
+  width: max-content;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  text-align: center;
+  background: var(--bg);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-variant-numeric: tabular-nums;
+}
+.friend-node.is-selected {
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+  box-shadow: 0 0 0 4px var(--photo-frame);
+}
+.friend-node.is-selected .friend-node-label {
+  color: var(--accent);
+}
+.friend-node:hover {
+  border-color: color-mix(in srgb, currentColor 30%, var(--line));
+  box-shadow: 0 0 0 4px var(--soft);
+}
+.network-profile {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 22px;
+  padding: 27px 0 24px;
+  border-top: 1px solid var(--line);
+  min-height: 190px;
+}
+.network-profile > .friend-avatar {
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+}
+.network-profile-copy > .eyebrow {
+  font-size: 9px;
+}
+.network-profile-copy h2 {
+  font: 600 var(--type-item-title)/1.5 var(--font-heading);
+  letter-spacing: var(--tracking-heading);
+  margin-top: 5px;
+}
+.network-profile-copy h2 small {
+  display: inline-block;
+  margin-left: 12px;
+  font: var(--type-caption)/1.6 var(--font-ui);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.network-profile-copy > p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+  max-width: 590px;
+  margin-top: 8px;
+}
+.network-profile-topics {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.network-profile-topics span {
+  font-size: 9px;
+  line-height: 1.7;
+  color: var(--muted);
+  padding: 3px 7px;
+  background: var(--soft);
+  border-radius: 4px;
+}
+.network-visit {
+  padding-top: 20px;
+  text-align: right;
+}
+.network-visit > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  font-size: 11px;
+  color: var(--accent);
+}
+.network-visit > small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 3px;
+}
+.friend-network-page .friends-invite {
+  margin-top: 15px;
+  padding: 22px 25px;
+  background: var(--soft);
+  border-radius: 8px;
+}
+.friend-network-page .friends-invite p {
+  margin-top: 10px;
+}
+@media (max-width: 760px) {
+  .network-tools {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .network-random {
+    align-self: flex-end;
+    padding-right: 0;
+  }
+  .network-hint {
+    margin-top: 10px;
+  }
+  .friend-network-page .friends-heading {
+    gap: 15px;
+    align-items: start;
+  }
+  .friend-network-page .friends-count {
+    margin-top: 14px;
+  }
+  .friend-network-page .friends-count strong {
+    font-size: 28px;
+  }
+  .friend-network-page .friends-count svg {
+    width: 20px;
+  }
+  .friend-network-page .friends-heading p {
+    font-size: 12px;
+  }
+  .friend-network-page .friends-count > span {
+    font-size: 9px;
+    max-width: 80px;
+  }
+  .friend-node {
+    width: 48px;
+    height: 48px;
+    padding: 4px;
+  }
+  .friend-node .friend-avatar {
+    font-size: 13px;
+  }
+  .friend-node-label {
+    font-size: 8.5px;
+    max-width: 75px;
+    top: calc(100% + 6px);
+  }
+  .network-profile {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 15px;
+    padding-top: 22px;
+  }
+  .network-profile > .friend-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+  .network-profile-copy h2 {
+    font-size: var(--type-item-title);
+  }
+  .network-profile-copy h2 small {
+    display: block;
+    margin-left: 0;
+    margin-top: 3px;
+  }
+  .network-profile-copy > p {
+    font-size: 11px;
+  }
+  .network-visit {
+    grid-column: 2;
+    padding-top: 0;
+    text-align: left;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .network-lines path,
+  .friend-node,
+  .network-topics > button {
+    transition: none;
+  }
+}

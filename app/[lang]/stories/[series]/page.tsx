@@ -45,11 +45,9 @@ export default async function Page({ params }: { params: Params }) {
         )}
         <div className="story-hero-shade" />
         <div className="story-detail-intro">
-          <span className="eyebrow">
-            {story.status === "completed"
-              ? copy(lang, "ĐÃ HOÀN THÀNH", "COMPLETED")
-              : copy(lang, "ĐANG VIẾT", "IN PROGRESS")}
-          </span>
+          {story.status === "completed" && (
+            <span className="eyebrow">{copy(lang, "ĐÃ HOÀN THÀNH", "COMPLETED")}</span>
+          )}
           <h1>{story.title}</h1>
           <p>{story.summary}</p>
           <div>

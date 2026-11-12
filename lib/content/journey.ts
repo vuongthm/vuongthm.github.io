@@ -53,10 +53,10 @@ export function getJourney(locale: Locale): JourneyItem[] {
   })
 }
 
-/** The interactive homepage receives previews, never all milestone Markdown bodies. */
+/** The journey overview receives previews, never all milestone Markdown bodies. */
 export function getJourneyPreviews(locale: Locale) {
   return getJourney(locale).map(
-    ({ id, href, label, title, description, status, sample, photos }) => ({
+    ({ id, href, label, title, description, status, sample, photos, year, period }) => ({
       id,
       href,
       label,
@@ -65,6 +65,8 @@ export function getJourneyPreviews(locale: Locale) {
       status,
       sample,
       photos,
+      year,
+      period,
     }),
   )
 }

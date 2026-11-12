@@ -29,7 +29,9 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
   const { lang } = await params
   if (!isLocale(lang)) notFound()
   const text = cornerMessages[lang],
-    items = getCornerItems(lang).map(({ body: _body, ...meta }) => meta)
+    items = getCornerItems(lang)
+      .filter((item) => item.category === "books")
+      .map(({ body: _body, ...meta }) => meta)
   return (
     <main id="main-content" className="corner-page">
       <section className="wrap corner-hero" aria-labelledby="corner-title">
@@ -44,10 +46,6 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
             <span>{text.music}</span>
             <i />
             <span>{text.books}</span>
-            <i />
-            <span>{text.films}</span>
-            <i />
-            <span>{text.podcasts}</span>
           </div>
         </div>
         <figure className="corner-window">

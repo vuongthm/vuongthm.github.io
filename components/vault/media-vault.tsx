@@ -361,10 +361,6 @@ export function MediaVault() {
                 </button>
               ))}
             </div>
-            <button className="vault-lock-button" onClick={lock}>
-              <LockKeyhole size={14} />
-              {m.lock}
-            </button>
           </div>
           {items.length ? (
             <div className="vault-media-grid">

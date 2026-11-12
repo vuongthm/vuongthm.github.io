@@ -8,6 +8,7 @@ import { metadataFor } from "@/lib/seo"
 import { PageHeading } from "@/components/layout/page-heading"
 import { TopicIcon } from "@/components/knowledge/topic-icon"
 import { Library } from "@/components/knowledge/library"
+import { TopicPending } from "@/components/knowledge/topic-pending"
 export function generateStaticParams() {
   return localeCodes.flatMap((lang) => topics.map((topic) => ({ lang, topic: topic.id })))
 }
@@ -32,7 +33,7 @@ export default async function Page({
   const item = getTopic(topic)
   if (!item) notFound()
   return (
-    <main id="main-content">
+    <main id="main-content" className="topic-detail-page">
       <PageHeading
         eyebrow={`TOPIC / ${item.id.toUpperCase()}`}
         title={item.label[lang]}
@@ -47,9 +48,13 @@ export default async function Page({
         </div>
       </PageHeading>
       <div className="wrap">
-        <Suspense>
-          <Library entries={getEntryMeta(lang)} paths={getPaths()} initialTopic={item.id} />
-        </Suspense>
+        {item.available === false ? (
+          <TopicPending locale={lang} />
+        ) : (
+          <Suspense>
+            <Library entries={getEntryMeta(lang)} paths={getPaths()} initialTopic={item.id} />
+          </Suspense>
+        )}
       </div>
     </main>
   )

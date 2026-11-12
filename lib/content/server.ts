@@ -4,6 +4,7 @@ import database from "@/generated/content.json"
 import moduleRegistry from "@/generated/modules.json"
 import type { ContentModule, Project, ContentDatabase, Entry, EntryMeta, CornerItem } from "./types"
 import { localized, localeCodes, type Locale } from "@/lib/i18n/config"
+import { newestProjects } from "./project-order"
 const db = database as ContentDatabase
 export function getEntries(locale: Locale) {
   return catalogEntries(db.entries, locale)
@@ -93,19 +94,21 @@ export function allStories() {
   ]
 }
 export function getProjects(locale: Locale): Project[] {
-  return db.projects.map((item) => ({
-    ...item,
-    title: item.title[locale],
-    body: item.bodies[locale],
-    bodyLocale: item.bodyLocales[locale],
-    href: localized(`/projects/${item.slug}/`, locale),
-  }))
+  return newestProjects(
+    db.projects.map((item) => ({
+      ...item,
+      title: item.title[locale],
+      body: item.bodies[locale],
+      bodyLocale: item.bodyLocales[locale],
+      href: localized(`/projects/${item.slug}/`, locale),
+    })),
+  )
 }
 export function getProject(slug: string, locale: Locale) {
   return getProjects(locale).find((item) => item.slug === slug)
 }
 export function getContentModules(locale: Locale): ContentModule[] {
-  return (moduleRegistry as ContentModule[]).map((item) => ({
+  return (moduleRegistry as Omit<ContentModule, "href">[]).map((item) => ({
     ...item,
     href: localized(
       item.adapter === "corner"

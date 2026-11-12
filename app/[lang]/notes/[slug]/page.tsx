@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation"
 import { allEntries, getEntry } from "@/lib/content/server"
-import { isLocale } from "@/lib/i18n/config"
+import { isLocale, localeCodes } from "@/lib/i18n/config"
 import { ArticlePage, articleMetadata } from "@/components/reading/article-page"
 type Params = Promise<{ lang: string; slug: string }>
 export function generateStaticParams() {
-  return allEntries()
+  const routes = allEntries()
     .filter((entry) => !entry.seriesSlug && entry.href.startsWith(`/${entry.locale}/notes/`))
     .map((entry) => ({ lang: entry.locale, slug: entry.slug }))
+  // Next static export requires a nonempty parameter list. The reserved route renders a noindex 404.
+  return routes.length ? routes : localeCodes.map((lang) => ({ lang, slug: "_empty" }))
 }
 export async function generateMetadata({ params }: { params: Params }) {
   const { lang, slug } = await params

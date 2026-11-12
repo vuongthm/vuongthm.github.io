@@ -83,6 +83,18 @@ describe("independent personal-corner modules", () => {
       JSON.parse(fs.readFileSync(path.join(f.app, "generated/modules.json"), "utf8"))[0].count,
     ).toBe(2)
   })
+  it("keeps the published music manifest free of malformed YouTube ids", () => {
+    const manifest = JSON.parse(
+      fs.readFileSync(
+        path.resolve(__dirname, "../../../content/my-corner/music/tracks.json"),
+        "utf8",
+      ),
+    )
+    const track = manifest.find((item: { title: string }) => item.title === "Nỗi nhớ mang tên mình")
+    expect(track).toBeDefined()
+    expect(track.youtubeId).toMatch(/^[\w-]{11}$/)
+    expect(track.youtubeId).toBe("-iz6VBxZBIM")
+  })
   it("omits draft/private shelves and music before copying their media", async () => {
     const f = fixture()
     f.article("hidden", "visibility: private", "PRIVATE_CORNER_SENTINEL")
@@ -154,12 +166,26 @@ describe("password protected reading shelf", () => {
   it("encrypts the shelf and public article bodies, and groups both route aliases and detail access", async () => {
     const f = fixture()
     configure(f.app)
-    f.article("book-one", "", "PRIVATE_SHELF_SENTINEL")
+    f.article(
+      "book-one",
+      "readingProgress: 37\nkeepsakes:\n  - PRIVATE_KEEP_SENTINEL",
+      "PRIVATE_SHELF_SENTINEL",
+    )
+    f.article("film-one", "", "PRIVATE_FILM_SENTINEL")
+    const filmFile = path.join(f.repo, "vi/film-one.md")
+    fs.writeFileSync(
+      filmFile,
+      fs.readFileSync(filmFile, "utf8").replace("category: books", "category: films"),
+    )
     vi.stubEnv("CONTENT_PASSWORDS", JSON.stringify({ "site/shelf": "fixture-shelf-secret" }))
     await buildContent(f.app)
     const raw = fs.readFileSync(path.join(f.app, "generated/content.json"), "utf8"),
       db = JSON.parse(raw)
     expect(raw).not.toContain("PRIVATE_SHELF_SENTINEL")
+    expect(raw).not.toContain("PRIVATE_KEEP_SENTINEL")
+    expect(
+      db.corners.find((item: { id: string }) => item.id === "book-one").readingProgress,
+    ).toBeUndefined()
     expect(db.corners[0].encrypted).toBe(true)
     expect(await decryptString("fixture-shelf-secret", db.corners[0].bodies.vi)).toContain(
       "PRIVATE_SHELF_SENTINEL",
@@ -168,7 +194,14 @@ describe("password protected reading shelf", () => {
     expect(JSON.stringify(pages)).not.toContain("book-one")
     expect(
       JSON.parse((await decryptString("fixture-shelf-secret", pages.shelf.bodies.vi))!),
-    ).toEqual([expect.objectContaining({ href: "/vi/corner/book-one/", category: "books" })])
+    ).toEqual([
+      expect.objectContaining({
+        href: "/vi/corner/book-one/",
+        category: "books",
+        readingProgress: 37,
+        keepsakes: expect.objectContaining({ vi: ["PRIVATE_KEEP_SENTINEL"] }),
+      }),
+    ])
     const rules = JSON.parse(fs.readFileSync(path.join(f.app, "generated/access.json"), "utf8"))
     for (const href of ["/vi/shelf/", "/vi/corner/", "/vi/corner/book-one/"])
       expect(rules).toContainEqual(expect.objectContaining({ href, scope: "/vi/shelf/" }))

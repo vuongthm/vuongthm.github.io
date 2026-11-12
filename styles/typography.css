@@ -1,0 +1,83 @@
+/* The Home type system is shared by every page and interactive surface. */
+:root {
+  --font-ui: "Be Vietnam Pro", "Inter Fallback", system-ui, sans-serif;
+  --font-heading: var(--font-ui);
+  --font-mono: var(--font-jetbrains), var(--font-ui), ui-monospace, monospace;
+  --type-body: 14px;
+  --type-caption: 11px;
+  --type-page-title: clamp(25px, 2.3vw, 32px);
+  --type-section-title: clamp(20px, 1.8vw, 24px);
+  --type-item-title: clamp(18px, 1.6vw, 21px);
+  --tracking-heading: -0.025em;
+}
+
+html[lang="ja"] {
+  --font-ui: var(--font-ja), "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --tracking-heading: 0;
+}
+
+html[lang="zh"] {
+  --font-ui: var(--font-zh), "PingFang SC", "Microsoft YaHei", sans-serif;
+  --tracking-heading: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: var(--type-body);
+  font-weight: 400;
+  line-height: 1.85;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: var(--tracking-heading);
+}
+
+h1 {
+  font-size: var(--type-page-title);
+  line-height: 1.45;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-ui);
+}
+
+input,
+select,
+textarea {
+  font-weight: 400;
+  letter-spacing: normal;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-mono);
+}
+
+.eyebrow {
+  font-family: var(--font-ui);
+  font-size: var(--type-caption);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --type-body: 13px;
+    --type-caption: 10px;
+    --type-page-title: clamp(22px, 5.8vw, 26px);
+    --type-section-title: 20px;
+    --type-item-title: 18px;
+  }
+}

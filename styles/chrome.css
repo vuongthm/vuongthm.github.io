@@ -4,11 +4,7 @@
   height: 0;
   overflow: hidden;
 }
-:root {
-  --header-h: 72px;
-}
 .brand-wordmark {
-  display: inline-block;
   color: var(--ink);
   transition: color 0.18s;
 }
@@ -17,17 +13,13 @@ a:focus-visible .brand-wordmark {
   color: var(--accent);
 }
 .site-header {
-  height: var(--header-h);
   position: sticky;
   top: 0;
-  z-index: 40;
-  background: var(--bg);
 }
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 30px;
   height: 100%;
 }
 .brand {
@@ -39,8 +31,6 @@ a:focus-visible .brand-wordmark {
 .desktop-nav {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-left: auto;
 }
 .desktop-nav a {
   display: flex;
@@ -67,26 +57,17 @@ a:focus-visible .brand-wordmark {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
 }
 .search-trigger {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 38px;
-  padding: 8px 10px;
   font-size: 11px;
-  color: var(--muted);
-  border-radius: 5px;
 }
 .search-trigger:hover {
   color: var(--accent);
   background: var(--soft);
-}
-.header-actions .icon-button {
-  width: 37px;
-  height: 38px;
 }
 .language-control {
   position: relative;
@@ -95,11 +76,7 @@ a:focus-visible .brand-wordmark {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  min-width: 54px;
-  min-height: 38px;
   border-radius: 5px;
-  padding: 8px;
 }
 .language-button:hover,
 .language-button[aria-expanded="true"] {
@@ -123,8 +100,6 @@ a:focus-visible .brand-wordmark {
   padding: 6px;
   border: 1px solid var(--line);
   background: var(--paper);
-  border-radius: 7px;
-  box-shadow: var(--shadow);
 }
 .dropdown a {
   display: flex;
@@ -133,7 +108,6 @@ a:focus-visible .brand-wordmark {
   min-height: 42px;
   padding: 9px 10px;
   font-size: 12px;
-  border-radius: 4px;
 }
 .dropdown .locale-label {
   flex: 1;
@@ -161,27 +135,15 @@ a:focus-visible .brand-wordmark {
   overflow: auto;
 }
 .mobile-menu nav {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
   margin-bottom: 10px;
 }
 .mobile-menu nav a {
-  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px;
-  min-height: 42px;
-  border-radius: 5px;
-  font-size: 12px;
 }
 .mobile-menu nav a:hover,
 .mobile-menu nav a[aria-current] {
   color: var(--accent);
   background: var(--soft);
-}
-.mobile-menu nav a > span {
-  display: none;
 }
 .mobile-menu nav a > svg:last-child {
   width: 13px;
@@ -194,12 +156,6 @@ a:focus-visible .brand-wordmark {
   padding: 8px 12px;
 }
 @media (max-width: 1100px) {
-  .header-inner {
-    gap: 18px;
-  }
-  .desktop-nav {
-    gap: 1px;
-  }
   .desktop-nav a {
     padding-inline: 9px;
     font-size: 11px;
@@ -213,35 +169,16 @@ a:focus-visible .brand-wordmark {
   }
 }
 @media (max-width: 760px) {
-  :root {
-    --header-h: 64px;
-  }
-  .header-inner {
-    gap: 10px;
-  }
-  .desktop-nav {
-    display: none;
-  }
   .mobile-menu-toggle {
     display: inline-flex;
   }
-  .header-actions {
-    gap: 1px;
-  }
-  .header-actions .icon-button {
-    width: 33px;
-  }
   .language-button {
-    min-width: 47px;
     padding-inline: 5px;
     gap: 4px;
   }
   .language-flag {
     width: 22px;
     height: 15px;
-  }
-  .search-trigger {
-    width: 32px;
   }
 }
 @media print {
@@ -256,14 +193,4 @@ a:focus-visible .brand-wordmark {
   width: 88px;
   height: 35px;
   letter-spacing: 0;
-}
-.brand .wordmark-sm {
-  width: 84px;
-  height: 33px;
-}
-@media (max-width: 760px) {
-  .brand .wordmark-sm {
-    width: 78px;
-    height: 31px;
-  }
 }

@@ -1,0 +1,43 @@
+const en = {
+  soon: "Subject",
+  preparing: "Notes & learning routes",
+  preparingDetail: "Explore articles by subject, or follow the outline of a learning route.",
+  viewPath: "Browse articles",
+  lockedTitle: "Find a route through the library.",
+  lockedDetail: "Browse the article index or choose a related learning route.",
+  roadmap: "View the roadmap",
+  choose: "Choose a learning path",
+}
+export const authoringMessages = {
+  en,
+  vi: {
+    soon: "Chủ đề",
+    preparing: "Ghi chép & lộ trình",
+    preparingDetail: "Tìm bài theo chủ đề, hoặc đọc theo đề cương của một lộ trình.",
+    viewPath: "Xem bài viết",
+    lockedTitle: "Chọn một hướng tìm hiểu.",
+    lockedDetail: "Bạn có thể tìm trong danh sách bài viết hoặc chọn một lộ trình liên quan.",
+    roadmap: "Xem đề cương",
+    choose: "Chọn lộ trình",
+  },
+  ja: {
+    soon: "テーマ",
+    preparing: "ノートと学習ルート",
+    preparingDetail: "テーマ別の記事や学習ルートの概要から探せます。",
+    viewPath: "記事を見る",
+    lockedTitle: "ライブラリから学ぶ道を選ぶ。",
+    lockedDetail: "記事一覧や関連する学習ルートから探してください。",
+    roadmap: "ロードマップを見る",
+    choose: "学習ルートを選ぶ",
+  },
+  zh: {
+    soon: "主题",
+    preparing: "笔记与学习路线",
+    preparingDetail: "按主题查找文章，或沿着学习路线的大纲阅读。",
+    viewPath: "浏览文章",
+    lockedTitle: "选择一条探索路线。",
+    lockedDetail: "浏览文章目录，或选择相关学习路线。",
+    roadmap: "查看路线大纲",
+    choose: "选择学习路线",
+  },
+} satisfies Record<string, typeof en>

@@ -14,11 +14,13 @@ export function ArticleRow({
   locale,
   index,
   compact = false,
+  showModule = false,
 }: {
   entry: EntryMeta
   locale: Locale
   index?: number
   compact?: boolean
+  showModule?: boolean
 }) {
   const m = messages(locale),
     topic = getTopic(entry.topics[0])
@@ -60,6 +62,12 @@ export function ArticleRow({
         </h3>
         {!compact && <p>{entry.summary}</p>}
         <div className="article-meta">
+          {showModule && entry.contentModule && (
+            <span className="article-module-label">
+              <span>{String(entry.order ?? 1).padStart(2, "0")}</span>
+              {entry.contentModule.title[locale]}
+            </span>
+          )}
           <time dateTime={entry.publishedAt}>{dateLabel(entry.publishedAt, locale)}</time>
           <span>
             <Clock3 size={12} />

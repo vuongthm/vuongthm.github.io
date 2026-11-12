@@ -135,7 +135,24 @@ describe("independent content repositories", () => {
     config(app, [])
     const scripts = path.resolve(import.meta.dirname, "../../scripts/content")
     fs.mkdirSync(path.join(app, "scripts/content/templates"), { recursive: true })
-    fs.copyFileSync(path.join(scripts, "new.mjs"), path.join(app, "scripts/content/new.mjs"))
+    for (const name of [
+      "new",
+      "schema",
+      "authoring",
+      "files",
+      "structure",
+      "localized",
+      "learning-files",
+    ])
+      fs.copyFileSync(
+        path.join(scripts, `${name}.mjs`),
+        path.join(app, "scripts/content", `${name}.mjs`),
+      )
+    fs.symlinkSync(
+      path.resolve(import.meta.dirname, "../../node_modules"),
+      path.join(app, "node_modules"),
+      "dir",
+    )
     fs.copyFileSync(
       path.join(scripts, "templates/notify-site.yml"),
       path.join(app, "scripts/content/templates/notify-site.yml"),
@@ -146,10 +163,89 @@ describe("independent content repositories", () => {
         stdio: "pipe",
       })
     cli("module", "new-notes", "--repository", "owner/new-notes")
-    cli("article", "new-notes", "first-note")
+    fs.writeFileSync(
+      path.join(app, "site/paths.json"),
+      JSON.stringify([
+        {
+          slug: "fixture-course",
+          topic: "new",
+          sections: [{ id: "foundations", steps: [{ id: "planned" }, { id: "first-note" }] }],
+        },
+      ]),
+    )
+    cli(
+      "article",
+      "new-notes",
+      "first-note",
+      "--module",
+      "foundations",
+      "--path",
+      "fixture-course",
+      "--section",
+      "foundations",
+      "--step",
+      "first-note",
+    )
     const source = path.join(root, "content/new-notes"),
-      file = path.join(source, "vi/first-note.md")
-    expect(fs.readFileSync(file, "utf8")).toContain("id: new-notes:first-note")
+      file = path.join(source, "foundations/vi/first-note.md")
+    expect(parse(fs.readFileSync(file, "utf8").split("---")[1]).id).toBe("new-notes:first-note")
+    cli("article", "new-notes", "first-note", "--module", "foundations", "--lang", "en")
+    const en = parse(
+      fs.readFileSync(path.join(source, "foundations/en/first-note.md"), "utf8").split("---")[1],
+    )
+    expect(en.order).toBe(1)
+    expect(en.module).toBe("foundations")
+    expect(en.translationKey).toBe("new-notes:first-note")
+    expect(en.learning.order).toBe(2)
+    const viDate = parse(fs.readFileSync(file, "utf8").split("---")[1]).date
+    expect(en.date).toBe(viDate)
+    cli("section", "new-notes", "practice", "--group", "soc-l2", "--title", "Practice")
+    expect(fs.existsSync(path.join(source, "soc-l2/practice/media/.gitkeep"))).toBe(true)
+    expect(() => cli("article", "new-notes", "unassigned")).toThrow()
+    expect(fs.existsSync(path.join(source, "inbox"))).toBe(false)
+    cli("article", "new-notes", "second-note", "--module", "practice")
+    const secondDate = parse(
+      fs
+        .readFileSync(path.join(source, "soc-l2/practice/vi/second-note.md"), "utf8")
+        .split("---")[1],
+    ).date
+    expect(secondDate).toBe(viDate)
+    cli(
+      "path",
+      "composed-course",
+      "--topic",
+      "new",
+      "--modules",
+      "new-notes/foundations,new-notes/practice",
+    )
+    const composed = JSON.parse(fs.readFileSync(path.join(app, "site/paths.json"), "utf8")).find(
+      (item: { slug: string }) => item.slug === "composed-course",
+    )
+    expect(composed.status).toBe("draft")
+    expect(composed.sections.map((item: { module: string }) => item.module)).toEqual([
+      "new-notes/foundations",
+      "new-notes/practice",
+    ])
+    cli(
+      "path",
+      "grouped-course",
+      "--repo",
+      "new-notes",
+      "--group",
+      "soc-l2",
+      "--topic",
+      "new",
+      "--modules",
+      "new-notes/practice",
+    )
+    const grouped = JSON.parse(
+      fs.readFileSync(path.join(source, "soc-l2/learning-path.json"), "utf8"),
+    )
+    expect(grouped.slug).toBe("grouped-course")
+    expect(grouped.status).toBe("draft")
+    expect(
+      JSON.parse(fs.readFileSync(path.join(source, "module.json"), "utf8")).learningPaths,
+    ).toContain("soc-l2/learning-path.json")
     expect(loadContentConfig(app).repositories[0].repository).toBe("owner/new-notes")
     expect(fs.existsSync(path.join(source, ".github/workflows/notify-root.yml"))).toBe(true)
     await buildContent(app)
@@ -164,7 +260,7 @@ describe("independent content repositories", () => {
     expect(
       JSON.parse(fs.readFileSync(path.join(app, "generated/content.json"), "utf8")).entries[0].href,
     ).toBe("/vi/modules/new-notes/first-note/")
-    expect(() => cli("article", "new-notes", "first-note")).toThrow()
+    expect(() => cli("article", "new-notes", "first-note", "--module", "foundations")).toThrow()
   })
   it("keeps standalone dependencies and every registered notification workflow portable", () => {
     const app = path.resolve(import.meta.dirname, "../.."),

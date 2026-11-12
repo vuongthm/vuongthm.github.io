@@ -9,6 +9,7 @@ import profile from "@/site/profile.json"
 import {
   ArrowLeft,
   ArrowRight,
+  CornerDownLeft,
   Bookmark,
   BookmarkCheck,
   Check,
@@ -29,6 +30,7 @@ import type { EntryMeta, LearningPath } from "@/lib/content/types"
 import { ReaderPathContext } from "@/components/learning/learning-path-view"
 import type { Heading } from "@/lib/content/markdown"
 import { toggleBookmark, useBookmarks } from "@/lib/bookmarks"
+import { libraryMessages } from "@/lib/i18n/library"
 const EMPTY_HEADINGS: Heading[] = []
 export function ReaderFrame({
   entry,
@@ -71,6 +73,9 @@ export function ReaderFrame({
     [shared, setShared] = useState(false)
   const articleRef = useRef<HTMLElement>(null),
     progressRef = useRef<HTMLDivElement>(null)
+  const focusOpener = useRef<HTMLButtonElement>(null),
+    focusExit = useRef<HTMLButtonElement>(null)
+  const hadFocus = useRef(false)
   useEffect(() => {
     const tick = () => {
       const article = articleRef.current
@@ -97,12 +102,22 @@ export function ReaderFrame({
 
   useEffect(() => {
     document.documentElement.toggleAttribute("data-reading-focus", focus)
+    const frame = requestAnimationFrame(() => {
+      if (focus) {
+        hadFocus.current = true
+        focusExit.current?.focus({ preventScroll: true })
+      } else if (hadFocus.current) {
+        hadFocus.current = false
+        focusOpener.current?.focus({ preventScroll: true })
+      }
+    })
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape") setFocus(false)
     }
     document.addEventListener("keydown", key)
     return () => {
       document.documentElement.removeAttribute("data-reading-focus")
+      cancelAnimationFrame(frame)
       document.removeEventListener("keydown", key)
     }
   }, [focus])
@@ -283,7 +298,12 @@ export function ReaderFrame({
                   >
                     <Plus size={12} />
                   </button>
-                  <button onClick={() => setFocus(true)} aria-label={m.focus} title={m.focus}>
+                  <button
+                    ref={focusOpener}
+                    onClick={() => setFocus(true)}
+                    aria-label={m.focus}
+                    title={m.focus}
+                  >
                     <Focus size={14} />
                   </button>
                 </div>
@@ -387,9 +407,18 @@ export function ReaderFrame({
         </Dialog>
       )}
       {focus && (
-        <button className="button primary focus-exit" onClick={() => setFocus(false)}>
-          <X size={14} />
-          {m.exitFocus} <kbd>Esc</kbd>
+        <button
+          className="focus-exit"
+          ref={focusExit}
+          onClick={() => setFocus(false)}
+          aria-label={m.exitFocus}
+          title={libraryMessages[locale].focusHint}
+        >
+          <span className="focus-exit-icon">
+            <CornerDownLeft size={17} strokeWidth={1.5} />
+          </span>
+          <span>{libraryMessages[locale].focusBack}</span>
+          <kbd>esc</kbd>
         </button>
       )}
     </>

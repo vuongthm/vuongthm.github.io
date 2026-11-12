@@ -22,26 +22,13 @@
   font-size: 11px;
   color: var(--accent);
 }
-.album-photo-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
-}
 .album-photo {
   position: relative;
-  aspect-ratio: 1;
   padding: 0;
-  border-radius: 5px;
-  overflow: hidden;
-  background: var(--soft);
-  text-align: left;
   isolation: isolate;
 }
 .album-photo > img,
 .album-photo > video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   display: block;
   transition: transform 0.3s ease;
 }
@@ -50,29 +37,19 @@
   transform: scale(1.035);
 }
 .album-photo-caption {
-  position: absolute;
   inset: auto 0 0;
-  padding: 34px 12px 12px;
-  background: #1010119e;
-  color: #fff;
-  opacity: 0;
-  transform: translateY(5px);
   transition:
     opacity 0.2s,
     transform 0.2s;
 }
 .album-photo-caption strong {
-  font-size: 12px;
   line-height: 1.6;
-  font-weight: 500;
   display: block;
   overflow-wrap: anywhere;
 }
 .album-photo-caption small {
   display: block;
-  font-size: 9px;
   margin-top: 2px;
-  color: #e0e0e0;
 }
 .album-photo:hover .album-photo-caption,
 .album-photo:focus-visible .album-photo-caption {
@@ -92,171 +69,11 @@
   border-radius: 4px;
   font-size: 9px;
 }
-.journal-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 23px;
-}
-.journal-tabs {
-  display: flex;
-  gap: 5px;
-  padding: 4px;
-  background: var(--soft);
-  border-radius: 8px;
-}
-.journal-tabs button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 17px;
-  min-height: 40px;
-  border-radius: 5px;
-  font-size: 12px;
-  color: var(--muted);
-}
-.journal-tabs [aria-selected="true"] {
-  color: var(--ink);
-  background: var(--paper);
-  box-shadow: 0 1px 5px #0000000a;
-}
-.journal-tabs button:hover {
-  color: var(--accent);
-}
-.journal-library-count {
-  font-size: 10px;
-  color: var(--muted);
-}
-.journal-panel:focus-visible {
-  outline-offset: 8px;
-}
-.journal-album-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 28px 20px;
-}
-.journal-album-card {
-  min-width: 0;
-}
-.journal-album-cover {
-  display: grid;
-  place-items: center;
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 1.15;
-  border-radius: 10px;
-  background: var(--soft);
-  color: var(--muted);
-}
-.journal-album-cover > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s;
-}
-.journal-album-count {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  border-radius: 4px;
-  background: #171718c9;
-  color: #fff;
-  padding: 4px 8px;
-  font-size: 9px;
-}
-.journal-album-card h2 {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.6;
-  margin-top: 12px;
-}
-.journal-album-card p {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 5px;
-  line-height: 1.8;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.journal-album-card:hover img {
-  transform: scale(1.035);
-}
-.journal-album-card:hover h2 {
-  color: var(--accent);
-}
-.journal-story-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-.journal-story-card {
-  display: block;
-  position: relative;
-  aspect-ratio: 4/4.3;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #252527;
-  isolation: isolate;
-}
-.journal-story-card > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s;
-}
-.journal-story-shade,
+
 .photo-collage-shade {
   position: absolute;
   inset: 0;
   background: #0c0c0d80;
-}
-.journal-story-copy {
-  position: absolute;
-  inset: auto 0 0;
-  padding: 23px;
-  color: #fff;
-}
-.journal-story-copy > small {
-  font-size: 9px;
-  color: #e1e1e1;
-}
-.journal-story-copy h2 {
-  font:
-    500 21px/1.5 var(--font-heading),
-    sans-serif;
-  margin-top: 9px;
-  letter-spacing: -0.025em;
-}
-.journal-story-copy > p {
-  font-size: 11px;
-  line-height: 1.8;
-  color: #e3e3e3;
-  margin-top: 8px;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition:
-    opacity 0.2s,
-    max-height 0.2s;
-}
-.journal-story-copy > span {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 10px;
-  margin-top: 14px;
-}
-.journal-story-card:hover > img {
-  transform: scale(1.025);
-}
-.journal-story-card:hover .journal-story-copy > p,
-.journal-story-card:focus-visible .journal-story-copy > p {
-  max-height: 80px;
-  opacity: 1;
 }
 .photo-collage {
   display: grid;
@@ -330,44 +147,13 @@
   .album-photo-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .journal-album-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 @media (max-width: 760px) {
-  .journal-nav {
-    margin-bottom: 18px;
-    gap: 10px;
-  }
-  .journal-tabs {
-    gap: 2px;
-    padding: 3px;
-  }
-  .journal-tabs button {
-    padding: 8px 12px;
-    font-size: 11px;
-    gap: 6px;
-    min-height: 37px;
-  }
-  .journal-tabs svg {
-    width: 14px;
-    height: 14px;
-  }
-  .journal-library-count {
-    display: none;
-  }
-  .album-photo-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
-  }
   .album-photo {
     border-radius: 3px;
   }
   .album-photo-caption {
     padding: 25px 8px 8px;
-  }
-  .album-photo-caption strong {
-    font-size: 10px;
   }
   .album-photo-caption small {
     display: none;
@@ -377,37 +163,6 @@
     right: 6px;
     font-size: 8px;
     padding: 3px 5px;
-  }
-  .journal-album-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px 13px;
-  }
-  .journal-album-card h2 {
-    font-size: 12px;
-    margin-top: 9px;
-  }
-  .journal-album-card p {
-    font-size: 10px;
-  }
-  .journal-story-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 13px;
-  }
-  .journal-story-card {
-    aspect-ratio: 3/4;
-  }
-  .journal-story-copy {
-    padding: 15px 12px;
-  }
-  .journal-story-copy h2 {
-    font-size: 16px;
-    margin-top: 6px;
-  }
-  .journal-story-copy > small {
-    font-size: 8px;
-  }
-  .journal-story-copy > span {
-    font-size: 9px;
   }
   .photo-collage {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -440,9 +195,6 @@
 @media (prefers-reduced-motion: reduce) {
   .album-photo > img,
   .album-photo-caption,
-  .journal-album-cover > img,
-  .journal-story-card > img,
-  .journal-story-copy > p,
   .photo-collage img,
   .photo-collage-copy,
   .photo-collage-shade {
@@ -480,11 +232,13 @@
   align-items: center;
 }
 .photo-viewer-toolbar b {
-  font: 11px var(--font-mono);
+  font: 11px var(--font-ui);
   color: #f2f2f0;
+  font-variant-numeric: tabular-nums;
 }
 .photo-viewer-total {
-  font: 10px var(--font-mono);
+  font: var(--type-caption) var(--font-ui);
+  font-variant-numeric: tabular-nums;
 }
 .photo-viewer-close {
   display: grid;
@@ -540,9 +294,9 @@
 }
 .photo-viewer-caption h2 {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.6;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-heading);
 }
 .photo-viewer-caption p {
   font-size: 10px;
@@ -573,7 +327,6 @@
   place-items: center;
 }
 .photo-viewer-thumbnails button[aria-current="true"] {
-  border-color: #9cbfff;
   opacity: 1;
 }
 .photo-viewer-thumbnails button:hover {

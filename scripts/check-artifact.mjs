@@ -35,11 +35,11 @@ const cssFiles = files.filter((file) => file.endsWith(".css"))
 if (!cssFiles.length) throw new Error("No compiled stylesheets in the export")
 const stylesheetText = cssFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n")
 for (const selector of [
-  ".footer-main",
-  ".journey-detail",
-  ".journey-route",
-  ".subject-card",
-  ".story-grid",
+  ".compact-footer-main",
+  ".life-road",
+  ".road-ink",
+  ".subject-catalog-item",
+  ".story-exhibition",
 ])
   if (!stylesheetText.includes(selector))
     throw new Error(`Missing required component styles: ${selector}`)

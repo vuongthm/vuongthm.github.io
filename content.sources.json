@@ -36,7 +36,8 @@
       }
     ],
     "photoJournal": "site/photo-journal.md",
-    "shelf": "site/shelf.md"
+    "shelf": "site/shelf.md",
+    "journey": "site/journey.md"
   },
   "sources": [],
   "repositories": [
@@ -53,11 +54,6 @@
     {
       "id": "journey",
       "repository": "vuongthm/journey",
-      "ref": "main"
-    },
-    {
-      "id": "learning-notes",
-      "repository": "vuongthm/learning-notes",
       "ref": "main"
     },
     {
@@ -81,8 +77,8 @@
       "ref": "main"
     },
     {
-      "id": "soc-notes",
-      "repository": "vuongthm/soc-notes",
+      "id": "security-analyst",
+      "repository": "vuongthm/security-analyst",
       "ref": "main"
     },
     {

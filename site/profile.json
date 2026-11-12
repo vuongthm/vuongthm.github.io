@@ -14,13 +14,7 @@
       "zh": "我喜欢弄清原理、动手尝试，并记录学到的东西。这里有技术笔记、个人项目，也有屏幕之外的故事。"
     }
   ],
-  "interests": [
-    "Security",
-    "Network",
-    "Cloud",
-    "AI",
-    "Photography"
-  ],
+  "interests": ["Security", "Network", "Cloud", "AI", "Photography"],
   "timeline": [
     {
       "label": "2005",
@@ -56,7 +50,7 @@
       "label": "2023",
       "title": {
         "vi": "Bước đến Đà Nẵng",
-        "en": "Arriving in Đà Nẵng",
+        "en": "Arriving in Da Nang",
         "ja": "ダナンへ",
         "zh": "走进岘港"
       },

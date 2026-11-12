@@ -16,17 +16,10 @@
   font-size: 10px;
 }
 .music-heading h1 {
-  font:
-    500 clamp(31px, 4vw, 45px)/1.35 var(--font-heading),
-    Georgia,
-    serif;
-  letter-spacing: -0.04em;
   margin-top: 11px;
 }
 .music-heading p {
-  font-size: 13px;
   color: var(--muted);
-  line-height: 1.9;
   margin-top: 13px;
 }
 .music-heading > button {
@@ -37,7 +30,6 @@
 .music-layout {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 64px;
   align-items: start;
 }
 .music-now {
@@ -121,12 +113,7 @@
   font-size: 9px;
 }
 .music-now-meta h2 {
-  font:
-    500 25px/1.4 var(--font-heading),
-    Georgia,
-    serif;
-  margin-top: 8px;
-  letter-spacing: -0.025em;
+  letter-spacing: var(--tracking-heading);
 }
 .music-now-meta p {
   font-size: 12px;
@@ -168,7 +155,8 @@
   justify-content: space-between;
   margin-top: 4px;
   color: var(--muted);
-  font: 10px var(--font-mono);
+  font: var(--type-caption) var(--font-ui);
+  font-variant-numeric: tabular-nums;
 }
 .music-controls {
   display: flex;
@@ -303,11 +291,12 @@
   border-radius: 2px;
 }
 .music-panel-tabs small {
-  font: 9px var(--font-mono);
+  font: var(--type-caption) var(--font-ui);
   color: var(--muted);
   padding: 4px 6px;
   background: var(--soft);
   border-radius: 4px;
+  font-variant-numeric: tabular-nums;
 }
 .music-library [role="tabpanel"] {
   outline: 0;
@@ -317,9 +306,7 @@
   align-items: center;
   gap: 9px;
   padding: 9px 12px;
-  background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 6px;
   margin-top: 21px;
   color: var(--muted);
 }
@@ -330,7 +317,6 @@
   border: 0;
   outline: 0;
   background: transparent;
-  font-size: 12px;
 }
 .music-search button {
   display: grid;
@@ -369,12 +355,10 @@
   align-items: center;
   min-width: 0;
   border: 1px solid transparent;
-  border-radius: 7px;
   padding: 6px 9px 6px 0;
 }
 .music-track.active {
   border-color: var(--line);
-  background: var(--paper);
 }
 .music-track:hover {
   background: var(--soft);
@@ -392,7 +376,8 @@
   text-align: center;
   flex-shrink: 0;
   color: var(--muted);
-  font: 10px var(--font-mono);
+  font: var(--type-caption) var(--font-ui);
+  font-variant-numeric: tabular-nums;
 }
 .music-track-number > svg {
   margin: auto;
@@ -410,7 +395,6 @@
 .music-track-main strong {
   display: block;
   font-size: 12px;
-  font-weight: 500;
   line-height: 1.6;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -479,10 +463,7 @@
 .music-lyrics > p {
   color: var(--muted);
   text-align: left;
-  font:
-    400 clamp(15px, 1.25vw, 17px)/1.85 var(--font-inter),
-    Georgia,
-    serif;
+  font: 400 clamp(15px, 1.25vw, 17px)/1.85 var(--font-ui);
   transition: color 0.2s;
 }
 .music-lyrics > button.active {
@@ -503,10 +484,7 @@
   color: var(--accent-hover);
 }
 .music-lyrics-empty h3 {
-  font:
-    500 23px/1.6 var(--font-heading),
-    Georgia,
-    serif;
+  font: 600 23px/1.6 var(--font-heading);
   margin-top: 22px;
   color: var(--ink);
 }
@@ -529,14 +507,6 @@
   margin-top: 20px;
   font-size: 12px;
   line-height: 1.8;
-}
-.folio-music-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 34px;
-  color: var(--accent);
-  font-size: 12px;
 }
 @keyframes music-level {
   from {
@@ -573,9 +543,6 @@
     max-width: 210px;
     font-size: 9px;
   }
-  .music-heading h1 {
-    font-size: 30px;
-  }
   .music-heading p {
     font-size: 12px;
   }
@@ -590,14 +557,10 @@
   }
   .music-layout {
     grid-template-columns: 1fr;
-    gap: 32px;
   }
   .music-artwork {
     width: min(100%, 350px);
     margin: auto;
-  }
-  .music-now-meta h2 {
-    font-size: 23px;
   }
   .music-controls {
     gap: 18px;
@@ -712,8 +675,6 @@
   width: 100%;
   aspect-ratio: 16/9;
   min-height: 200px;
-  overflow: hidden;
-  border-radius: 9px;
   background: var(--soft);
 }
 .music-player-slot > img {
@@ -726,7 +687,6 @@
 .music-player-slot.is-audio {
   width: min(100%, 350px);
   aspect-ratio: 1;
-  margin: auto;
 }
 .music-playback-surface {
   position: fixed;
@@ -834,8 +794,9 @@
 }
 .music-dock-timeline span {
   color: var(--muted);
-  font: 10px var(--font-mono);
+  font: var(--type-caption) var(--font-ui);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .music-dock-close {
   margin-left: auto;

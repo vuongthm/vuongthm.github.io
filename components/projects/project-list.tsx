@@ -1,11 +1,15 @@
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, ArrowDown, MoveUpRight } from "lucide-react"
 import { LockBadge } from "@/components/reading/lock-badge"
 import type { Project } from "@/lib/content/types"
 import type { Locale } from "@/lib/i18n/config"
 import { copy } from "@/lib/i18n/copy"
+import { newestProjects } from "@/lib/content/project-order"
+import { designMessages } from "@/lib/i18n/design"
 
 export function ProjectList({ projects, locale }: { projects: Project[]; locale: Locale }) {
+  const ordered = newestProjects(projects),
+    text = designMessages[locale]
   return (
     <section
       className="signpost-garden"
@@ -22,34 +26,51 @@ export function ProjectList({ projects, locale }: { projects: Project[]; locale:
       <p className="signpost-caption">
         {copy(locale, "Mỗi dự án, một hướng khám phá.", "Every project, a direction to explore.")}
       </p>
-      <ol className="project-signpost">
-        {projects.map((project, index) => (
-          <li className="signpost-branch" key={project.slug}>
-            <span className="signpost-bolt" aria-hidden="true" />
-            <Link
-              className={`project-sign sign-tone-${index % 3}`}
-              href={project.href}
-              prefetch={project.encrypted ? false : undefined}
-            >
-              <span className="sign-meta">
-                <span>
-                  {String(index + 1).padStart(2, "0")} / {project.category}
+      <div className="signpost-index-label">
+        <span>
+          {text.projectIndex} / {String(projects.length).padStart(2, "0")}
+        </span>
+        <span>
+          {text.newest}
+          <MoveUpRight size={12} />
+        </span>
+      </div>
+      <div className="signpost-scroll" role="region" tabIndex={0} aria-label={text.projectIndex}>
+        <ol className="project-signpost">
+          {ordered.map((project, index) => (
+            <li className="signpost-branch" key={project.slug}>
+              <span className="signpost-bolt" aria-hidden="true" />
+              <Link
+                className={`project-sign sign-tone-${index % 3}`}
+                href={project.href}
+                prefetch={project.encrypted ? false : undefined}
+              >
+                <span className="sign-meta">
+                  <span>
+                    {String(index + 1).padStart(2, "0")} / {project.category}
+                  </span>
+                  <span>{project.year}</span>
                 </span>
-                <span>{project.year}</span>
-              </span>
-              <h2>
-                {project.title}
-                {project.encrypted && <LockBadge locale={locale} />}
-              </h2>
-              <p>{project.description[locale]}</p>
-              <span className="sign-bottom">
-                <span>{project.stack.slice(0, 3).join(" · ")}</span>
-                <ArrowRight size={20} aria-hidden="true" />
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ol>
+                <h2>
+                  {project.title}
+                  {project.encrypted && <LockBadge locale={locale} />}
+                </h2>
+                <p>{project.description[locale]}</p>
+                <span className="sign-bottom">
+                  <span>{project.stack.slice(0, 3).join(" · ")}</span>
+                  <ArrowRight size={20} aria-hidden="true" />
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </div>
+      {projects.length > 4 && (
+        <span className="signpost-scroll-hint">
+          {text.scroll}
+          <ArrowDown size={13} />
+        </span>
+      )}
       <div className="signpost-ground" aria-hidden="true">
         <svg viewBox="0 0 500 42">
           <path d="M5 35Q125 8 250 27Q360 12 495 35M205 30l-8-12m38 8 5-17m38 20 10-12" />

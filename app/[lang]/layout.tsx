@@ -6,8 +6,9 @@ import music from "@/generated/music.json"
 import type { MusicTrack } from "@/lib/music/types"
 import { SiteShell } from "@/components/layout/site-shell"
 import { isLocale, localeCodes } from "@/lib/i18n/config"
-import { getEntryMeta } from "@/lib/content/server"
-import { readingShelf } from "@/lib/content/site-pages"
+import { getEntryMeta, getPaths } from "@/lib/content/server"
+import { PathPreviewProvider } from "@/components/learning/path-preview-provider"
+import { journeyPage, readingShelf } from "@/lib/content/site-pages"
 import { PageAccess } from "@/components/providers/page-access"
 import access from "@/generated/access.json"
 import type { AccessRule } from "@/lib/content/access"
@@ -40,9 +41,14 @@ export default async function Layout({
           }))}
       >
         <MusicProvider tracks={music as MusicTrack[]}>
-          <SiteShell shelfLocked={!!readingShelf?.encrypted}>
-            <PageAccess rules={access as AccessRule[]}>{children}</PageAccess>
-          </SiteShell>
+          <PathPreviewProvider paths={getPaths()} entries={getEntryMeta(lang)}>
+            <SiteShell
+              shelfLocked={!!readingShelf?.encrypted}
+              journeyLocked={!!journeyPage?.encrypted}
+            >
+              <PageAccess rules={access as AccessRule[]}>{children}</PageAccess>
+            </SiteShell>
+          </PathPreviewProvider>
         </MusicProvider>
       </SiteProvider>
     </Document>

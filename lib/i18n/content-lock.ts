@@ -3,8 +3,7 @@ export const contentLockMessages = {
     openDialog: "Nhập mật khẩu",
     toc: "Mục lục sẽ hiện sau khi mở bài.",
     title: "Nội dung riêng tư",
-    description:
-      "Nội dung này đã được mã hóa bảo mật. Vui lòng nhập đúng mật khẩu để mở khóa và xem chi tiết.",
+    description: "Nhập mật khẩu được chia sẻ với bạn để tiếp tục.",
     password: "Mật khẩu",
     unlock: "Mở khóa",
     back: "Quay lại",
@@ -21,8 +20,7 @@ export const contentLockMessages = {
     openDialog: "Enter password",
     toc: "The contents appear after unlocking.",
     title: "Private content",
-    description:
-      "This content is securely encrypted. Enter the correct password to unlock it and see the details.",
+    description: "Enter the password shared with you to continue.",
     password: "Password",
     unlock: "Unlock",
     back: "Go back",
@@ -39,8 +37,7 @@ export const contentLockMessages = {
     openDialog: "パスワードを入力",
     toc: "ロックを解除すると目次が表示されます。",
     title: "プライベートコンテンツ",
-    description:
-      "このコンテンツは安全に暗号化されています。正しいパスワードを入力して、詳細をご覧ください。",
+    description: "共有されたパスワードを入力して、続きをご覧ください。",
     password: "パスワード",
     unlock: "ロックを解除",
     back: "戻る",
@@ -57,7 +54,7 @@ export const contentLockMessages = {
     openDialog: "输入密码",
     toc: "解锁后将显示目录。",
     title: "私密内容",
-    description: "此内容已安全加密。请输入正确的密码以解锁并查看详情。",
+    description: "输入与你分享的密码以继续阅读。",
     password: "密码",
     unlock: "解锁",
     back: "返回",

@@ -12,6 +12,8 @@ import { authorProfile as profile } from "@/lib/content/profile"
 import { friendsMessages } from "@/lib/i18n/friends"
 import { DistanceMap } from "@/components/experience/distance-map"
 import { studio } from "@/lib/i18n/studio"
+import { coastMessages } from "@/lib/i18n/coast"
+import { PhotoCollage } from "@/components/album/photo-collage"
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   return isLocale(lang)
@@ -48,6 +50,24 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
         }}
       />
       <section className="wrap folio-hero" aria-labelledby="about-title">
+        <figure className="folio-portrait">
+          <div className="folio-portrait-image">
+            <Image
+              src={profile.portrait}
+              alt="Vuong — vuongthm"
+              fill
+              sizes="(max-width:700px) 80vw, 35vw"
+              unoptimized
+              priority
+            />
+          </div>
+          <figcaption>
+            <span>vuong.</span>
+            <span>
+              {localeName("Đại Lãnh", lang)} <ArrowRight size={12} /> {localeName("Đà Nẵng", lang)}
+            </span>
+          </figcaption>
+        </figure>
         <div className="folio-introduction">
           <span className="folio-kicker">
             {copy(lang, "Về người viết", "The person behind the notes")}
@@ -99,91 +119,22 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
             </Link>
           </div>
         </div>
-        <figure className="folio-portrait">
-          <div className="folio-portrait-image">
-            <Image
-              src={profile.portrait}
-              alt="Vuong — vuongthm"
-              fill
-              sizes="(max-width:700px) 80vw, 35vw"
-              unoptimized
-              priority
-            />
-          </div>
-          <figcaption>
-            <span>vuong.</span>
-            <span>
-              {localeName("Đại Lãnh", lang)} <ArrowRight size={12} /> {localeName("Đà Nẵng", lang)}
-            </span>
-          </figcaption>
-        </figure>
       </section>
-      <DistanceMap />
-      <section className="wrap about-offscreen" aria-labelledby="offscreen-title">
-        <header>
-          <span className="eyebrow">{copy(lang, "Ngoài màn hình", "Beyond the screen")}</span>
-          <h2 id="offscreen-title">
-            {copy(lang, "Một chút nơi mình bắt đầu.", "A little of where it all began.")}
-          </h2>
-          <p>{profile.timeline[0].description[lang]}</p>
-          <Link className="text-link" href={localized("/my-album/", lang)}>
-            {copy(lang, "Ghé góc ảnh", "Visit the photo journal")}
+      <section className="wrap about-coast" aria-labelledby="coast-title">
+        <header className="about-coast-heading">
+          <div>
+            <span className="eyebrow">{coastMessages[lang].eyebrow}</span>
+            <h2 id="coast-title">{coastMessages[lang].title}</h2>
+            <p>{coastMessages[lang].note}</p>
+          </div>
+          <Link href={localized("/my-album/dai-lanh/", lang)} className="about-coast-link">
+            {coastMessages[lang].album}
             <ArrowUpRight size={15} />
           </Link>
         </header>
-        <div className="about-contact-sheet">
-          {profile.photos.map((photo, index) => (
-            <figure key={photo.src}>
-              <div>
-                <Image
-                  src={photo.src}
-                  alt={photo.title[lang]}
-                  fill
-                  sizes="(max-width:760px) 75vw, 30vw"
-                  unoptimized
-                />
-              </div>
-              <figcaption>
-                <small>0{index + 1}</small>
-                <span>{photo.title[lang]}</span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+        <PhotoCollage photos={profile.photos} />
       </section>
-      <section className="wrap about-in-practice" aria-labelledby="practice-title">
-        <header>
-          <span className="eyebrow">{copy(lang, "Học bằng cách làm", "Learning by doing")}</span>
-          <h2 id="practice-title">
-            {copy(lang, "Những điều thành trải nghiệm.", "Things that became experiences.")}
-          </h2>
-        </header>
-        <div>
-          {profile.achievements.map((item, index) => (
-            <article key={item.title.en}>
-              <span className="practice-number">0{index + 1}</span>
-              <div>
-                <span className="eyebrow">{item.category[lang]}</span>
-                <h3>{item.title[lang]}</h3>
-                <p>{item.description[lang]}</p>
-                {item.href && (
-                  <Link className="text-link" href={localized(item.href, lang)}>
-                    {copy(lang, "Đọc thêm một chút", "A little more")}
-                    <ArrowUpRight size={15} />
-                  </Link>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-      <section className="wrap about-postscript" aria-labelledby="contact-title">
-        <h2 id="contact-title">{art.contact}</h2>
-        <a href={`mailto:${siteConfig.email}`}>
-          {siteConfig.email}
-          <ArrowUpRight size={18} />
-        </a>
-      </section>
+      <DistanceMap />
     </main>
   )
 }

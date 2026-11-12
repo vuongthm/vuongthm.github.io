@@ -6,6 +6,7 @@ import { copy } from "@/lib/i18n/copy"
 import { metadataFor } from "@/lib/seo"
 import { PageHeading } from "@/components/layout/page-heading"
 import { Library } from "@/components/knowledge/library"
+import { TopicPending } from "@/components/knowledge/topic-pending"
 type Params = Promise<{ lang: string; module: string }>
 export function generateStaticParams() {
   return localeCodes.flatMap((lang) =>
@@ -34,17 +35,24 @@ export default async function Page({ params }: { params: Params }) {
         title={item.title[lang]}
         description={item.description[lang]}
         back={{
-          href: localized("/modules/", lang),
-          label: copy(lang, "Các bộ sưu tập", "Content collections"),
+          href: localized("/topics/", lang),
+          label: copy(lang, "Bản đồ chủ đề", "Topic map"),
         }}
       />
       <div className="wrap">
-        <Suspense>
-          <Library
-            entries={getEntryMeta(lang).filter((entry) => entry.moduleId === module)}
-            paths={getPaths().filter((path) => item.topics.includes(path.topic))}
-          />
-        </Suspense>
+        {item.available === false ? (
+          <TopicPending locale={lang} />
+        ) : (
+          <Suspense>
+            <Library
+              entries={getEntryMeta(lang).filter((entry) => entry.moduleId === module)}
+              learningEntries={getEntryMeta(lang)}
+              paths={getPaths().filter((path) =>
+                item.topics.some((topic) => path.topic === topic || path.topics?.includes(topic)),
+              )}
+            />
+          </Suspense>
+        )}
       </div>
     </main>
   )

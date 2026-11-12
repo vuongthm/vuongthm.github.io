@@ -6,6 +6,8 @@ import { getEntryMeta, getPaths } from "@/lib/content/server"
 import { metadataFor } from "@/lib/seo"
 import { PageHeading } from "@/components/layout/page-heading"
 import { Library } from "@/components/knowledge/library"
+import { knowledgeMessages } from "@/lib/i18n/knowledge"
+import { messages } from "@/lib/i18n/messages"
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   if (!isLocale(lang)) return {}
@@ -24,15 +26,11 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
   const { lang } = await params
   if (!isLocale(lang)) notFound()
   return (
-    <main id="main-content">
+    <main id="main-content" className="notes-page">
       <PageHeading
-        eyebrow={copy(lang, "Bài viết", "Writing")}
-        title={copy(lang, "Thư viện kiến thức", "Knowledge library")}
-        description={copy(
-          lang,
-          "Những điều mình đã học và thử làm. Tìm theo chủ đề, loại bài hoặc khái niệm bạn quan tâm.",
-          "Things I’ve learned and put into practice. Browse by subject, article type, or a concept you’re curious about.",
-        )}
+        eyebrow={messages(lang).knowledge}
+        title={knowledgeMessages[lang].writingTitle}
+        description={knowledgeMessages[lang].writingIntro}
       />
       <div className="wrap">
         {lang === "zh" && (
@@ -40,7 +38,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
         )}
         {lang === "ja" && (
           <p className="content-availability">
-            日本語の記事はOSIモデルのサンプルです。「英語」と表示された記事は英語の本文を開きます。
+            公開済みの記事から順に読めます。「英語」と表示された記事は英語の原文で開きます。
           </p>
         )}
         <Suspense

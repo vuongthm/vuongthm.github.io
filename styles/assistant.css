@@ -76,12 +76,9 @@
 }
 .assistant-welcome h2,
 .assistant-settings h2 {
-  font:
-    500 clamp(25px, 3vw, 31px)/1.45 var(--font-heading),
-    Georgia,
-    serif;
+  font: 600 var(--type-section-title)/1.45 var(--font-heading);
   margin: 16px 0 13px;
-  letter-spacing: -0.035em;
+  letter-spacing: var(--tracking-heading);
 }
 .assistant-welcome > p {
   font-size: 13px;
@@ -262,15 +259,9 @@
   padding: 12px;
   margin: 16px 20px 8px;
 }
-.assistant-input:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-light);
-}
 .assistant-input textarea {
   width: 100%;
   resize: none;
-  border: 0;
-  outline: 0;
   background: transparent;
   font-size: 13px;
   line-height: 1.7;

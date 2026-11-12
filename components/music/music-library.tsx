@@ -148,7 +148,7 @@ export function MusicLibrary({
             tabIndex={0}
           >
             <div id="music-panel-lyrics" hidden />
-            <div className="music-search">
+            <div className="music-search" data-search-field>
               <Search size={16} />
               <input
                 type="search"

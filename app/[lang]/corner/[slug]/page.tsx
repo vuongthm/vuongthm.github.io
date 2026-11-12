@@ -50,7 +50,7 @@ export default async function Page({ params }: { params: Params }) {
         </div>
         <article>
           <span className="eyebrow">
-            {text[item.category]} · {item.sample ? text.sample : text[item.shelfStatus]}
+            {text[item.category]} · {text[item.shelfStatus]}
           </span>
           <h1>{item.title[lang]}</h1>
           {item.creator[lang] && <p className="corner-creator">{item.creator[lang]}</p>}

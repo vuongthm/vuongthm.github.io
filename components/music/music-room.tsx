@@ -101,7 +101,7 @@ export function MusicRoom() {
       <div className="music-layout">
         <section className="music-now" aria-labelledby="now-title">
           <MusicPlayerSlot />
-          {error && (
+          {error && videoError !== current.id && (
             <p className="music-feedback" role="alert">
               {error}
             </p>

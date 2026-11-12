@@ -84,6 +84,9 @@ function PhotoGrid({ photos, start }: { photos: GalleryPhoto[]; start: number })
                 decoding="async"
               />
             )}
+            <span className="album-photo-frame" aria-hidden="true">
+              {String(start + index + 1).padStart(2, "0")}
+            </span>
             <span className="album-photo-caption">
               <strong>{photo.title[locale]}</strong>
               {photo.place && <small>{localeName(photo.place, locale)}</small>}

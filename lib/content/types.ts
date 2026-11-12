@@ -3,6 +3,8 @@ export type ContentKind = "note" | "guide" | "lab" | "writeup" | "reference"
 export type Level = "beginner" | "intermediate" | "advanced"
 export interface EntryMeta {
   moduleId?: string
+  contentModule?: { id: string; title: Record<Locale, string>; order: number }
+  order?: number
   id: string
   translationKey: string
   slug: string
@@ -23,7 +25,8 @@ export interface EntryMeta {
   seriesSlug?: string
   part?: number
   cover?: string
-  learning?: { path: string; section: string; step: string }
+  learning?: { path: string; section: string; step: string; order?: number }
+  learningPaths?: { path: string; section: string; step: string; order: number }[]
 }
 export interface Entry extends EntryMeta {
   body: string
@@ -48,6 +51,8 @@ export interface Story {
   encrypted?: boolean
 }
 export interface Project {
+  publishedAt?: string
+  updatedAt?: string
   cover?: string
   photos?: GalleryPhoto[]
   encrypted?: boolean
@@ -65,11 +70,13 @@ export interface Project {
   year: string
 }
 export interface LearningPath {
+  topics?: string[]
   moduleId?: string
   source?: { title: string; url: string }
   outcomes?: Record<Locale, string>[]
   sections?: {
     id: string
+    module?: string
     title: Record<Locale, string>
     steps: { id: string; title: Record<Locale, string>; entry?: string; translationKey?: string }[]
   }[]
@@ -170,6 +177,8 @@ export interface ProjectDocument extends Omit<Project, "title" | "href" | "body"
   bodyLocales: Record<Locale, Locale>
 }
 export interface ContentModule {
+  modules?: { id: string; path?: string; title: Record<Locale, string>; order: number }[]
+  available?: boolean
   id: string
   adapter: "notes" | "articles" | "stories" | "journey" | "projects" | "albums" | "corner"
   title: Record<Locale, string>
@@ -182,7 +191,16 @@ export interface ContentModule {
 
 export type JourneyPreview = Pick<
   JourneyItem,
-  "id" | "href" | "label" | "title" | "description" | "status" | "sample" | "photos"
+  | "id"
+  | "href"
+  | "label"
+  | "title"
+  | "description"
+  | "status"
+  | "sample"
+  | "photos"
+  | "year"
+  | "period"
 >
 
 export interface CornerDocument {
@@ -200,6 +218,8 @@ export interface CornerDocument {
   source?: string
   sample: boolean
   shelfStatus: "planned" | "current" | "finished"
+  readingProgress?: number
+  keepsakes?: Record<Locale, string[]>
   order: number
 }
 export interface CornerItem extends Omit<CornerDocument, "bodies" | "bodyLocales"> {

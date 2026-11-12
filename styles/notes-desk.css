@@ -1,0 +1,134 @@
+.notes-page .page-heading {
+  padding-block: 46px 32px;
+}
+.journal-preparing {
+  max-width: 590px;
+  padding: 40px 0 55px;
+}
+.journal-preparing > svg {
+  color: var(--accent);
+  margin-bottom: 15px;
+}
+.journal-preparing h3 {
+  font: 600 var(--type-section-title)/1.6 var(--font-heading);
+  color: var(--ink);
+}
+.journal-preparing p {
+  margin: 12px 0 20px;
+  line-height: 1.95;
+  font-size: 14px;
+  color: var(--muted);
+}
+.journal-topics .topic-unavailable {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--muted);
+  padding: 7px 10px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.topic-pending {
+  padding: 45px 0 70px;
+  max-width: 650px;
+}
+.topic-pending > svg {
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.topic-pending h2 {
+  font: 600 var(--type-section-title)/1.6 var(--font-heading);
+}
+.topic-pending p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.9;
+  margin: 10px 0 20px;
+}
+.notes-page .page-heading .eyebrow {
+  color: var(--secondary);
+}
+.article-module-label {
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.article-module-label > span {
+  color: var(--accent);
+  font: var(--type-caption) var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A quiet bookmark for returning from the reading room. */
+.focus-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  right: 24px;
+  bottom: 24px;
+  padding: 7px 12px 7px 7px;
+  min-height: 47px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: 0 5px 24px #00000012;
+  font-size: 12px;
+  font-weight: 400;
+  transition:
+    border-color 180ms,
+    transform 180ms,
+    box-shadow 180ms;
+}
+.focus-exit-icon {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 7px;
+  background: var(--accent-light);
+  color: var(--accent);
+}
+.focus-exit kbd {
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 2px 5px;
+  font: 9px/1.5 var(--font-mono);
+  color: var(--muted);
+  margin-left: 9px;
+}
+.focus-exit:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.focus-exit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+@media (max-width: 760px) {
+  .notes-page .page-heading p {
+    max-width: 50ch;
+  }
+  .focus-exit {
+    right: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    padding: 6px 11px 6px 6px;
+    min-height: 44px;
+    gap: 9px;
+    font-size: 11px;
+  }
+  .focus-exit kbd {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .focus-exit {
+    transition: none;
+  }
+}

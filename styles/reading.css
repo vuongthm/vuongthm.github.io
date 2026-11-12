@@ -6,7 +6,6 @@
   gap: 9px;
   align-items: center;
   color: var(--faint);
-  font-size: 9px;
   white-space: nowrap;
   overflow: hidden;
 }
@@ -31,7 +30,6 @@
   scrollbar-width: thin;
 }
 .reader-sidebar .eyebrow {
-  font-size: 8px;
   color: var(--faint);
   margin-bottom: 17px;
 }
@@ -44,7 +42,6 @@
 .toc-list a {
   display: block;
   padding: 8px 0 8px 15px;
-  font-size: 10px;
   line-height: 1.7;
   color: var(--muted);
   border-left: 2px solid transparent;
@@ -63,7 +60,6 @@
 }
 .toc-list .toc-nested a {
   padding-left: 26px;
-  font-size: 9px;
 }
 .reader-aside-note {
   border-top: 1px solid var(--line);
@@ -71,12 +67,10 @@
   padding-top: 19px;
 }
 .reader-aside-note p {
-  font-size: 9px;
   color: var(--faint);
   line-height: 1.8;
 }
 .reader-aside-note .text-link {
-  font-size: 9px;
   margin-top: 8px;
 }
 .reader-article {
@@ -91,14 +85,9 @@
   margin-bottom: 30px;
 }
 .article-header h1 {
-  font-size: clamp(29px, 3vw, 43px);
-  letter-spacing: -0.045em;
-  font-weight: 550;
-  line-height: 1.35;
   margin: 13px 0 18px;
 }
 .article-header > p {
-  font-size: 14px;
   line-height: 1.9;
   color: var(--muted);
 }
@@ -108,7 +97,6 @@
   gap: 10px;
   margin-top: 23px;
   color: var(--muted);
-  font-size: 10px;
   flex-wrap: wrap;
 }
 .author-avatar {
@@ -151,8 +139,6 @@
   border: 1px solid var(--line);
   background: var(--paper);
   border-radius: 3px;
-  font-size: 9px;
-  min-height: 33px;
   color: var(--muted);
 }
 .article-actions button:hover,
@@ -174,9 +160,10 @@
   justify-content: center;
 }
 .article-actions .reading-size span {
-  font: 9px var(--font-mono);
+  font: var(--type-caption) var(--font-ui);
   color: var(--faint);
   padding-inline: 3px;
+  font-variant-numeric: tabular-nums;
 }
 .reading-progress {
   position: fixed;
@@ -190,8 +177,6 @@
   pointer-events: none;
 }
 .prose {
-  font-size: var(--reading-size);
-  line-height: 1.85;
   overflow-wrap: anywhere;
   color: var(--ink);
 }
@@ -200,8 +185,7 @@
 }
 .prose h2 {
   font-size: 1.28em;
-  font-weight: 550;
-  letter-spacing: -0.035em;
+  font-weight: 600;
   line-height: 1.45;
   margin: 44px 0 19px;
   padding-bottom: 9px;
@@ -212,15 +196,11 @@
   font-weight: 600;
   line-height: 1.5;
   margin: 30px 0 14px;
-  letter-spacing: -0.02em;
 }
 .prose h4 {
   font-size: 1em;
   font-weight: 600;
   margin-top: 25px;
-}
-.prose h1 {
-  font-size: 1.7em;
 }
 .prose a {
   color: var(--accent);
@@ -328,7 +308,7 @@
   justify-content: space-between;
   border-bottom: 1px solid #2d3b53;
   color: #a8b8d2;
-  font: 9px var(--font-mono);
+  font: var(--type-caption)/1.6 var(--font-ui);
 }
 .code-toolbar button {
   display: flex;
@@ -338,7 +318,7 @@
   padding: 2px 7px;
   border-radius: 3px;
   color: #d1dced;
-  font-size: 9px;
+  font-size: var(--type-caption);
 }
 .code-toolbar button:hover {
   background: #36363b;
@@ -348,6 +328,10 @@
   margin: 0;
   padding: 17px 20px;
   tab-size: 2;
+}
+.code-block pre:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -3px;
 }
 .code-block code {
   font-family: var(--font-mono);
@@ -419,9 +403,7 @@
 .reader-bottom-nav a strong {
   font-size: 11px;
   line-height: 1.7;
-  display: block;
   margin-top: 7px;
-  font-weight: 500;
 }
 .reader-bottom-nav a + a {
   text-align: right;
@@ -429,26 +411,9 @@
 .reader-bottom-nav a + a small {
   justify-content: flex-end;
 }
-.reader-related {
-  padding-top: 35px;
-}
-.reader-related h2 {
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-}
-.reader-related .article-symbol {
-  display: none;
-}
-.reader-related .article-row h3 {
-  font-size: 14px;
-}
 .focus-exit {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
   z-index: 60;
-  box-shadow: var(--shadow);
 }
 html[data-reading-focus] [data-reading-chrome],
 html[data-reading-focus] .reader-sidebar,

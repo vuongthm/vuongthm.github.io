@@ -44,6 +44,14 @@ export default async function Page({
       )
       .filter((entry) => entry !== undefined),
     m = messages(lang)
+  if (item.sections)
+    return (
+      <main id="main-content" className="path-detail-page">
+        <div className="wrap">
+          <LearningPathView path={item} entries={entries} />
+        </div>
+      </main>
+    )
   return (
     <main id="main-content">
       <PageHeading

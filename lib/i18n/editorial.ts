@@ -30,7 +30,7 @@ const vi = {
   footerTopics: "Chủ đề",
   footerPaths: "Lộ trình đọc",
   collections: "Các bộ sưu tập",
-  shelf: "Sách, phim & podcast",
+  shelf: "Đọc sách",
 } as const
 
 export const editorial: Record<Locale, Record<keyof typeof vi, string>> = {
@@ -64,7 +64,7 @@ export const editorial: Record<Locale, Record<keyof typeof vi, string>> = {
     footerTopics: "Topics",
     footerPaths: "Reading paths",
     collections: "Collections",
-    shelf: "Books, films & podcasts",
+    shelf: "Reading",
   },
   ja: {
     homeTitle: "技術についてのノート。",
@@ -95,7 +95,7 @@ export const editorial: Record<Locale, Record<keyof typeof vi, string>> = {
     footerTopics: "テーマ",
     footerPaths: "学習コース",
     collections: "コレクション",
-    shelf: "本・映画・ポッドキャスト",
+    shelf: "読書",
   },
   zh: {
     homeTitle: "关于技术的笔记。",
@@ -126,7 +126,7 @@ export const editorial: Record<Locale, Record<keyof typeof vi, string>> = {
     footerTopics: "主题",
     footerPaths: "学习路径",
     collections: "内容合集",
-    shelf: "书籍、电影与播客",
+    shelf: "读书",
   },
 }
 

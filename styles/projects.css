@@ -1,96 +1,3 @@
-.project-directory-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 19px;
-  display: grid;
-}
-.project-preview {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  flex-direction: column;
-  transition:
-    background 0.18s,
-    border-color 0.18s;
-  display: flex;
-  overflow: hidden;
-}
-.project-preview:hover {
-  background: var(--accent-light);
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
-}
-.project-preview-image {
-  aspect-ratio: 20/11;
-  border-bottom: 1px solid var(--line);
-  background: #eceeeb;
-}
-.project-preview-image img {
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-.project-preview-copy {
-  flex-direction: column;
-  flex: 1;
-  align-items: flex-start;
-  min-width: 0;
-  padding: 19px;
-  display: flex;
-}
-.project-preview-meta {
-  width: 100%;
-  color: var(--muted);
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 10px;
-  display: flex;
-}
-.project-preview :is(h2, h3) {
-  font:
-    500 20px/1.5 var(--font-heading),
-    Georgia,
-    serif;
-  margin-top: 13px;
-}
-.project-preview p {
-  color: var(--muted);
-  flex: 1;
-  margin-top: 10px;
-  font-size: 12px;
-  line-height: 1.9;
-}
-.project-preview .stack-tags {
-  gap: 5px;
-  margin: 17px 0;
-}
-.project-preview .stack-tags span {
-  font-size: 9px;
-}
-.project-preview-action {
-  width: 100%;
-  color: var(--accent);
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-top: auto;
-  padding-top: 7px;
-  font-size: 11px;
-  display: flex;
-}
-@media (max-width: 1000px) {
-  .project-directory-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 600px) {
-  .project-directory-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-  .project-preview :is(h2, h3) {
-    font-size: 19px;
-  }
-}
 .project-detail {
   padding-top: 26px;
 }
@@ -102,12 +9,7 @@
   display: flex;
 }
 .project-detail-heading h1 {
-  font-family: var(--font-heading), Georgia, serif;
-  letter-spacing: -0.035em;
   margin-top: 10px;
-  font-size: clamp(28px, 3.6vw, 40px);
-  font-weight: 500;
-  line-height: 1.35;
 }
 .project-detail-heading p {
   max-width: 650px;
@@ -163,10 +65,7 @@
   top: 100px;
 }
 .project-facts h2 {
-  font:
-    500 19px/1.5 var(--font-heading),
-    Georgia,
-    serif;
+  font: 600 19px/1.5 var(--font-heading);
 }
 .project-facts dl {
   gap: 17px;

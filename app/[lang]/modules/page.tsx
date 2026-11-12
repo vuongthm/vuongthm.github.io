@@ -1,53 +1,33 @@
-import { PaginatedList } from "@/components/collections/paginated-list"
-import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getContentModules } from "@/lib/content/server"
-import { isLocale } from "@/lib/i18n/config"
-import { copy } from "@/lib/i18n/copy"
+import { isLocale, localized } from "@/lib/i18n/config"
+import { messages } from "@/lib/i18n/messages"
+import { knowledgeMessages } from "@/lib/i18n/knowledge"
+import { LegacyCollections } from "@/components/knowledge/legacy-collections"
 import { metadataFor } from "@/lib/seo"
-import { PageHeading } from "@/components/layout/page-heading"
-import { TopicIcon } from "@/components/knowledge/topic-icon"
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   return isLocale(lang)
-    ? metadataFor(
-        copy(lang, "Các bộ sưu tập", "Content collections"),
-        copy(
+    ? {
+        ...metadataFor(
+          messages(lang).topics,
+          knowledgeMessages[lang].subjectsIntro,
+          "/topics/",
           lang,
-          "Kiến thức, dự án và câu chuyện, sắp xếp thành những không gian riêng.",
-          "Knowledge, projects, and stories, each with their own space.",
         ),
-        "/modules/",
-        lang,
-      )
+        robots: { index: false, follow: true },
+      }
     : {}
 }
 export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   if (!isLocale(lang)) notFound()
-  const modules = getContentModules(lang)
   return (
-    <main id="main-content">
-      <PageHeading
-        eyebrow={copy(lang, "Thư viện", "Library")}
-        title={copy(lang, "Các bộ sưu tập", "Content collections")}
-        description={copy(
-          lang,
-          "Kiến thức, dự án và câu chuyện, sắp xếp thành những không gian riêng.",
-          "Knowledge, projects, and stories, each with their own space.",
-        )}
+    <main id="main-content" className="wrap">
+      <LegacyCollections
+        href={localized("/topics/", lang)}
+        label={knowledgeMessages[lang].oldCollections}
       />
-      <div className="wrap">
-        <PaginatedList className="module-directory">
-          {modules.map((module) => (
-            <Link href={module.href} key={module.id} className="module-card">
-              <TopicIcon id={module.topics[0] ?? "book"} size={20} />
-              <h2>{module.title[lang]}</h2>
-              <p>{module.description[lang]}</p>
-            </Link>
-          ))}
-        </PaginatedList>
-      </div>
     </main>
   )
 }

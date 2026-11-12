@@ -6,6 +6,7 @@ export interface Topic {
   description: Record<Locale, string>
   color: string
   symbol: string
+  available?: boolean
 }
 export const topics = registry as Topic[]
 export function getTopic(id: string) {

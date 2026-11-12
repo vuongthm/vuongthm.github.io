@@ -1,12 +1,13 @@
 "use client"
 import { localeName, englishNames } from "@/lib/i18n/english-names.mjs"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
-import { ArrowUpRight, Globe2, Search, X } from "lucide-react"
-import { PaginatedList } from "@/components/collections/paginated-list"
+import { ArrowUpRight, Shuffle } from "lucide-react"
 import { friendsMessages } from "@/lib/i18n/friends"
+import { personalSpaces } from "@/lib/i18n/personal-spaces"
 import type { Locale } from "@/lib/i18n/config"
-import { filterFriends, type Friend } from "@/lib/friends/directory"
+import type { Friend } from "@/lib/friends/directory"
+import { connectionCurve, friendConnections, friendPositions } from "@/lib/friends/network"
 
 function FriendAvatar({ friend }: { friend: Friend }) {
   const [failed, setFailed] = useState(false)
@@ -16,8 +17,8 @@ function FriendAvatar({ friend }: { friend: Friend }) {
         <Image
           src={friend.avatar}
           alt=""
-          width={56}
-          height={56}
+          width={64}
+          height={64}
           unoptimized
           onError={() => setFailed(true)}
         />
@@ -28,86 +29,194 @@ function FriendAvatar({ friend }: { friend: Friend }) {
   )
 }
 export function FriendsDirectory({ friends, locale }: { friends: Friend[]; locale: Locale }) {
-  const text = friendsMessages[locale]
-  const [query, setQuery] = useState("")
-  const entries = useMemo(
-    () => friends.map((friend, index) => ({ ...friend, renderKey: `${friend.id}:${index}` })),
-    [friends],
+  const text = friendsMessages[locale],
+    t = personalSpaces[locale]
+  const [topic, setTopic] = useState("")
+  const [selectedId, setSelectedId] = useState(friends[0]?.id ?? "")
+  const [width, setWidth] = useState(1000)
+  const [hop, setHop] = useState<{ from: string; to: string } | null>(null)
+  const canvas = useRef<HTMLDivElement>(null),
+    hopPath = useRef<SVGPathElement>(null),
+    spark = useRef<SVGCircleElement>(null)
+  const buttons = useRef<(HTMLButtonElement | null)[]>([])
+  const topics = useMemo(() => [...new Set(friends.flatMap((friend) => friend.topics))], [friends])
+  const visible = useMemo(
+    () => friends.filter((friend) => !topic || friend.topics.includes(topic)),
+    [friends, topic],
   )
-  const filtered = filterFriends(entries, query, "", "original", locale)
+  const selected = visible.find((friend) => friend.id === selectedId) ?? visible[0]
+  const connections = useMemo(() => friendConnections(visible), [visible])
+  const layout = friendPositions(visible.length, width)
+  const positions = new Map(visible.map((friend, index) => [friend.id, layout.points[index]]))
+  const from = hop && positions.get(hop.from),
+    to = hop && positions.get(hop.to)
+  const hopCurve = from && to ? connectionCurve(from, to, width, layout.height) : ""
+  useEffect(() => {
+    const root = canvas.current
+    if (!root) return
+    const observer = new ResizeObserver(([entry]) => setWidth(Math.round(entry.contentRect.width)))
+    observer.observe(root)
+    return () => observer.disconnect()
+  }, [])
+  useEffect(() => {
+    if (!hop || !hopPath.current || !spark.current) return
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setHop(null)
+      return
+    }
+    const path = hopPath.current,
+      dot = spark.current,
+      length = path.getTotalLength(),
+      start = performance.now()
+    let frame = 0
+    function move(now: number) {
+      const progress = Math.min(1, (now - start) / 850),
+        eased = 1 - Math.pow(1 - progress, 3),
+        point = path.getPointAtLength(length * eased)
+      dot.setAttribute("cx", String(point.x))
+      dot.setAttribute("cy", String(point.y))
+      if (progress < 1) frame = requestAnimationFrame(move)
+      else setHop(null)
+    }
+    frame = requestAnimationFrame(move)
+    return () => cancelAnimationFrame(frame)
+  }, [hop, hopCurve])
+  function choose(id: string) {
+    setHop(null)
+    setSelectedId(id)
+  }
+  function surprise() {
+    if (!selected || visible.length < 2) return
+    const candidates = visible.filter((friend) => friend.id !== selected.id)
+    const next = candidates[Math.floor(Math.random() * candidates.length)]
+    setSelectedId(next.id)
+    setHop({ from: selected.id, to: next.id })
+  }
   return (
-    <section className="friends-directory" aria-label={text.title}>
-      <div className="friends-tools">
-        <label className="friends-search">
-          <Search size={16} aria-hidden="true" />
-          <input
-            type="search"
-            placeholder={text.search}
-            aria-label={text.search}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          {query && (
-            <button aria-label={text.clear} onClick={() => setQuery("")}>
-              <X size={14} />
-            </button>
-          )}
-        </label>
-      </div>
-      {query && (
-        <p className="friends-results" role="status">
-          {filtered.length} / {friends.length} {text.websites}
-        </p>
-      )}
-      {filtered.length ? (
-        <PaginatedList className="friends-grid" pageSize={8} key={query}>
-          {filtered.map((friend) => (
-            <a
-              key={friend.renderKey}
-              className="friend-card"
-              href={friend.website}
-              target="_blank"
-              rel="noopener noreferrer"
+    <section className="friend-network" aria-label={t.network}>
+      <div className="network-tools">
+        <div className="network-topics" role="group" aria-label={text.topic}>
+          {["", ...topics].map((value) => (
+            <button
+              key={value}
+              aria-pressed={topic === value}
+              onClick={() => {
+                setTopic(value)
+                setHop(null)
+              }}
+              data-ui-sound="select"
             >
-              <div className="friend-card-top">
-                <FriendAvatar friend={friend} />
-                <ArrowUpRight size={17} strokeWidth={1.5} aria-hidden="true" />
-              </div>
-              <span className="friend-alias">{friend.alias}</span>
-              <h2>{localeName(friend.name, locale)}</h2>
-              <p>
-                {locale === "en"
-                  ? englishNames(friend.description[locale])
-                  : friend.description[locale]}
-              </p>
-              <div className="friend-topics">
-                {friend.topics.map((value) => (
-                  <span key={value}>{value}</span>
-                ))}
-              </div>
-              <div className="friend-card-bottom">
-                <span>
-                  <Globe2 size={12} aria-hidden="true" />
-                  {new URL(friend.website).hostname}
-                </span>
-                <small>{friend.websitePlaceholder ? text.placeholderWebsite : text.visit}</small>
-              </div>
-            </a>
+              {value || text.all}
+            </button>
           ))}
-        </PaginatedList>
-      ) : (
-        <div className="friends-empty">
-          <Search size={26} strokeWidth={1.25} />
-          <h2>{text.empty}</h2>
+        </div>
+        <button
+          className="network-random"
+          onClick={surprise}
+          disabled={visible.length < 2 || !!hop}
+        >
+          <Shuffle size={15} />
+          {t.random}
+        </button>
+      </div>
+      <p className="network-hint">{t.networkHint}</p>
+      <div
+        className="network-canvas"
+        ref={canvas}
+        style={{ height: layout.height }}
+        role="group"
+        aria-label={t.network}
+      >
+        <svg
+          viewBox={`0 0 ${width} ${layout.height}`}
+          preserveAspectRatio="none"
+          className="network-lines"
+          aria-hidden="true"
+        >
+          {connections.map((edge) => (
+            <path
+              key={edge.from + ":" + edge.to}
+              d={connectionCurve(
+                positions.get(edge.from)!,
+                positions.get(edge.to)!,
+                width,
+                layout.height,
+              )}
+              className={
+                edge.from === selected?.id || edge.to === selected?.id ? "is-connected" : ""
+              }
+            />
+          ))}
+          {hopCurve && (
+            <>
+              <path d={hopCurve} ref={hopPath} className="network-hop-route" />
+              <circle ref={spark} className="network-spark" r="5" cx={from!.x} cy={from!.y} />
+            </>
+          )}
+        </svg>
+        {visible.map((friend, index) => (
           <button
-            className="text-link"
-            onClick={() => {
-              setQuery("")
+            key={friend.id}
+            ref={(node) => {
+              buttons.current[index] = node
+            }}
+            className={`friend-node tone-${index % 3}${selected?.id === friend.id ? " is-selected" : ""}`}
+            style={{
+              left: `${(positions.get(friend.id)!.x / width) * 100}%`,
+              top: `${(positions.get(friend.id)!.y / layout.height) * 100}%`,
+            }}
+            aria-label={`${localeName(friend.name, locale)} · ${friend.alias}`}
+            aria-pressed={selected?.id === friend.id}
+            aria-controls="friend-profile"
+            onClick={() => choose(friend.id)}
+            onKeyDown={(event) => {
+              const direction = ["ArrowRight", "ArrowDown"].includes(event.key)
+                ? 1
+                : ["ArrowLeft", "ArrowUp"].includes(event.key)
+                  ? -1
+                  : 0
+              if (!direction) return
+              event.preventDefault()
+              const next = (index + direction + visible.length) % visible.length
+              buttons.current[next]?.focus({ preventScroll: true })
+              choose(visible[next].id)
             }}
           >
-            {text.reset}
+            <FriendAvatar friend={friend} />
+            <span className="friend-node-label">{friend.alias}</span>
           </button>
+        ))}
+      </div>
+      {selected ? (
+        <div className="network-profile" id="friend-profile" aria-live="polite" aria-atomic="true">
+          <FriendAvatar key={selected.id} friend={selected} />
+          <div className="network-profile-copy">
+            <span className="eyebrow">{t.selected}</span>
+            <h2>
+              {localeName(selected.name, locale)}
+              <small>{selected.alias}</small>
+            </h2>
+            <p>
+              {locale === "en"
+                ? englishNames(selected.description[locale])
+                : selected.description[locale]}
+            </p>
+            <div className="network-profile-topics">
+              {selected.topics.map((value) => (
+                <span key={value}>{value}</span>
+              ))}
+            </div>
+          </div>
+          <div className="network-visit">
+            <a href={selected.website} target="_blank" rel="noopener noreferrer">
+              {text.visit}
+              <ArrowUpRight size={15} />
+            </a>
+            <small>{new URL(selected.website).hostname}</small>
+          </div>
         </div>
+      ) : (
+        <p className="corner-empty">{text.empty}</p>
       )}
     </section>
   )

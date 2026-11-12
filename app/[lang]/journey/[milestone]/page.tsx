@@ -41,7 +41,7 @@ export default async function Page({ params }: { params: Params }) {
         eyebrow={copy(lang, "Dấu mốc", "Milestones")}
         title={item.title[lang]}
         description={item.description[lang]}
-        back={{ href: `/${lang}/#journey-title`, label: copy(lang, "Hành trình", "Journey") }}
+        back={{ href: `/${lang}/journey/`, label: copy(lang, "Hành trình", "Journey") }}
       />
       <div className="wrap">
         <div className={`journey-page-content ${item.photos.length ? "has-photos" : ""}`}>
@@ -51,11 +51,6 @@ export default async function Page({ params }: { params: Params }) {
                 {item.period[lang]}
                 {item.year && ` · ${item.year}`}
               </span>
-              {item.sample && (
-                <span className="journey-status">
-                  {copy(lang, "Nội dung mẫu", "Sample content")}
-                </span>
-              )}
               {item.status !== "completed" && (
                 <span className="journey-status">
                   {item.status === "planned"

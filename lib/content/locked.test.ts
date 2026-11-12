@@ -89,6 +89,39 @@ const pixel = Buffer.from(
 )
 
 describe("Markdown lock field", () => {
+  it("locks the journey index and every milestone with a shared page password", async () => {
+    const { app, content } = fixture()
+    const journey = moduleFolder(content, "journey", "journey")
+    write(journey, "vi/first-stop.md", "status: current", "PRIVATE_JOURNEY_BODY_SENTINEL")
+    const configFile = path.join(app, "content.sources.json")
+    const config = JSON.parse(fs.readFileSync(configFile, "utf8"))
+    config.site.journey = "site/journey.md"
+    fs.writeFileSync(configFile, JSON.stringify(config))
+    const setting = path.join(app, "site/journey.md")
+    fs.writeFileSync(setting, "---\ntitle: Journey\nlock: true\n---\n")
+    vi.stubEnv("CONTENT_PASSWORDS", JSON.stringify({ "site/journey": "fixture-journey-secret" }))
+    await buildContent(app)
+    const raw = fs.readFileSync(path.join(app, "generated/content.json"), "utf8")
+    expect(raw).not.toContain("PRIVATE_JOURNEY_BODY_SENTINEL")
+    expect(
+      await decryptString("fixture-journey-secret", JSON.parse(raw).journey[0].bodies.vi),
+    ).toContain("PRIVATE_JOURNEY_BODY_SENTINEL")
+    const rules = JSON.parse(fs.readFileSync(path.join(app, "generated/access.json"), "utf8"))
+    for (const href of ["/vi/journey/", "/vi/journey/first-stop/"])
+      expect(rules).toContainEqual(expect.objectContaining({ href, scope: "/vi/journey/" }))
+    expect(
+      JSON.parse(fs.readFileSync(path.join(app, "generated/site-pages.json"), "utf8")).journey
+        .encrypted,
+    ).toBe(true)
+    fs.writeFileSync(setting, "---\ntitle: Journey\nlock: false\n---\n")
+    await buildContent(app)
+    expect(fs.readFileSync(path.join(app, "generated/content.json"), "utf8")).toContain(
+      "PRIVATE_JOURNEY_BODY_SENTINEL",
+    )
+    fs.writeFileSync(setting, "---\ntitle: Journey\nlock: true\n---\n")
+    vi.stubEnv("CONTENT_PASSWORDS", "{}")
+    await expect(buildContent(app)).rejects.toThrow(/CONTENT_PASSWORDS/)
+  }, 15000)
   it("never falls back to a shared default and rejects credentials reused across articles", async () => {
     expect(contentPassword({ default: PASSWORD }, { lock: true }, "notes", "one")).toBeUndefined()
     expect(() =>
@@ -503,7 +536,9 @@ describe("Markdown lock field", () => {
       "---\ntitle: New\ndate: 2026-11-04\nlock: true\n---\nBody",
     )
     fs.mkdirSync(scripts, { recursive: true })
-    for (const name of ["password", "locks", "config", "schema"])
+    fs.mkdirSync(path.join(notes, "inbox/vi"), { recursive: true })
+    fs.writeFileSync(path.join(notes, "inbox/vi/incomplete.md"), "---\nmetadata: [\n")
+    for (const name of ["password", "locks", "config", "schema", "structure", "localized", "files"])
       fs.copyFileSync(
         path.resolve(import.meta.dirname, `../../scripts/content/${name}.mjs`),
         path.join(scripts, `${name}.mjs`),

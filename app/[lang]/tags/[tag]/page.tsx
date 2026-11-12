@@ -7,9 +7,10 @@ import { metadataFor } from "@/lib/seo"
 import { PageHeading } from "@/components/layout/page-heading"
 import { Library } from "@/components/knowledge/library"
 export function generateStaticParams() {
-  return localeCodes.flatMap((lang) =>
+  const routes = localeCodes.flatMap((lang) =>
     [...new Set(getEntryMeta(lang).flatMap((entry) => entry.tags))].map((tag) => ({ lang, tag })),
   )
+  return routes.length ? routes : localeCodes.map((lang) => ({ lang, tag: "_empty" }))
 }
 export async function generateMetadata({
   params,
