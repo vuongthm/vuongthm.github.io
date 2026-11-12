@@ -1,4 +1,5 @@
 "use client"
+import { useScrollLock } from "@/lib/hooks/use-scroll-lock"
 import { useEffect, useRef, type ReactNode } from "react"
 export function Dialog({
   label,
@@ -11,15 +12,14 @@ export function Dialog({
   children: ReactNode
   className?: string
 }) {
+  useScrollLock(true)
   const ref = useRef<HTMLDivElement>(null)
   const closeRef = useRef(onClose)
   useEffect(() => {
     closeRef.current = onClose
   }, [onClose])
   useEffect(() => {
-    const previous = document.activeElement as HTMLElement,
-      overflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
+    const previous = document.activeElement as HTMLElement
     const focusable = () =>
       Array.from(
         ref.current?.querySelectorAll<HTMLElement>(
@@ -47,7 +47,6 @@ export function Dialog({
     }
     document.addEventListener("keydown", key)
     return () => {
-      document.body.style.overflow = overflow
       document.removeEventListener("keydown", key)
       previous?.focus()
     }

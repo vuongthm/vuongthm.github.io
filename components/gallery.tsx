@@ -1,4 +1,5 @@
 "use client"
+import { localeName } from "@/lib/i18n/english-names.mjs"
 import { PhotoCollage } from "./album/photo-collage"
 import { AlbumBrowser } from "./album/album-browser"
 import Image from "next/image"
@@ -102,7 +103,7 @@ export function Gallery({
                 )}
               </div>
               <span>
-                <small>{photo.place}</small>
+                <small>{localeName(photo.place, locale)}</small>
                 <strong>{photo.title[locale]}</strong>
               </span>
             </button>

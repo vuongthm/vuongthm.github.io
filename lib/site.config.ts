@@ -12,12 +12,10 @@ export const siteConfig = {
     zh: "Vuong 的个人空间，记录技术笔记、项目与一路上的经历。",
   },
   github: "https://github.com/vuongthm",
-  email: "vuongthm.it@gmail.com",
+  email: "vuongtranhoangminh@gmail.com",
   nav: [
     { key: "knowledge", path: "/notes" },
-    { key: "topics", path: "/topics" },
     { key: "projects", path: "/projects" },
-    { key: "stories", path: "/stories" },
     { key: "corner", path: "/corner" },
     { key: "about", path: "/about" },
   ] as const,

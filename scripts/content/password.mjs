@@ -48,22 +48,38 @@ for (const source of config.sources) {
     }
   }
 }
-if (config.site.photoJournal) {
-  const { data } = frontmatter(
-    fs.readFileSync(path.resolve(root, config.site.photoJournal), "utf8"),
-  )
-  if (hasLock(data)) keys.add(contentLockKey(data, "site", "my-album"))
+for (const [setting, id] of [
+  ["photoJournal", "my-album"],
+  ["shelf", "shelf"],
+]) {
+  if (!config.site[setting]) continue
+  const { data } = frontmatter(fs.readFileSync(path.resolve(root, config.site[setting]), "utf8"))
+  if (hasLock(data)) keys.add(contentLockKey(data, "site", id))
 }
-let added = 0
-for (const key of keys)
-  if (!known[key]) {
+let added = 0,
+  synchronized = 0
+for (const key of keys) {
+  let active = known[key]
+  if (key === "vault") {
+    const legacy = path.join(root, ".private-vault/password.txt")
+    active =
+      process.env.VAULT_PASSWORD?.trim() ||
+      known.vault?.trim() ||
+      known.default?.trim() ||
+      (fs.existsSync(legacy) ? fs.readFileSync(legacy, "utf8").trim() : undefined)
+  }
+  if (!active) {
     values[key] = randomBytes(24).toString("base64url")
     added++
+  } else if (values[key] !== active) {
+    values[key] = active
+    synchronized++
   }
+}
 const serialized = JSON.stringify(values, null, 2) + "\n"
 if (!fs.existsSync(file) || fs.readFileSync(file, "utf8") !== serialized)
   fs.writeFileSync(file, serialized, { mode: 0o600 })
 if ((fs.statSync(file).mode & 0o777) !== 0o600) fs.chmodSync(file, 0o600)
 console.log(
-  `[Content] ${added} missing document/vault credentials created in private passwords.json; existing values preserved. Passwords are never printed.`,
+  `[Content] ${added} missing document/vault credentials created in private passwords.json; ${synchronized} configured credentials synchronized. Passwords are never printed.`,
 )

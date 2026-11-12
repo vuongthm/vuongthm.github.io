@@ -40,20 +40,20 @@ export function CoverCard({
             unoptimized
           />
         )}
-        <div className="cover-card-copy">
-          <div className="cover-card-meta">
-            <span className="eyebrow">{label}</span>
-            {meta}
-          </div>
-          <Heading>
-            {title}
-            {encrypted && <LockBadge locale={locale} />}
-          </Heading>
-          <p>{description}</p>
-          <div className="cover-card-foot">
-            <span>{footer}</span>
-            <ArrowRight size={14} aria-hidden="true" />
-          </div>
+      </div>
+      <div className="cover-card-copy">
+        <div className="cover-card-meta">
+          <span className="eyebrow">{label}</span>
+          {meta}
+        </div>
+        <Heading>
+          {title}
+          {encrypted && <LockBadge locale={locale} />}
+        </Heading>
+        <p>{description}</p>
+        <div className="cover-card-foot">
+          <span>{footer}</span>
+          <ArrowRight size={14} aria-hidden="true" />
         </div>
       </div>
     </Link>

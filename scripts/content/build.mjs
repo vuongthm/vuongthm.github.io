@@ -1,3 +1,4 @@
+import { englishFields } from "../../lib/i18n/english-names.mjs"
 import fs from "node:fs"
 import path from "node:path"
 import { frontmatter, normalizeDate, assertUnique, publishPolicy, hasLock } from "./schema.mjs"
@@ -36,10 +37,17 @@ export async function buildContent(root) {
   const passwords = loadContentPasswords(root)
   const accessRules = [],
     probes = new Map()
-  async function protect(href, password, title, back) {
+  async function protect(href, password, title, back, scope) {
     if (!probes.has(password))
       probes.set(password, await encryptString(password, "vuong-page-access-v1"))
-    accessRules.push({ href, title, back, kind: "content", probe: probes.get(password) })
+    accessRules.push({
+      href,
+      title,
+      back,
+      kind: "content",
+      probe: probes.get(password),
+      ...(scope ? { scope } : {}),
+    })
   }
   const policy = process.env.PUBLISH_ENCRYPTED === "1" ? "encrypt" : config.privateContent
   const passwordOwners = new Map()
@@ -62,6 +70,14 @@ export async function buildContent(root) {
       passwordOwners.set(password, owner)
     }
     return { mode, password }
+  }
+  let shelfAccess
+  if (config.site.shelf) {
+    const file = path.resolve(root, config.site.shelf)
+    const { data } = frontmatter(fs.readFileSync(file, "utf8"), file)
+    shelfAccess = publication(data, { id: "site" }, "shelf", "shelf", file)
+    if (shelfAccess.mode === "exclude")
+      throw Error("The reading shelf must be public or password protected.")
   }
   function files(dir) {
     return fs
@@ -222,12 +238,19 @@ export async function buildContent(root) {
         config.locales,
         (body, file) => transformBody(body, source, file),
         (url, file) => registerAsset(url, source, file),
-        (data, id, file) => publication(data, source, id, id, file).mode,
+        (data, id, file) =>
+          source.adapter === "corner" && shelfAccess?.mode === "encrypt" && !hasLock(data)
+            ? "encrypt"
+            : publication(data, source, id, id, file).mode,
       )
       for (const item of items)
         if (item.encrypted) {
-          const access = publication(item._lockData, source, item.id, item.id, item._lockFile)
-          lockedCollections.set(item, { source, password: access.password })
+          const grouped =
+            source.adapter === "corner" && !item._lockData && shelfAccess?.mode === "encrypt"
+          const access = grouped
+            ? shelfAccess
+            : publication(item._lockData, source, item.id, item.id, item._lockFile)
+          lockedCollections.set(item, { source, password: access.password, shelf: grouped })
         }
       ;(source.adapter === "corner"
         ? corners
@@ -349,9 +372,15 @@ export async function buildContent(root) {
       }
     } else throw new Error(`Unknown content adapter: ${source.adapter}`)
   }
+  for (const collection of [entries, stories, projects, journey, albums, corners])
+    for (const item of collection) Object.assign(item, englishFields(item))
   entries.sort((a, b) => a.weight - b.weight || b.publishedAt.localeCompare(a.publishedAt))
-  const sitePaths = JSON.parse(fs.readFileSync(path.resolve(root, config.site.paths), "utf8"))
-  const profile = JSON.parse(fs.readFileSync(path.resolve(root, config.site.profile), "utf8"))
+  const sitePaths = englishFields(
+    JSON.parse(fs.readFileSync(path.resolve(root, config.site.paths), "utf8")),
+  )
+  const profile = englishFields(
+    JSON.parse(fs.readFileSync(path.resolve(root, config.site.profile), "utf8")),
+  )
   for (const collection of [projects, journey, albums, corners]) {
     const ids = new Set()
     for (const item of collection) {
@@ -425,7 +454,8 @@ export async function buildContent(root) {
           `/${locale}/${collectionRoute(item)}/${item.id}/`,
           lock.password,
           item.title[locale],
-          `/${locale}/${collectionRoute(item)}/`,
+          corners.includes(item) ? `/${locale}/shelf/` : `/${locale}/${collectionRoute(item)}/`,
+          lock.shelf ? `/${locale}/shelf/` : undefined,
         )
       }
     }
@@ -494,6 +524,28 @@ export async function buildContent(root) {
       fs.writeFileSync(target, text)
   }
   const sitePages = {}
+  if (shelfAccess?.mode === "encrypt") {
+    sitePages.shelf = { encrypted: true, bodies: {} }
+    for (const locale of config.locales) {
+      const items = corners.map(({ bodies: _bodies, bodyLocales, ...meta }) => ({
+        ...meta,
+        bodyLocale: bodyLocales[locale],
+        href: `/${locale}/corner/${meta.slug}/`,
+      }))
+      sitePages.shelf.bodies[locale] = await encryptString(
+        shelfAccess.password,
+        JSON.stringify(items),
+      )
+      for (const route of ["shelf", "corner"])
+        await protect(
+          `/${locale}/${route}/`,
+          shelfAccess.password,
+          "Books, Films & Podcasts",
+          `/${locale}/`,
+          `/${locale}/shelf/`,
+        )
+    }
+  }
   if (config.site.photoJournal) {
     const file = path.resolve(root, config.site.photoJournal)
     const { data, body } = frontmatter(fs.readFileSync(file, "utf8"), file)

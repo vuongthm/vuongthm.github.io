@@ -47,7 +47,7 @@ export function SiteProvider({
     [aiGateway, setAIGateway] = useState(aiConfig.gateway)
   const [aiContext, setAiContext] = useState<SiteState["aiContext"]>(null)
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SiteContext.Provider
         value={{
           locale,

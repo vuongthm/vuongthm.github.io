@@ -75,9 +75,9 @@ export function MusicRoom() {
     <main className="wrap music-room" id="main-content">
       <header className="music-heading">
         <div>
-          <Link className="back-link" href={localized("/corner/", locale)}>
+          <Link className="back-link" href={localized("/", locale)}>
             <ArrowLeft size={14} />
-            {dictionary.corner}
+            {dictionary.home}
           </Link>
           <span className="eyebrow">{text.intro}</span>
           <h1>{text.title}</h1>

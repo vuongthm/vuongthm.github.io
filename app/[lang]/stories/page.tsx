@@ -1,5 +1,8 @@
+import { localeName } from "@/lib/i18n/english-names.mjs"
 import { PaginatedList } from "@/components/collections/paginated-list"
-import { CoverCard } from "@/components/collections/cover-card"
+import Link from "next/link"
+import Image from "next/image"
+import { LockBadge } from "@/components/reading/lock-badge"
 import { copy } from "@/lib/i18n/copy"
 import { ArrowRight } from "lucide-react"
 import { notFound } from "next/navigation"
@@ -39,7 +42,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
         </div>
         <div className="story-index-aside">
           <span>
-            Đại Lãnh <ArrowRight size={12} /> Đà Nẵng
+            {localeName("Đại Lãnh", lang)} <ArrowRight size={12} /> {localeName("Đà Nẵng", lang)}
           </span>
           <small>
             {stories.length} {m.stories.toLocaleLowerCase(lang)} ·{" "}
@@ -59,28 +62,52 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
         </p>
       )}
       <div className="wrap">
-        <PaginatedList className="story-grid">
-          {stories.map((story) => (
-            <CoverCard
-              key={story.id}
-              href={localized(`/stories/${story.slug}`, lang)}
-              cover={story.cover}
-              title={story.title}
-              description={story.summary}
-              label={
-                story.status === "completed"
-                  ? copy(lang, "ĐÃ HOÀN THÀNH", "COMPLETED")
-                  : copy(lang, "ĐANG VIẾT", "IN PROGRESS")
-              }
-              meta={<time dateTime={story.date}>{story.date.slice(0, 4)}</time>}
-              footer={
-                <>
-                  {story.chapters.length} {copy(lang, "chương", "chapters")}
-                </>
-              }
-              encrypted={story.encrypted}
-              locale={lang}
-            />
+        <PaginatedList className="story-exhibition" pageSize={8}>
+          {stories.map((story, index) => (
+            <article className="story-exhibit" key={story.id}>
+              <Link
+                className="story-exhibit-image"
+                href={localized(`/stories/${story.slug}`, lang)}
+                prefetch={story.encrypted ? false : undefined}
+                aria-label={story.title}
+              >
+                <Image
+                  src={story.cover}
+                  alt=""
+                  fill
+                  sizes={
+                    index === 0 ? "(max-width:760px) 90vw, 54vw" : "(max-width:760px) 90vw, 44vw"
+                  }
+                  unoptimized
+                  priority={index === 0}
+                />
+                <span className="story-exhibit-number">{String(index + 1).padStart(2, "0")}</span>
+              </Link>
+              <div className="story-exhibit-copy">
+                <span className="eyebrow">
+                  {story.date.slice(0, 4)} <span aria-hidden="true">/</span> {story.chapters.length}{" "}
+                  {copy(lang, "chương", "chapters")}
+                </span>
+                <h2>
+                  <Link
+                    href={localized(`/stories/${story.slug}`, lang)}
+                    prefetch={story.encrypted ? false : undefined}
+                  >
+                    {story.title}
+                    {story.encrypted && <LockBadge locale={lang} />}
+                  </Link>
+                </h2>
+                <p>{story.summary}</p>
+                <Link
+                  className="text-link"
+                  href={localized(`/stories/${story.slug}`, lang)}
+                  prefetch={story.encrypted ? false : undefined}
+                >
+                  {copy(lang, "Mở câu chuyện", "Open the story")}
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            </article>
           ))}
         </PaginatedList>
       </div>

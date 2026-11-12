@@ -1,3 +1,4 @@
+import { localeName } from "@/lib/i18n/english-names.mjs"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, Music2 } from "lucide-react"
@@ -7,11 +8,21 @@ import { cornerMessages } from "@/lib/i18n/corner"
 import { metadataFor } from "@/lib/seo"
 import { getCornerItems } from "@/lib/content/server"
 import music from "@/generated/music.json"
+import { readingShelf } from "@/lib/content/site-pages"
+import { LockedShelf } from "@/components/corner/locked-shelf"
 import { CornerShelf } from "@/components/corner/shelf"
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   return isLocale(lang)
-    ? metadataFor(cornerMessages[lang].title, cornerMessages[lang].description, "/corner/", lang)
+    ? {
+        ...metadataFor(
+          cornerMessages[lang].title,
+          cornerMessages[lang].description,
+          "/corner/",
+          lang,
+        ),
+        robots: readingShelf?.encrypted ? { index: false, follow: false } : undefined,
+      }
     : {}
 }
 export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
@@ -49,7 +60,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
             unoptimized
           />
           <figcaption>
-            <span>Đại Lãnh</span>
+            <span>{localeName("Đại Lãnh", lang)}</span>
             <span>vuong.</span>
           </figcaption>
         </figure>
@@ -85,7 +96,11 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
               </span>
             </div>
           </Link>
-          <CornerShelf items={items} />
+          {readingShelf?.encrypted ? (
+            <LockedShelf payload={readingShelf.bodies[lang]!} />
+          ) : (
+            <CornerShelf items={items} />
+          )}
         </div>
       </div>
     </main>

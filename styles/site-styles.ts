@@ -40,3 +40,10 @@ import "./friends.css"
 import "./learning.css"
 
 import "./corner.css"
+
+import "./experience.css"
+
+import "./studio.css"
+
+import "maplibre-gl/dist/maplibre-gl.css"
+import "./atelier.css"

@@ -14,6 +14,7 @@ import { useSite } from "./site-provider"
 import { PasswordDialog } from "@/components/reading/password-dialog"
 import { PasswordForm } from "@/components/reading/password-form"
 import { contentLockMessages } from "@/lib/i18n/content-lock"
+import { playSound } from "@/lib/interaction-sound"
 import type { AccessRule } from "@/lib/content/access"
 
 const normalize = (path: string) => path.replace(/\/$/, "") + "/"
@@ -41,7 +42,9 @@ export function PageAccess({ rules, children }: { rules: AccessRule[]; children:
   const epoch = useRef(0),
     lastActive = useRef(0)
   const rule = rules.find((item) => item.href === path)
-  const session = rule && sessions[path]?.probe === rule.probe ? sessions[path] : undefined
+  const credential = rule?.scope ?? path
+  const session =
+    rule && sessions[credential]?.probe === rule.probe ? sessions[credential] : undefined
   const ask = useCallback((href: string, rule: AccessRule) => {
     epoch.current++
     setPassword("")
@@ -52,11 +55,11 @@ export function PageAccess({ rules, children }: { rules: AccessRule[]; children:
   const relock = useCallback(() => {
     setSessions((previous) => {
       const next = { ...previous }
-      delete next[path]
+      delete next[credential]
       return next
     })
     if (rule) ask(path, rule)
-  }, [path, rule, ask])
+  }, [path, credential, rule, ask])
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       if (rule && !session) ask(path, rule)
@@ -85,7 +88,11 @@ export function PageAccess({ rules, children }: { rules: AccessRule[]; children:
       if (url.origin !== location.origin) return
       const route = normalize(url.pathname),
         locked = rules.find((item) => item.href === route)
-      if (!locked || (sessions[route] && sessions[route].probe === locked.probe)) return
+      if (
+        !locked ||
+        (sessions[locked.scope ?? route] && sessions[locked.scope ?? route].probe === locked.probe)
+      )
+        return
       event.preventDefault()
       event.stopPropagation()
       origin.current = link
@@ -134,8 +141,11 @@ export function PageAccess({ rules, children }: { rules: AccessRule[]; children:
     setPassword("")
     setError("")
     setBusy(false)
-    if (rule && !session) router.replace(rule.back)
-    else requestAnimationFrame(() => origin.current?.focus({ preventScroll: true }))
+    if (rule && !session) {
+      const back = rules.find((item) => item.href === normalize(rule.back))
+      const backSession = back && sessions[back.scope ?? back.href]
+      router.replace(back && backSession?.probe !== back.probe ? `/${locale}/` : rule.back)
+    } else requestAnimationFrame(() => origin.current?.focus({ preventScroll: true }))
   }
   async function submit(event: React.FormEvent) {
     event.preventDefault()
@@ -174,9 +184,14 @@ export function PageAccess({ rules, children }: { rules: AccessRule[]; children:
       }
       if (token !== epoch.current) return
       lastActive.current = Date.now()
+      playSound("success")
       setSessions((previous) => ({
         ...previous,
-        [pending.rule.href]: { password, vaultKey, probe: pending.rule.probe },
+        [pending.rule.scope ?? pending.rule.href]: {
+          password,
+          vaultKey,
+          probe: pending.rule.probe,
+        },
       }))
       setTarget(null)
       setPassword("")

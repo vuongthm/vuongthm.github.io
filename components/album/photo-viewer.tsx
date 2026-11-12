@@ -1,4 +1,5 @@
 "use client"
+import { localeName } from "@/lib/i18n/english-names.mjs"
 /* eslint-disable @next/next/no-img-element -- Also supports decrypted Blob URLs. */
 import { useEffect, useRef } from "react"
 import { ArrowLeft, ArrowRight, Play, X } from "lucide-react"
@@ -104,7 +105,7 @@ export function PhotoViewer({
       </div>
       <div className="photo-viewer-caption" aria-live="polite">
         <h2>{photo.title[locale]}</h2>
-        {photo.place && <p>{photo.place}</p>}
+        {photo.place && <p>{localeName(photo.place, locale)}</p>}
       </div>
       {photos.length > 1 && (
         <div

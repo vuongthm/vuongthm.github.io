@@ -8,8 +8,8 @@ import path from "node:path"
  * Only run this when the mark itself changes: `pnpm icons`. The generated PNGs
  * are committed, so a normal build never depends on `sharp` being installed.
  *
- *   icon-light-32x32.png  favicon on light browser chrome (white wordmark on ink)
- *   icon-dark-32x32.png   favicon on dark browser chrome (white wordmark on ink)
+ *   icon-light-32x32.png  favicon on light browser chrome (colored V on warm paper)
+ *   icon-dark-32x32.png   favicon on dark browser chrome (colored V on warm paper)
  *   apple-icon.png        180×180 home-screen icon (opaque, iOS ignores alpha)
  */
 
@@ -35,7 +35,7 @@ async function main() {
   const lightSvg = fs.readFileSync(SOURCE)
 
   const jobs = [
-    // The same white-on-ink wordmark stays visible on light and dark browser chrome.
+    // The same colored V mark stays visible on light and dark browser chrome.
     { file: "icon-light-32x32.png", input: lightSvg, size: 32 },
     { file: "icon-dark-32x32.png", input: lightSvg, size: 32 },
     // iOS renders the home-screen icon on an opaque background, so the tile is

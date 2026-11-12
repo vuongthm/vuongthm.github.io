@@ -26,8 +26,8 @@ export function metadataFor(
     },
     twitter: { card: "summary", title, description },
     icons: {
-      icon: { url: "/icon.svg?v=blue-white-2", type: "image/svg+xml" },
-      apple: "/apple-icon.png?v=blue-white-2",
+      icon: { url: "/icon.svg?v=atelier-v-3", type: "image/svg+xml" },
+      apple: "/apple-icon.png?v=atelier-v-3",
     },
   }
 }

@@ -1,4 +1,5 @@
 "use client"
+import { localeName } from "@/lib/i18n/english-names.mjs"
 /* eslint-disable @next/next/no-img-element -- Shared author media can also use Blob URLs. */
 import { useState } from "react"
 import { useSite } from "@/components/providers/site-provider"
@@ -19,7 +20,7 @@ export function PhotoCollage({ photos }: { photos: GalleryPhoto[] }) {
             <img src={photo.src} alt={photo.title[locale]} loading="lazy" decoding="async" />
             <span className="photo-collage-shade" />
             <span className="photo-collage-copy">
-              <small>{photo.place}</small>
+              <small>{localeName(photo.place, locale)}</small>
               <strong>{photo.title[locale]}</strong>
             </span>
             {index === 2 && photos.length > 3 && (
