@@ -83,17 +83,14 @@ describe("independent personal-corner modules", () => {
       JSON.parse(fs.readFileSync(path.join(f.app, "generated/modules.json"), "utf8"))[0].count,
     ).toBe(2)
   })
-  it("keeps the published music manifest free of malformed YouTube ids", () => {
-    const manifest = JSON.parse(
-      fs.readFileSync(
-        path.resolve(__dirname, "../../../content/my-corner/music/tracks.json"),
-        "utf8",
-      ),
-    )
-    const track = manifest.find((item: { title: string }) => item.title === "Nỗi nhớ mang tên mình")
-    expect(track).toBeDefined()
-    expect(track.youtubeId).toMatch(/^[\w-]{11}$/)
-    expect(track.youtubeId).toBe("-iz6VBxZBIM")
+  it("accepts a leading-hyphen YouTube ID and rejects malformed IDs without external checkouts", () => {
+    const f = fixture()
+    f.writeTracks([{ ...f.track, youtubeId: "-iz6VBxZBIM" }])
+    expect(compileMusic(f.source())).toMatchObject([{ youtubeId: "-iz6VBxZBIM" }])
+    for (const youtubeId of ["short", "123456789abc", "invalid/id!"]) {
+      f.writeTracks([{ ...f.track, youtubeId }])
+      expect(() => compileMusic(f.source())).toThrow(/Invalid YouTube ID/)
+    }
   })
   it("omits draft/private shelves and music before copying their media", async () => {
     const f = fixture()

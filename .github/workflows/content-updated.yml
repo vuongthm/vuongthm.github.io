@@ -4,8 +4,10 @@ on:
     branches: ["content-updates/**"]
 permissions:
   actions: write
+  contents: write
 jobs:
   rebuild:
+    if: github.event.deleted == false
     runs-on: ubuntu-latest
     steps:
       - name: Build canonical website branch
@@ -18,3 +20,20 @@ jobs:
               workflow_id: 'quality-and-pages.yml',
               ref: 'main'
             });
+      - name: Remove processed notification branch
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const prefix = 'refs/heads/content-updates/';
+            if (!context.ref.startsWith(prefix)) throw new Error('Unexpected notification ref');
+            const ref = context.ref.slice('refs/'.length);
+            const parameters = { owner: context.repo.owner, repo: context.repo.repo, ref };
+            try {
+              const current = await github.rest.git.getRef(parameters);
+              // A later push owns its own cleanup; never delete that newer notification.
+              if (current.data.object.sha === context.sha) {
+                await github.rest.git.deleteRef(parameters);
+              }
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
