@@ -37,7 +37,7 @@
     "alias": "thaihq",
     "website": "https://thaihq.id.vn/",
     "initials": "HT",
-    "topics": ["Personal Website"],
+    "topics": ["Web Security", "Security", "CTF"],
     "description": {
       "vi": "Một người bạn, một góc riêng trên internet. Ghé thăm để khám phá những điều Thái chia sẻ.",
       "en": "A friend with a corner of the internet of his own. Visit to explore what Thái shares.",
@@ -46,6 +46,22 @@
     },
     "avatar": "/friends/thaihq.webp",
     "avatarSource": "https://thaihq.id.vn/assets/avatar.jpg"
+  },
+  {
+    "id": "thienic",
+    "name": "Nguyễn Bá Thiện",
+    "alias": "thienic",
+    "website": "https://thienic.github.io/",
+    "initials": "NT",
+    "topics": ["IC Design"],
+    "description": {
+      "vi": "Cùng kết nối quanh chủ đề thiết kế vi mạch.",
+      "en": "Connecting around integrated circuit design.",
+      "ja": "集積回路の設計を通じたつながり。",
+      "zh": "围绕集成电路设计的交流与连接。"
+    },
+    "avatar": "/friends/thienic.webp",
+    "avatarSource": "https://thienic.github.io/images/avatar.png"
   },
   {
     "id": "huyvn",
@@ -105,21 +121,6 @@
       "en": "A connection in information security.",
       "ja": "情報セキュリティの分野でのつながり。",
       "zh": "信息安全领域的一位朋友。"
-    }
-  },
-  {
-    "id": "thiennb",
-    "name": "Nguyễn Bá Thiện",
-    "alias": "thiennb",
-    "website": "https://thiennb.github.io/",
-    "websitePlaceholder": true,
-    "initials": "NT",
-    "topics": ["IC Design"],
-    "description": {
-      "vi": "Cùng kết nối quanh chủ đề thiết kế vi mạch.",
-      "en": "Connecting around integrated circuit design.",
-      "ja": "集積回路の設計を通じたつながり。",
-      "zh": "围绕集成电路设计的交流与连接。"
     }
   },
   {
