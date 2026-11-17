@@ -1,15 +1,18 @@
 "use client"
 import { useState, type ReactNode } from "react"
+import { playSound } from "@/lib/interaction-sound"
 import { Check, Copy } from "lucide-react"
 import { useSite } from "@/components/providers/site-provider"
 export function CodeBlock({
   children,
   language,
   text,
+  wide = false,
 }: {
   children: ReactNode
   language: string
   text: string
+  wide?: boolean
 }) {
   const { dictionary: m } = useSite(),
     [copied, setCopied] = useState(false),
@@ -18,16 +21,17 @@ export function CodeBlock({
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
+      playSound("success")
       setTimeout(() => setCopied(false), 1800)
     } catch {
       setError(true)
     }
   }
   return (
-    <div className="code-block">
+    <div className={wide ? "code-block reading-wide" : "code-block"}>
       <div className="code-toolbar">
         <span>{language || "text"}</span>
-        <button onClick={copy} aria-label={m.copy}>
+        <button onClick={copy} aria-label={m.copy} data-sound="off">
           {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? m.copied : m.copy}
         </button>
       </div>

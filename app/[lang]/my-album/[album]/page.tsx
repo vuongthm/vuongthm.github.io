@@ -40,7 +40,7 @@ export default async function Page({ params }: { params: Params }) {
           <EncryptedBody payload={item.bodies[lang]} view="gallery" />
         ) : (
           <>
-            <Markdown body={item.bodies[lang]} />
+            <Markdown body={item.bodies[lang]} locale={lang} />
             <Gallery photos={item.items} variant="journal" />
           </>
         )}

@@ -12,6 +12,8 @@ export function articlePreview(
       part
         .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
         .replace(/<[^>]*>/g, "")
+        .replace(/\[!(?:NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/g, "")
+        .replace(/==([^=\n]+)==/g, "$1")
         .replace(/\s+/g, " ")
         .trim(),
     )

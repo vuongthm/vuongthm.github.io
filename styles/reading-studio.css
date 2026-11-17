@@ -1,0 +1,294 @@
+/* A right-hand, unboxed index. The text column keeps a deliberate reading measure. */
+.reader-grid {
+  --reader-rail: 232px;
+  --reader-gap: 64px;
+  grid-template-columns: minmax(0, 720px) var(--reader-rail);
+  gap: var(--reader-gap);
+  justify-content: center;
+  position: relative;
+}
+.reader-grid > .reader-article {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+  z-index: 2;
+}
+.reader-grid > .reader-sidebar {
+  grid-column: 2;
+  grid-row: 1;
+  position: sticky;
+  top: calc(var(--header-h) + 32px);
+  max-height: calc(100dvh - var(--header-h) - 64px);
+  padding: 5px 6px 16px 0;
+  z-index: 1;
+  mask-image: linear-gradient(#000 0%, #000 calc(100% - 15px), transparent);
+}
+.reader-sidebar .eyebrow {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+.reader-sidebar .eyebrow > svg {
+  display: none;
+}
+.reader-sidebar .toc-list {
+  border: 0;
+}
+.reader-sidebar .toc-list a {
+  border: 0;
+  margin: 0;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.6;
+  background: none;
+}
+.reader-sidebar .toc-list a.active {
+  color: var(--accent);
+  background: none;
+}
+.reader-sidebar .toc-list .toc-nested a {
+  padding-left: 12px;
+  font-size: 11px;
+}
+.prose :is(h2, h3, h4)[tabindex="-1"]:focus {
+  outline: none;
+}
+.prose :is(h2, h3, h4)[tabindex="-1"]:focus-visible {
+  position: relative;
+}
+.prose :is(h2, h3, h4)[tabindex="-1"]:focus-visible::before {
+  content: "#";
+  position: absolute;
+  right: calc(100% + 7px);
+  top: 0.2em;
+  font-size: 0.75em;
+  color: var(--reading-blue);
+}
+@media (min-width: 1101px) {
+  html:not([data-reading-focus])
+    .reader-article
+    .prose
+    :is(.reading-wide, .article-image[data-wide="true"]) {
+    width: calc(100% + var(--reader-rail) + var(--reader-gap));
+    max-width: none;
+    position: relative;
+    background-color: var(--bg);
+    box-shadow: 0 0 28px 14px var(--bg);
+  }
+  html:not([data-reading-focus]) .reader-article .prose .code-block.reading-wide {
+    background-color: #18181a;
+  }
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  .reader-grid {
+    --reader-rail: 190px;
+    --reader-gap: 30px;
+  }
+}
+@media (max-width: 760px) {
+  .reader-grid {
+    display: block;
+  }
+  .reader-grid > .reader-sidebar {
+    display: none;
+  }
+}
+/* Semantic colour accompanies meaning rather than colouring whole paragraphs. */
+:root {
+  --reading-blue: #2455a5;
+  --reading-teal: #087368;
+  --reading-gold: #8a5b13;
+  --reading-strong: #14637a;
+  --reading-coral: #b33e52;
+}
+.dark {
+  --reading-blue: #a7c2ff;
+  --reading-teal: #78d8c3;
+  --reading-gold: #edc97b;
+  --reading-strong: #9ed9e9;
+  --reading-coral: #f3a1af;
+}
+.prose h2 {
+  color: var(--accent);
+  border-bottom-color: color-mix(in srgb, var(--accent) 22%, var(--line));
+}
+.prose h3 {
+  color: var(--reading-blue);
+}
+.prose h4 {
+  color: var(--reading-teal);
+}
+.prose mark {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--reading-gold) 20%, var(--bg));
+  padding: 0.1em 0.25em;
+  border-radius: 3px;
+  box-decoration-break: clone;
+}
+.prose em {
+  color: var(--reading-teal);
+}
+.prose :is(ul, ol) li::marker {
+  color: var(--reading-blue);
+}
+.prose blockquote {
+  border-left-color: var(--reading-strong);
+  background: color-mix(in srgb, var(--reading-strong) 6%, var(--bg));
+}
+.markdown-callout {
+  --callout: var(--reading-blue);
+  padding: 17px 20px;
+  margin-block: 25px;
+  border: 1px solid color-mix(in srgb, var(--callout) 18%, var(--line));
+  border-left: 3px solid var(--callout);
+  border-radius: 4px 8px 8px 4px;
+  background: color-mix(in srgb, var(--callout) 6%, var(--bg));
+}
+.callout-tip {
+  --callout: var(--reading-teal);
+}
+.callout-important {
+  --callout: var(--reading-strong);
+}
+.callout-warning {
+  --callout: var(--reading-gold);
+}
+.callout-caution {
+  --callout: var(--reading-coral);
+}
+.callout-title {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--callout);
+  margin-bottom: 7px;
+}
+.markdown-callout > p {
+  margin-block: 8px;
+}
+.markdown-callout > :last-child {
+  margin-bottom: 0;
+}
+.markdown-callout .code-block {
+  font-size: 0.8em;
+}
+.prose .hljs-deletion {
+  color: #ffb0b8;
+  background: #6b23354d;
+}
+.prose .hljs-addition {
+  color: #b7e8c2;
+  background: #2252354d;
+}
+@media print {
+  .reader-grid > .reader-article {
+    z-index: auto;
+  }
+  .prose :is(.reading-wide, .table-scroll, .article-image[data-wide="true"]) {
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+}
+
+.reader-progress-ring {
+  display: inline-flex;
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  color: var(--reading-blue, var(--accent));
+}
+.reader-progress-ring svg {
+  display: block;
+}
+.reader-progress-track {
+  stroke: var(--line);
+}
+.reader-progress-fill {
+  stroke: currentColor;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 100ms linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reader-progress-fill {
+    transition: none;
+  }
+}
+.reader-sidebar .eyebrow {
+  gap: 9px;
+}
+.prose :is(.hljs-title, .hljs-built_in) {
+  color: #e4c487;
+}
+
+/* Diagram and commentary share a wide surface, passing in front of the sticky index. */
+.prose .reading-figure {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 244px;
+  gap: 24px;
+  align-items: start;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+}
+.prose .reading-figure > p {
+  margin: 0;
+  min-width: 0;
+}
+.reading-figure .article-image {
+  margin: 0;
+}
+.reading-figure .article-image img {
+  width: 100% !important;
+  max-height: none;
+  border: 0;
+  background: transparent;
+}
+.reading-figure .image-caption {
+  display: none;
+}
+.prose .reading-figure .figure-note {
+  min-width: 0;
+  padding: 0 0 0 18px;
+  border-left: 1px solid var(--line);
+  color: var(--muted);
+  font: 400 13px/1.85 var(--font-ui);
+  text-align: left;
+  margin: 0;
+}
+.figure-note-title {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.figure-note :is(p, ul, ol) {
+  margin-block: 12px;
+}
+.figure-note li {
+  margin-block: 8px;
+  padding-left: 0;
+}
+.figure-note strong {
+  color: var(--ink);
+}
+@media (max-width: 1100px) {
+  .prose .reading-figure {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 14px;
+  }
+  .prose .reading-figure .figure-note {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 16px 0 0;
+    font-size: 13px;
+  }
+}

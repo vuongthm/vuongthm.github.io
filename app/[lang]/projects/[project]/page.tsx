@@ -64,7 +64,11 @@ export default async function Page({ params }: { params: Params }) {
           {item.bodyLocale !== lang && (
             <p className="content-language">{contentLanguage(lang, item.bodyLocale)}</p>
           )}
-          {item.encrypted ? <EncryptedBody payload={item.body} /> : <Markdown body={item.body} />}
+          {item.encrypted ? (
+            <EncryptedBody payload={item.body} />
+          ) : (
+            <Markdown body={item.body} locale={lang} />
+          )}
         </article>
         <aside className="project-facts">
           <h2>{copy(lang, "Thông tin dự án", "Project information")}</h2>

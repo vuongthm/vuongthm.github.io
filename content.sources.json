@@ -36,8 +36,7 @@
       }
     ],
     "photoJournal": "site/photo-journal.md",
-    "shelf": "site/shelf.md",
-    "journey": "site/journey.md"
+    "shelf": "site/shelf.md"
   },
   "sources": [],
   "repositories": [
@@ -49,11 +48,6 @@
     {
       "id": "cloud-notes",
       "repository": "vuongthm/cloud-notes",
-      "ref": "main"
-    },
-    {
-      "id": "journey",
-      "repository": "vuongthm/journey",
       "ref": "main"
     },
     {
@@ -79,11 +73,6 @@
     {
       "id": "security-analyst",
       "repository": "vuongthm/security-analyst",
-      "ref": "main"
-    },
-    {
-      "id": "stories",
-      "repository": "vuongthm/stories",
       "ref": "main"
     },
     {

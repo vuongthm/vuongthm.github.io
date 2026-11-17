@@ -1,4 +1,5 @@
 "use client"
+import { BrandLockup } from "@/components/brand/logo"
 import { useState, useSyncExternalStore } from "react"
 import { createPortal } from "react-dom"
 import { useTheme } from "next-themes"
@@ -33,7 +34,7 @@ export function AppearancePicker() {
           <Dialog label={t.title} className="appearance-dialog" onClose={() => setOpen(false)}>
             <div className="appearance-heading">
               <div>
-                <span className="eyebrow">VUONG / PALETTE</span>
+                <span className="eyebrow">THM / PALETTE</span>
                 <h2>{t.title}</h2>
                 <p>{t.intro}</p>
               </div>
@@ -59,7 +60,7 @@ export function AppearancePicker() {
                     <i />
                     <i />
                     <i />
-                    <span>V.</span>
+                    <BrandLockup />
                   </span>
                   <span className="palette-description">
                     <strong>{t[id]}</strong>

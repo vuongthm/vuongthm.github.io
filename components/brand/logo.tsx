@@ -1,6 +1,7 @@
+import { brandViewBox, brandPaths, brandAccentPath, brandGold } from "@/lib/brand.mjs"
 import { cn } from "@/lib/utils"
 
-/** Compact serif signature with the site's blue accent. */
+/** The author's geometric THM mark; preserve the supplied viewBox and paths. */
 export function Wordmark({
   className,
   size = "md",
@@ -11,26 +12,19 @@ export function Wordmark({
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 100 40"
-      width="88"
-      height="35"
+      viewBox={brandViewBox}
+      width="1335"
+      height="355"
       role="img"
-      aria-label="vuong."
+      aria-label="THM"
       className={cn("brand-wordmark", `wordmark-${size}`, className)}
     >
-      <text
-        x="4"
-        y="28"
-        fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="26"
-        fontWeight="600"
-        fill="currentColor"
-      >
-        vuong
-        <tspan dx="1" fill="var(--accent, #2255bd)">
-          .
-        </tspan>
-      </text>
+      <g fill="var(--brand-ink, #011A39)">
+        {brandPaths.map((d) => (
+          <path key={d} d={d} />
+        ))}
+      </g>
+      <path d={brandAccentPath} fill={brandGold} />
     </svg>
   )
 }

@@ -47,14 +47,6 @@
 .journal-posts {
   margin-top: 27px;
 }
-.site-footer :is(.compact-footer-links a, .compact-footer-base, .compact-footer-tools) {
-  color: var(--ink);
-}
-.site-footer .compact-footer-links a:hover {
-  color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
 .site-header:has(~ .site-content .studio-hero):not([data-hero-passed])
   :is(.navigation-trigger, .desktop-nav > .navigation-item > a) {
   color: var(--ink);

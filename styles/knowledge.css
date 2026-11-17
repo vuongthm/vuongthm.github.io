@@ -702,6 +702,13 @@ input[type="search"]::-webkit-search-decoration {
 .navigation-trigger {
   font-size: 12px;
 }
+@media (min-width: 1024px) {
+  .desktop-nav > .navigation-item > :is(a, .navigation-trigger) {
+    font-size: 14px;
+    min-height: 46px;
+    padding-inline: 12px;
+  }
+}
 
 /* One password field, one focus outline; the same form is used by every protected page. */
 .content-lock-dialog {

@@ -160,7 +160,7 @@ function ContentLock({ payload, view }: { payload: string; view: "article" | "ga
             }))}
           />
         ) : (
-          <Markdown body={document.body} assetUrls={document.assets} />
+          <Markdown body={document.body} assetUrls={document.assets} locale={locale} />
         )}
       </section>
     )

@@ -80,5 +80,14 @@ describe("writing independently of a learning path", () => {
     expect(read(article).data.status).toBe("draft")
     expect(read(article).data.title).toBe("Ý tưởng tự do")
     expect(fs.existsSync(path.join(directory, "inbox"))).toBe(false)
+    const cornerJourney = path.join(root, "content/my-corner/journey")
+    fs.mkdirSync(cornerJourney, { recursive: true })
+    fs.writeFileSync(
+      path.join(cornerJourney, "module.json"),
+      JSON.stringify({ id: "journey", adapter: "journey" }),
+    )
+    run("milestone", "first-job")
+    expect(read(path.join(cornerJourney, "vi/first-job.md")).data.id).toBe("first-job")
+    expect(fs.existsSync(path.join(root, "content/journey"))).toBe(false)
   })
 })

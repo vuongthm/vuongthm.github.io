@@ -16,7 +16,9 @@ import {
 import { useSite } from "@/components/providers/site-provider"
 import { musicMessages } from "@/lib/i18n/music"
 import { activeLyric, parseLyrics, type LyricLine } from "@/lib/music/lyrics"
-import type { MusicTrack } from "@/lib/music/types"
+import type { MusicMood, MusicTrack } from "@/lib/music/types"
+import { musicMoods } from "@/lib/music/moods.mjs"
+type MusicGroup = "all" | "favorites" | MusicMood
 export function MusicLibrary({
   tracks,
   current,
@@ -49,12 +51,19 @@ export function MusicLibrary({
   const { locale } = useSite(),
     text = musicMessages[locale]
   const [query, setQuery] = useState(""),
-    [group, setGroup] = useState("all"),
+    [group, setGroup] = useState<MusicGroup>("all"),
     [panel, setPanel] = useState<"queue" | "lyrics">("queue"),
     [following, setFollowing] = useState(true)
   const lyricFile = useRef<HTMLInputElement>(null),
     lyricPane = useRef<HTMLDivElement>(null),
     active = activeLyric(lines, time)
+  const groups: MusicGroup[] = [
+    "all",
+    "favorites",
+    ...musicMoods.filter((mood) =>
+      mood === "personal" ? localCount > 0 : tracks.some((track) => track.mood === mood),
+    ),
+  ]
   const filtered = tracks.filter(
     (track) =>
       (group === "all" ||
@@ -164,18 +173,16 @@ export function MusicLibrary({
               )}
             </div>
             <div className="music-filters" role="group" aria-label={text.library}>
-              {["all", "favorites", "focus", "quiet", ...(localCount ? ["personal"] : [])].map(
-                (value) => (
-                  <button
-                    key={value}
-                    className={group === value ? "active" : ""}
-                    aria-pressed={group === value}
-                    onClick={() => setGroup(value)}
-                  >
-                    {text[value as "all"]}
-                  </button>
-                ),
-              )}
+              {groups.map((value) => (
+                <button
+                  key={value}
+                  className={group === value ? "active" : ""}
+                  aria-pressed={group === value}
+                  onClick={() => setGroup(value)}
+                >
+                  {text[value]}
+                </button>
+              ))}
             </div>
             <div className="music-track-list">
               {filtered.length ? (

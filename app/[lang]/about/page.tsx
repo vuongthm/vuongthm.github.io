@@ -1,3 +1,4 @@
+import { BrandLockup } from "@/components/brand/logo"
 import { localeName } from "@/lib/i18n/english-names.mjs"
 import { copy } from "@/lib/i18n/copy"
 import { Github } from "@/components/brand/github"
@@ -62,7 +63,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
             />
           </div>
           <figcaption>
-            <span>vuong.</span>
+            <BrandLockup className="caption-brand" />
             <span>
               {localeName("Đại Lãnh", lang)} <ArrowRight size={12} /> {localeName("Đà Nẵng", lang)}
             </span>
@@ -73,8 +74,14 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
             {copy(lang, "Về người viết", "The person behind the notes")}
           </span>
           <h1 id="about-title">
-            {copy(lang, "Mình là ", "I’m ")}
-            <span>{lang === "ja" ? "Vuongです。" : "Vuong."}</span>
+            <span className="folio-greeting">
+              {{ en: "Hi there!", vi: "Chào bạn!", ja: "こんにちは！", zh: "你好！" }[lang]}
+            </span>{" "}
+            <span className="folio-name">
+              {{ en: "I'm ", vi: "Mình là ", ja: "", zh: "我是 " }[lang]}
+              <em>Vuong.</em>
+              {lang === "ja" ? "です。" : ""}
+            </span>
           </h1>
           <p className="folio-lede">
             {copy(

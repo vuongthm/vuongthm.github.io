@@ -477,21 +477,6 @@ select {
   font-size: 12px;
 }
 
-/* Cloud-shaped footer: flat blue layers, grouped links and compact utilities. */
-.site-footer {
-  --footer-bg: #a2d2e9;
-  --footer-cloud: #bee3f3;
-  --footer-ink: #172c3c;
-}
-.dark .site-footer {
-  --footer-bg: #1c2b3b;
-  --footer-cloud: #253a4d;
-  --footer-ink: #e5ebf1;
-}
-.site-footer :focus-visible {
-  outline-color: var(--footer-ink);
-}
-
 @media (max-width: 1100px) {
   .desktop-nav {
     margin-left: 20px;
@@ -553,8 +538,8 @@ select {
     gap: 10px;
   }
   .brand .wordmark-sm {
-    width: 94px;
-    height: 37px;
+    width: 82px;
+    height: 32px;
   }
   .desktop-nav {
     display: none;
@@ -670,7 +655,6 @@ select {
 }
 @media print {
   .site-header,
-  .site-footer,
   .journal-sidebar {
     display: none;
   }

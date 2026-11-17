@@ -99,19 +99,13 @@ export function GlossaryTerm({
         onFocus={() => {
           if (trigger.current?.matches(":focus-visible")) show()
         }}
-        onBlur={() => {
-          pinned.current = false
-          hide()
+        onBlur={(event) => {
+          if (!note.current?.contains(event.relatedTarget as Node)) hide()
         }}
         onClick={() => {
           cancel()
-          if (pinned.current) {
-            pinned.current = false
-            setOpen(false)
-          } else {
-            pinned.current = true
-            show()
-          }
+          pinned.current = true
+          show()
         }}
       >
         {children}
@@ -122,10 +116,19 @@ export function GlossaryTerm({
             ref={note}
             id={id}
             role="tooltip"
+            tabIndex={0}
             className="glossary-note"
             style={position ?? { visibility: "hidden" }}
             onPointerEnter={cancel}
             onPointerLeave={hide}
+            onPointerDown={() => {
+              pinned.current = true
+              cancel()
+            }}
+            onFocus={() => {
+              pinned.current = true
+              cancel()
+            }}
           >
             <strong>{term}</strong>
             <span>{typeof definition === "string" ? definition : definition[locale]}</span>

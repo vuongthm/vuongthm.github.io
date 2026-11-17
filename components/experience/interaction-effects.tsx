@@ -64,7 +64,16 @@ export function SoundToggle() {
 
 export function InteractionEffects() {
   useEffect(() => {
-    const unlock = () => unlockSound()
+    const unlock = (event: Event) => {
+      unlockSound()
+      if (
+        event.type === "pointerdown" &&
+        event.isTrusted &&
+        event.target instanceof Element &&
+        event.target.closest("button[data-ui-sound='switch']")
+      )
+        playSound("press")
+    }
     const hover = (event: PointerEvent) => {
       if (event.pointerType !== "mouse" || !(event.target instanceof Element)) return
       const tag = event.target.closest(".journal-home .journal-sidebar .journal-topics a")
@@ -99,16 +108,19 @@ export function InteractionEffects() {
           ? element.getAttribute("aria-expanded") === "true"
             ? "open"
             : "dismiss"
-          : requested === "switch" ||
-              requested === "select" ||
-              requested === "page" ||
-              requested === "lock"
-            ? requested
-            : element.matches(".album-photo,.photo-viewer-nav button")
-              ? "page"
-              : element.hasAttribute("aria-expanded")
-                ? "open"
-                : "tap"
+          : requested === "switch"
+            ? element.getAttribute("aria-pressed") === "false"
+              ? "toggle-off"
+              : "toggle-on"
+            : requested === "select" || requested === "page" || requested === "lock"
+              ? requested
+              : element.matches(".album-photo,.photo-viewer-nav button")
+                ? "page"
+                : element.hasAttribute("aria-expanded")
+                  ? element.getAttribute("aria-expanded") === "true"
+                    ? "open"
+                    : "dismiss"
+                  : "tap"
       playSound(kind)
     }
     document.addEventListener("pointerdown", unlock, { passive: true })

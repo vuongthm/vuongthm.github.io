@@ -165,17 +165,6 @@
   padding-inline: 3px;
   font-variant-numeric: tabular-nums;
 }
-.reading-progress {
-  position: fixed;
-  top: calc(var(--header-h) - 1px);
-  left: 0;
-  height: 2px;
-  background: var(--accent);
-  z-index: 45;
-  transform-origin: left;
-  width: 100%;
-  pointer-events: none;
-}
 .prose {
   overflow-wrap: anywhere;
   color: var(--ink);
@@ -426,9 +415,6 @@ html[data-reading-focus] .reader-grid {
 }
 html[data-reading-focus] .reader-article {
   max-width: 760px;
-}
-html[data-reading-focus] .reading-progress {
-  top: 0;
 }
 .translation-links {
   display: none;

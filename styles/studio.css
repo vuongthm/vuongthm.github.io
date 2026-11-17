@@ -27,26 +27,9 @@
 }
 
 /* One family of flowing curves, from the opening illustration to the colophon. */
-.contour {
-  display: block;
-  width: 100%;
-  height: 90px;
-  pointer-events: none;
-}
-.contour-back {
-  fill: var(--studio-cloud);
-}
-.contour-front {
-  fill: var(--bg);
-}
 .studio-hero {
   position: relative;
   padding-bottom: 75px;
-}
-.studio-hero > .contour {
-  position: absolute;
-  bottom: -1px;
-  height: 90px;
 }
 .journal-home {
   padding-bottom: 24px;
@@ -172,84 +155,6 @@
 }
 
 /* Compact colophon. Four destinations and a single row of small controls. */
-.site-footer,
-.dark .site-footer {
-  position: relative;
-  background: var(--studio-sky);
-  color: var(--ink);
-  margin-top: 48px;
-  padding-top: 59px;
-  overflow: hidden;
-}
-.footer-contour {
-  position: absolute;
-  top: -1px;
-  height: 68px;
-  transform: rotate(180deg);
-}
-.footer-contour .contour-back {
-  fill: var(--studio-cloud);
-}
-.compact-footer-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding-block: 22px 13px;
-}
-.footer-brand .brand-wordmark {
-  width: 94px;
-  height: 38px;
-}
-.compact-footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 24px;
-  margin-left: auto;
-}
-.compact-footer-links a {
-  font-size: 12px;
-  min-height: 36px;
-  display: inline-flex;
-  align-items: center;
-  color: var(--muted);
-}
-.compact-footer-links a:hover {
-  color: var(--accent);
-}
-.compact-footer-tools {
-  display: flex;
-  align-items: center;
-  gap: 1px;
-  margin-left: 18px;
-}
-.compact-footer-tools .icon-button {
-  width: 32px;
-  height: 36px;
-  color: var(--muted);
-}
-.compact-footer-tools .icon-button:hover {
-  background: var(--paper);
-  color: var(--accent);
-}
-.compact-footer-base {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 22px;
-  padding-block: 12px 23px;
-  border-top: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
-  font-size: 10px;
-  color: var(--faint);
-}
-.compact-footer-base > a {
-  margin-left: auto;
-  min-width: 28px;
-  min-height: 28px;
-  display: grid;
-  place-items: center;
-}
 
 /* An actual branching project tree. Descriptions are discoverable by pointer, focus and touch. */
 
@@ -482,35 +387,14 @@
 .album-photo:nth-child(3n) {
   border-radius: 6px 24px 6px 6px;
 }
-
-@media (max-width: 1100px) {
-  .compact-footer-links {
-    gap: 7px 18px;
-  }
-  .compact-footer-tools {
-    margin-left: 5px;
-  }
-}
 @media (max-width: 850px) {
   .personal-panel {
     left: 210px;
-  }
-  .compact-footer-main {
-    flex-wrap: wrap;
-  }
-  .compact-footer-links {
-    margin-left: 0;
-  }
-  .compact-footer-tools {
-    margin-left: auto;
   }
 }
 @media (max-width: 760px) {
   .studio-hero {
     padding-bottom: 51px;
-  }
-  .studio-hero > .contour {
-    height: 52px;
   }
   .journal-sidebar {
     position: static;
@@ -529,51 +413,6 @@
   }
   .journal-all {
     min-height: 44px;
-  }
-  .compact-footer-main {
-    gap: 10px 20px;
-    padding-block: 15px 11px;
-  }
-  .site-footer,
-  .dark .site-footer {
-    margin-top: 32px;
-    padding-top: 44px;
-  }
-  .footer-contour {
-    height: 49px;
-  }
-  .footer-brand {
-    flex-shrink: 0;
-  }
-  .footer-brand .brand-wordmark {
-    width: 83px;
-    height: 34px;
-  }
-  .compact-footer-links {
-    margin-left: auto;
-    gap: 0 15px;
-    justify-content: flex-end;
-  }
-  .compact-footer-links a {
-    font-size: 11px;
-    min-height: 33px;
-  }
-  .compact-footer-tools {
-    margin-left: auto;
-  }
-  .compact-footer-tools .icon-button {
-    width: 35px;
-    height: 40px;
-  }
-  .compact-footer-base {
-    font-size: 9px;
-    gap: 8px 16px;
-    padding-block: 12px 17px;
-  }
-  .compact-footer-base > span:nth-child(2) {
-    flex: 1;
-    max-width: 180px;
-    font-size: 9px;
   }
   .connection-heading p {
     font-size: 12px;
@@ -613,17 +452,6 @@
   .album-photo:first-child {
     grid-row: auto;
     aspect-ratio: 1.5;
-  }
-}
-@media (max-width: 380px) {
-  .compact-footer-links {
-    gap: 0 11px;
-  }
-  .compact-footer-links a {
-    font-size: 10px;
-  }
-  .compact-footer-base > span:nth-child(2) {
-    max-width: 150px;
   }
 }
 @media (hover: none) and (pointer: coarse) {

@@ -52,3 +52,11 @@ import "./personal-studio.css"
 import "./life-road.css"
 import "./friend-network.css"
 import "./reading-shelf.css"
+import "./floating-header.css"
+
+import "./brand.css"
+import "./site-footer.css"
+
+import "./reading-studio.css"
+
+import "./surface-polish.css"

@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site.config"
 import { ReaderFrame } from "./reader-frame"
 import { Markdown } from "./markdown"
 import { EncryptedBody } from "./encrypted-body"
-import { pathEntries } from "@/lib/learning/paths"
+import { readingContext } from "@/lib/learning/paths"
 import { learningMarkdown } from "@/lib/learning/markdown.mjs"
 export function articleMetadata(entry: Entry, lang: Locale) {
   return {
@@ -23,14 +23,8 @@ export function articleMetadata(entry: Entry, lang: Locale) {
 }
 export function ArticlePage({ entry }: { entry: Entry }) {
   const lang = entry.locale
-  const course = entry.learning
-    ? getPaths().find((path) => path.slug === entry.learning?.path)
-    : undefined
   const metadata = getEntryMeta(lang)
-  const list = course
-      ? pathEntries(course, metadata)
-      : metadata.filter((item) => !item.encrypted && !item.learning),
-    index = list.findIndex((item) => item.id === entry.id)
+  const { course, courseEntries, previous, next } = readingContext(entry, getPaths(), metadata)
   const { body, ...meta } = entry
   return (
     <main id="main-content">
@@ -55,14 +49,18 @@ export function ArticlePage({ entry }: { entry: Entry }) {
       <ReaderFrame
         entry={meta}
         course={course}
-        courseEntries={course ? list : undefined}
+        courseEntries={courseEntries}
         headings={entry.encrypted ? [] : headingsFor(body)}
         body={entry.encrypted ? undefined : learningMarkdown(body).markdown}
         translations={translations(entry)}
-        previous={index > 0 ? list[index - 1] : undefined}
-        next={index >= 0 ? list[index + 1] : undefined}
+        previous={previous}
+        next={next}
       >
-        {entry.encrypted ? <EncryptedBody payload={body} /> : <Markdown body={body} />}
+        {entry.encrypted ? (
+          <EncryptedBody payload={body} />
+        ) : (
+          <Markdown body={body} locale={lang} />
+        )}
       </ReaderFrame>
     </main>
   )

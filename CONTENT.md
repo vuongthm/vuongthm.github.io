@@ -167,7 +167,13 @@ Lệnh tạo `my-course/learning-path.json` dạng draft và đăng ký trong ma
 
 SOC L1, Pre Security và Cyber Security 101 đang mở đề cương; bài đã xuất bản có thể đọc trực tiếp, các bài khung còn lại giữ trạng thái draft. SOC L2 còn draft. Chủ đề được các bài trong một đề cương công khai sử dụng cũng tự mở, kể cả khi bài chưa xuất bản. Trang Chủ đề tách nhóm có nội dung với các chủ đề còn lại; trang con có thể dẫn đến đề cương liên quan. `outline: true` chỉ công khai tên bài nháp trong đề cương; không công khai thân bài, mô tả, media hay URL. Muốn xuất bản khung outline phải hoàn thiện mô tả và nội dung thực tế.
 
-Hành trình và Đọc sách hiện được mở công khai bằng `lock: false` trong `site/journey.md` và `site/shelf.md`. Đọc sách chỉ hiển thị sách. Muốn khóa lại một trong hai trang, đặt `lock: true`; mật khẩu riêng nằm trong file local bị Git bỏ qua `passwords.json`, với khóa `site/journey` hoặc `site/shelf`. Không đặt mật khẩu trong Markdown. Tiến độ đọc và giấy ghi nhớ được khai báo trong frontmatter của từng cuốn sách; xem `../content/my-corner/books/README.md` trong repo nội dung.
+Hành trình và Đọc sách hiện được mở công khai bằng `lock: false` trong `my-corner/journey/page.md` trong repo nội dung và `site/shelf.md` trong repo website. Đọc sách chỉ hiển thị sách. Muốn khóa lại một trong hai trang, đặt `lock: true`; mật khẩu riêng nằm trong file local bị Git bỏ qua `passwords.json`, với khóa `site/journey` hoặc `site/shelf`. Không đặt mật khẩu trong Markdown. Tiến độ đọc và giấy ghi nhớ được khai báo trong frontmatter của từng cuốn sách; xem `../content/my-corner/books/README.md` trong repo nội dung.
+
+## SVG hỗ trợ nền sáng và tối
+
+Ảnh SVG trong bài được hiển thị qua thẻ ảnh, nên CSS của website không trực tiếp đổi `fill` hoặc `stroke` bên trong file. Với sơ đồ nền trong suốt có bảng màu riêng cho hai chế độ, thêm `data-color-scheme="adaptive"` vào thẻ `<svg>` ngoài cùng và khai báo màu tối trong `@media (prefers-color-scheme: dark)` bên trong SVG. Website nhận dấu này khi chạy pipeline, bỏ nền trắng của khung ảnh và truyền chế độ màu đang chọn vào ảnh, kể cả khi khác thiết lập hệ điều hành.
+
+Hai hình `soc-l1-alert-workflow.svg` và `ssh-login-timeline.svg` trong `security-analyst/soc-l1/blue-team-introduction/media/` đã dùng cách này. SVG có màu cố định vẫn hiển thị như trước; muốn đổi màu tự động cần chuẩn bị bảng màu trong SVG, không chỉ thêm dấu đánh dấu.
 
 ## Kiểm tra và cập nhật repo
 
@@ -180,3 +186,63 @@ pnpm build
 Website và các repo nội dung có lịch sử Git riêng. Khi đổi cấu trúc, cập nhật đủ các repo bị ảnh hưởng và website trước khi chạy workflow cuối cùng. Khi thêm khóa trang, cập nhật GitHub secret `CONTENT_PASSWORDS` từ file local theo quy trình triển khai của bạn; không commit mật khẩu.
 
 Repo GitHub và thư mục local đều dùng tên `security-analyst`. Remote là `https://github.com/vuongthm/security-analyst.git`; website đăng ký `vuongthm/security-analyst` trong `content.sources.json`. Tên cũ `soc-notes` được đổi tên với lịch sử Git giữ nguyên. Các ID bài đã công khai có tiền tố `soc-notes:` vẫn giữ nguyên để bảo toàn liên kết và lộ trình.
+
+## Góc nhỏ trong một repo
+
+Repo `my-corner` chứa `music/`, `books/`, `journey/`, `friends/` và `stories/`. Sửa bạn bè trong `my-corner/friends/friends.json`, dùng avatar tương đối `media/ten-ban.webp` ở cùng thư mục. Mốc hành trình nằm trong `journey/vi/`, `journey/en/`; truyện nằm trong `stories/<ten-truyen>/{vi,en,media}/`. Mỗi phần có thư mục `media/` riêng. Xem README của repo `my-corner` và từng thư mục.
+
+Manifest gốc khai báo `collections: ["journey", "stories"]`. Compiler dùng manifest con để giữ adapter, định danh, URL và khóa mật khẩu hiện tại; các thư mục con không bị đọc lặp thành sách. `friends: "friends/friends.json"` khai báo nguồn danh bạ. Chỉ ảnh được tham chiếu mới được xuất bản. Website không cần fetch repo `journey` hay `stories` riêng nữa.
+
+Khi xuất bản lần đầu sau khi gom nguồn, push **my-corner trước**, sau đó push **vuongthm.github.io**. Các lần sửa nội dung sau chỉ cần push my-corner. Hai repo cũ có thể được archive sau khi website đã deploy thành công từ nguồn mới.
+
+Nguồn gốc của chương truyện có khóa cũng nằm trong `my-corner`. Nếu muốn giữ bản gốc riêng tư, giữ repo `my-corner` private và cấp quyền đọc repo này cho secret `CONTENT_SOURCE_TOKEN` của website. Workflow không checkout `vuongthm/stories` hay dùng `STORIES_SOURCE_KEY` nữa; mật khẩu chương trong `CONTENT_PASSWORDS` giữ nguyên.
+
+## Trình bày bài đọc có màu và khối rộng
+
+Renderer hỗ trợ cùng một cú pháp cho bài công khai và bài có mật khẩu, trên cả giao diện sáng/tối. Dùng màu theo ý nghĩa để nội dung dễ đọc; không cần HTML hoặc mã CSS trong bài.
+
+```markdown
+## A section title
+
+Keep ==this idea== in mind. Normal **bold**, _emphasis_, lists and links still work.
+
+> [!NOTE] Evidence first
+> Write what you observed before drawing a conclusion.
+
+> [!TIP]
+> A practical suggestion.
+
+> [!IMPORTANT]
+> The key point to remember.
+
+> [!WARNING]
+> A limitation to check.
+
+> [!CAUTION]
+> A step that needs extra care.
+```
+
+`NOTE`, `TIP`, `IMPORTANT`, `WARNING`, `CAUTION` có màu riêng; nhãn mặc định theo ngôn ngữ giao diện. Có thể ghi tiêu đề riêng ngay sau marker. `==...==` tô nền một ý ngắn; nội dung trong code và liên kết không bị tự đổi thành highlight. Heading và code cũng được phối màu dễ phân biệt.
+
+Muốn một khối code rộng đi qua phía trước mục lục trên desktop, thêm `wide` sau ngôn ngữ:
+
+````markdown
+```python wide
+print("A wider example")
+```
+````
+
+Với bảng, đặt `<!-- wide -->` trước bảng, cách một dòng trống. Với ảnh, dùng title `wide`: `![Caption](../media/diagram.svg "wide")`. Các khối thông thường giữ chiều rộng cột đọc; khối rộng được thu về vừa màn hình trên tablet, điện thoại và chế độ tập trung. Mục lục bên phải sẽ hiện lại khi cuộn qua khối rộng.
+
+Để đặt lời giải thích bên phải ảnh hoặc sơ đồ, viết một khối `[!FIGURE]` ngay sau ảnh, cách một dòng trống:
+
+```markdown
+![Quy trình phân tích cảnh báo](../media/workflow.svg)
+
+> [!FIGURE] Đọc sơ đồ từ trái sang phải
+> **Quan sát:** dữ liệu nào đang có trong hình?
+>
+> **Kiểm tra tiếp:** dữ liệu nào còn thiếu để kết luận?
+```
+
+Ảnh và lời giải thích tạo thành một khối rộng trên laptop, đi qua phía trước mục lục. Trên màn hình nhỏ hoặc chế độ tập trung, lời giải thích nằm dưới ảnh. Khối này không tạo thêm tiêu đề trong mục lục. Màu chữ dùng xanh theo chủ đề, xanh ngọc và vàng ấm; không cần gán màu trực tiếp trong Markdown.

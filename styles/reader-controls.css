@@ -1,54 +1,16 @@
-/* Reader controls and mobile sheet, after the shared responsive rules. */
-
-.reader-mobile-tools {
+/* The reading bar stays below the site's existing header. */
+.reader-mobile-toc {
   display: none;
 }
-.reader-toc-sheet {
-  align-items: flex-end;
-  padding: 0;
+/* Reset the generic [id] margin: html already reserves the header's height. */
+.reader-article .prose [id] {
+  scroll-margin-top: 0;
 }
-.reader-toc-sheet .dialog-panel {
-  width: 100%;
-  height: clamp(180px, 28dvh, 300px);
-  max-height: 40dvh;
-  border-radius: 12px 12px 0 0;
-  border: 0;
-  padding-bottom: env(safe-area-inset-bottom);
-  animation: reader-sheet-enter 0.2s ease-out;
+html[data-reading-focus] {
+  scroll-padding-top: 24px;
 }
-.reader-sheet-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 15px;
-}
-.reader-sheet-heading h2 {
-  font-size: 13px;
-  font-weight: 600;
-}
-.reader-sheet-heading .icon-button {
-  width: 34px;
-  height: 34px;
-}
-.reader-sheet-content {
-  overflow: auto;
-  overscroll-behavior: contain;
-  flex: 1;
-  padding: 0 16px 12px;
-  scrollbar-width: thin;
-}
-.reader-sheet-content .toc-list {
-  border: 0;
-}
-.reader-sheet-content .toc-list a {
-  padding: 8px 10px;
-  font-size: 12px;
-  min-height: 35px;
-  border-radius: 4px;
-}
-.reader-sheet-content .toc-list .toc-nested a {
-  padding-left: 23px;
-  font-size: 11px;
+html[data-reading-focus] .reader-article .prose [id] {
+  scroll-margin-top: 0;
 }
 .reader-bottom-nav a strong {
   font-weight: 500;
@@ -60,40 +22,90 @@
 .reader-bottom-nav a:hover {
   background: var(--accent-light);
 }
-@keyframes reader-sheet-enter {
-  from {
-    transform: translateY(24px);
-    opacity: 0.5;
+
+@media (max-width: 760px) {
+  html:has(.reader-mobile-toc):not([data-reading-focus]) {
+    scroll-padding-top: calc(var(--header-h) + 44px + 24px);
   }
-  to {
-    transform: none;
+  .reader-mobile-toc {
+    display: block;
+    position: sticky;
+    top: var(--header-h);
+    z-index: 40;
+    height: 44px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .reader-toc-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 43px;
+    padding: 0;
+    text-align: left;
+    color: var(--muted);
+    font: 500 var(--type-caption)/1.5 var(--font-ui);
+  }
+  .reader-toc-toggle > .reader-toc-current {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .reader-toc-toggle > svg:last-child {
+    transition: transform 220ms;
+  }
+  .reader-toc-toggle[aria-expanded="true"] > svg:last-child {
+    transform: rotate(180deg);
+  }
+  .reader-toc-dropdown {
+    display: grid;
+    grid-template-rows: 0fr;
+    position: absolute;
+    top: 100%;
+    inset-inline: 0;
+    visibility: hidden;
+    opacity: 0;
+    background: color-mix(in srgb, var(--bg) 96%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 12px 22px #0000000a;
+    transition:
+      grid-template-rows 240ms ease,
+      opacity 180ms,
+      visibility 240ms;
+  }
+  .reader-toc-dropdown[data-open="true"] {
+    grid-template-rows: 1fr;
+    visibility: visible;
     opacity: 1;
   }
-}
-@media (max-width: 760px) {
-  .reader-mobile-tools {
-    display: flex;
-    position: fixed;
-    right: 17px;
-    bottom: calc(15px + env(safe-area-inset-bottom));
-    gap: 7px;
-    z-index: 35;
+  .reader-toc-clip {
+    min-height: 0;
+    overflow: hidden;
   }
-  .reader-mobile-tools button {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border: 1px solid var(--line);
-    border-radius: 50%;
-    background: var(--paper);
-    color: var(--accent);
-    box-shadow: 0 4px 18px #11182718;
+  .reader-toc-content {
+    max-height: min(52dvh, 380px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-block: 10px 14px;
   }
-  .reader-mobile-tools button:hover,
-  .reader-mobile-tools button.active {
-    color: var(--accent);
-    background: var(--accent-light);
+  .reader-toc-content .toc-list {
+    border: 0;
+  }
+  .reader-toc-content .toc-list a {
+    min-height: 38px;
+    margin: 0;
+    padding: 9px 12px;
+    font-size: var(--type-caption);
+    line-height: 1.65;
+    border-radius: 0 4px 4px 0;
+  }
+  .reader-toc-content .toc-list .toc-nested a {
+    padding-left: 25px;
+    font-size: var(--type-caption);
   }
   .reader-bottom-nav {
     gap: 8px;
@@ -107,12 +119,13 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .reader-toc-sheet .dialog-panel {
-    animation: none;
+  .reader-toc-dropdown,
+  .reader-toc-toggle > svg:last-child {
+    transition: none;
   }
 }
 @media print {
-  .reader-mobile-tools {
+  .reader-mobile-toc {
     display: none;
   }
 }
@@ -129,10 +142,4 @@
   font-size: 12px;
   line-height: 1.9;
   margin-block: 0 18px;
-}
-
-@media (max-width: 760px) {
-  body:has(.reader-mobile-tools) .site-footer {
-    padding-bottom: 60px;
-  }
 }

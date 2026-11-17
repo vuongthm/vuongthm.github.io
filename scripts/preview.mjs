@@ -44,7 +44,7 @@ const server = http.createServer((request, response) => {
   fs.createReadStream(file).pipe(response)
 })
 server.listen(Number(process.env.PORT ?? 3001), "127.0.0.1", () =>
-  console.log(`Preview: http://localhost:${process.env.PORT ?? 3001}/vi/`),
+  console.log(`Preview: http://localhost:${process.env.PORT ?? 3001}/en/`),
 )
 process.on("SIGINT", () => server.close())
 process.on("SIGTERM", () => server.close())

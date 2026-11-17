@@ -1,0 +1,66 @@
+/* One shared offset reserves the floating bar and its breathing room. */
+:root {
+  --header-top: 12px;
+  --header-width: min(1120px, calc(100% - 40px));
+  --header-panel-h: 64px;
+  --header-radius: 14px;
+  --header-h: 88px;
+}
+.site-header,
+.site-header[data-header-pinned="true"] {
+  position: fixed;
+  inset: var(--header-top) auto auto 50%;
+  transform: translateX(-50%);
+  width: var(--header-width);
+  height: var(--header-panel-h);
+  border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+  border-radius: var(--header-radius);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  box-shadow:
+    0 3px 8px #00000004,
+    0 12px 32px #00000008;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.site-header:has(~ .site-content .studio-hero),
+.site-header[data-hero-passed="true"]:has(~ .site-content .studio-hero),
+.dark .site-header[data-hero-passed="true"]:has(~ .site-content .studio-hero) {
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+}
+.site-header > .header-inner.wrap {
+  width: 100%;
+  max-width: none;
+  padding-inline: 20px;
+  gap: 18px;
+}
+.header-spacer:has(~ .site-content .studio-hero) {
+  background: var(--studio-sky);
+}
+.navigation-backdrop {
+  inset: 0;
+}
+@media (max-width: 760px) {
+  :root {
+    --header-top: 8px;
+    --header-width: calc(100% - 20px);
+    --header-panel-h: 56px;
+    --header-radius: 12px;
+    --header-h: 72px;
+  }
+  .site-header,
+  .site-header[data-header-pinned="true"] {
+    width: var(--header-width);
+    height: var(--header-panel-h);
+    border-radius: var(--header-radius);
+  }
+  .site-header > .header-inner.wrap {
+    padding-inline: 12px;
+    gap: 8px;
+  }
+}
+@media print {
+  .header-spacer {
+    display: none;
+  }
+}

@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="V — Vuong">
-  <rect x="1" y="1" width="78" height="78" rx="22" fill="#f4f0e8"/>
-  <path d="M13 18C22 17 25 19 28 27L42 64H33L15 26Z" fill="#57664d"/>
-  <path d="M51 17C58 15 66 16 68 19L43 64H33L53 25Q57 18 51 17Z" fill="#ac5f43"/>
-  <path d="M22 18Q27 18 30 27L42 58L39 64L25 28Q22 21 18 20Z" fill="#d6ad75"/>
-  <circle cx="64" cy="60" r="3" fill="#57664d"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="THM"><style>@media(prefers-color-scheme:dark){.thm-ink{fill:#EDF3F8}.icon-paper{fill:#171A1E}}</style><rect class="icon-paper" x="2" y="2" width="156" height="156" rx="30" fill="#F8F7F3"/><svg x="4" y="57" width="152" height="41" viewBox="420 205 1335 355"><g class="thm-ink" fill="#011A39"><path d="M447 299 L495 229 H864 L837 299 Z"/><path d="M721 324 L622 325 L555 537 H658 Z"/><path d="M896 229 H988 L953 340 H1114 L1153 229 H1252 L1153 537 H1055 L1091 412 H929 L890 537 H793 Z"/><path d="M1283 229 H1373 L1484 414 L1727 239 L1641 537 H1544 L1593 366 L1433 498 L1340 348 L1285 537 H1187 Z"/></g><path d="M1611 229 H1728 L1489 396 L1467 363 Z" fill="#CD9444"/></svg></svg>

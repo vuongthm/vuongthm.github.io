@@ -985,3 +985,55 @@
     margin-top: 12px;
   }
 }
+
+/* A single-line greeting sized to its text column, with the full mobile portrait. */
+.about-folio .folio-introduction {
+  container-type: inline-size;
+  width: 100%;
+}
+.about-folio .folio-introduction h1 {
+  font: 600 clamp(22px, 3.2vw, 48px)/1.18 var(--font-heading);
+  white-space: nowrap;
+  text-wrap: nowrap;
+  letter-spacing: -0.045em;
+  margin-block: 16px 24px;
+}
+.about-folio .folio-introduction h1 .folio-greeting {
+  display: inline;
+  font-size: 1em;
+  font-weight: inherit;
+  color: var(--ink);
+  margin: 0;
+}
+.about-folio .folio-introduction h1 .folio-name {
+  display: inline;
+  color: var(--ink);
+}
+.about-folio .folio-name em {
+  color: var(--accent);
+  font-style: normal;
+}
+@media (max-width: 760px) {
+  .about-folio .folio-portrait {
+    width: min(340px, calc(100% - 13px));
+  }
+  .about-folio .folio-portrait-image {
+    aspect-ratio: auto;
+    max-height: none;
+    height: auto;
+  }
+  .about-folio .folio-portrait-image img {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+  }
+}
+
+@supports (font-size: 1cqi) {
+  .about-folio .folio-introduction h1 {
+    font-size: clamp(20px, 8cqi, 50px);
+  }
+}

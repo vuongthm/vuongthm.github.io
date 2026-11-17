@@ -37,6 +37,23 @@ function readModule(base, expectedId) {
   }
 }
 
+/** A repository may explicitly own several collections without sharing IDs or routes. */
+function readModuleTree(base, expectedId) {
+  const source = readModule(base, expectedId)
+  if (source.collections !== undefined && !Array.isArray(source.collections))
+    throw Error(`Module collections must be an array: ${source.id}`)
+  const children = (source.collections ?? []).map((folder) => {
+    if (typeof folder !== "string" || path.isAbsolute(folder))
+      throw Error(`Invalid collection path: ${source.id}`)
+    const child = fs.realpathSync(path.resolve(base, folder))
+    if (!child.startsWith(fs.realpathSync(base) + path.sep))
+      throw Error(`Collection escapes its repository: ${source.id}`)
+    return { path: child, sources: readModuleTree(child) }
+  })
+  source.childPaths = children.map((child) => child.path)
+  return [source, ...children.flatMap((child) => child.sources)]
+}
+
 export function loadContentConfig(root, { allowMissingRepositories = false } = {}) {
   const config = JSON.parse(fs.readFileSync(path.join(root, "content.sources.json"), "utf8"))
   const sources = [...(config.sources ?? [])].map((source) => ({
@@ -54,7 +71,7 @@ export function loadContentConfig(root, { allowMissingRepositories = false } = {
       if (!folder.isDirectory() || folder.name.startsWith(".") || folder.name.startsWith("_"))
         continue
       const base = path.join(directory, folder.name)
-      if (fs.existsSync(path.join(base, "module.json"))) localModules.push(readModule(base))
+      if (fs.existsSync(path.join(base, "module.json"))) localModules.push(...readModuleTree(base))
     }
   }
   sources.push(...localModules)
@@ -72,7 +89,7 @@ export function loadContentConfig(root, { allowMissingRepositories = false } = {
     repositories.push({ ...repo, destination, local })
     if (local) continue
     if (fs.existsSync(path.join(destination, "module.json"))) {
-      sources.push(readModule(destination, repo.id))
+      sources.push(...readModuleTree(destination, repo.id))
     } else if (!allowMissingRepositories) {
       throw Error(
         `Missing repository module ${repo.id}. Run pnpm content to fetch ${repo.repository}; its root must contain module.json.`,

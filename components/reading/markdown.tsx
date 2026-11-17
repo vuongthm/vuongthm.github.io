@@ -3,6 +3,8 @@ import remarkGfm from "remark-gfm"
 import rehypeSlug from "rehype-slug"
 import rehypeHighlight from "rehype-highlight"
 import Image from "next/image"
+import { remarkReading } from "@/lib/content/reading-markdown.mjs"
+import type { Locale } from "@/lib/i18n/config"
 import { CodeBlock } from "./code-block"
 import { Children, isValidElement, type ReactNode } from "react"
 import assetDimensions from "@/generated/assets.json"
@@ -10,7 +12,10 @@ import { GlossaryTerm } from "./glossary-term"
 import { glossary, remarkGlossary } from "@/lib/learning/glossary"
 import { KnowledgeQuiz, type QuizData } from "@/components/learning/knowledge-quiz"
 import { learningMarkdown } from "@/lib/learning/markdown.mjs"
-const dimensions = assetDimensions as Record<string, { width: number; height: number }>
+const dimensions = assetDimensions as Record<
+  string,
+  { width: number; height: number; adaptiveColorScheme?: boolean }
+>
 function textOf(node: ReactNode): string {
   return Children.toArray(node)
     .map((child) =>
@@ -25,9 +30,11 @@ function textOf(node: ReactNode): string {
 export function Markdown({
   body,
   assetUrls,
+  locale = "en",
 }: {
   body: string
   assetUrls?: Record<string, string>
+  locale?: Locale
 }) {
   const { markdown, quizzes } = learningMarkdown(body)
   return (
@@ -36,30 +43,45 @@ export function Markdown({
         urlTransform={(url) =>
           /^glossary:[a-z0-9-]+$/.test(url) ? url : (assetUrls?.[url] ?? defaultUrlTransform(url))
         }
-        remarkPlugins={[remarkGfm, remarkGlossary]}
+        remarkPlugins={[remarkGfm, [remarkReading, { locale }], remarkGlossary]}
         rehypePlugins={[rehypeSlug, [rehypeHighlight, { detect: false, ignoreMissing: true }]]}
         components={{
           h1: ({ children, ...props }) => <h2 {...props}>{children}</h2>,
           pre: ({ children }) => <>{children}</>,
-          code: ({ className, children }) => {
+          code: ({ className, children, node }) => {
             const text = textOf(children),
               language = className?.match(/language-([\w-]+)/)?.[1] ?? ""
             return language || text.includes("\n") ? (
-              <CodeBlock language={language} text={text.replace(/\n$/, "")}>
+              <CodeBlock
+                language={language}
+                text={text.replace(/\n$/, "")}
+                wide={Boolean(node?.properties?.["data-wide"] || node?.properties?.dataWide)}
+              >
                 {children}
               </CodeBlock>
             ) : (
               <code>{children}</code>
             )
           },
-          table: ({ children }) => (
-            <div className="table-scroll" tabIndex={0}>
+          table: ({ children, node }) => (
+            <div
+              className={
+                node?.properties?.["data-wide"] || node?.properties?.dataWide
+                  ? "table-scroll reading-wide"
+                  : "table-scroll"
+              }
+              tabIndex={0}
+            >
               <table>{children}</table>
             </div>
           ),
-          img: ({ src, alt }) =>
+          img: ({ src, alt, title }) =>
             typeof src === "string" ? (
-              <span className="article-image">
+              <span
+                className="article-image"
+                data-wide={title === "wide" ? "true" : undefined}
+                data-color-scheme={dimensions[src]?.adaptiveColorScheme ? "adaptive" : undefined}
+              >
                 <Image
                   src={src}
                   alt={alt ?? ""}

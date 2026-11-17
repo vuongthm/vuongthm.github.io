@@ -1,3 +1,7 @@
+import type { musicMoods } from "./moods.mjs"
+
+export type MusicMood = (typeof musicMoods)[number]
+
 export interface MusicTrack {
   id: string
   title: string
@@ -6,7 +10,7 @@ export interface MusicTrack {
   src?: string
   youtubeId?: string
   cover: string
-  mood: "focus" | "quiet" | "personal"
+  mood: MusicMood
   source?: string
   license?: string
   lyrics?: string

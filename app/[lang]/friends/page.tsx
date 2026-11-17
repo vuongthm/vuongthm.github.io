@@ -8,7 +8,7 @@ import { friendsMessages } from "@/lib/i18n/friends"
 import { metadataFor } from "@/lib/seo"
 import { siteConfig } from "@/lib/site.config"
 import { FriendsDirectory } from "@/components/friends/friends-directory"
-import data from "@/site/friends.json"
+import data from "@/generated/friends.json"
 import type { Friend } from "@/lib/friends/directory"
 const friends: Friend[] = data
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {

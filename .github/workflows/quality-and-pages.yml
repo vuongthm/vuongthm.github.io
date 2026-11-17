@@ -21,14 +21,6 @@ jobs:
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - name: Read private stories source
-        uses: actions/checkout@v5
-        with:
-          repository: vuongthm/stories
-          ref: main
-          path: .content-sources/stories
-          ssh-key: ${{ secrets.STORIES_SOURCE_KEY }}
-          persist-credentials: false
       - name: Read private album source
         uses: actions/checkout@v5
         with:

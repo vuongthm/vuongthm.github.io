@@ -39,6 +39,11 @@ export async function emitAssets(root, assets, entries, stories, imageVariants =
     if (/\.(?:png|jpe?g|webp|avif|gif|svg)$/i.test(target)) {
       const info = await sharp(target).metadata()
       dimensions[targetUrl] = { width: info.width, height: info.height }
+      if (
+        /\.svg$/i.test(target) &&
+        /<svg\b[^>]*\bdata-color-scheme=(["'])adaptive\1/.test(fs.readFileSync(target, "utf8"))
+      )
+        dimensions[targetUrl].adaptiveColorScheme = true
     }
     if (targetUrl !== url) {
       for (const entry of entries)

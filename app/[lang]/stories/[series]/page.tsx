@@ -66,7 +66,7 @@ export default async function Page({ params }: { params: Params }) {
             (story.encrypted ? (
               <EncryptedBody payload={story.body} />
             ) : (
-              <Markdown body={story.body} />
+              <Markdown body={story.body} locale={lang} />
             ))}
           <ChapterList
             chapters={chapters.map(({ body: _body, ...metadata }) => metadata)}

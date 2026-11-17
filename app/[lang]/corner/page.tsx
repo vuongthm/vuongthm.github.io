@@ -1,3 +1,4 @@
+import { BrandLockup } from "@/components/brand/logo"
 import { localeName } from "@/lib/i18n/english-names.mjs"
 import Link from "next/link"
 import Image from "next/image"
@@ -59,7 +60,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
           />
           <figcaption>
             <span>{localeName("Đại Lãnh", lang)}</span>
-            <span>vuong.</span>
+            <BrandLockup className="caption-brand" />
           </figcaption>
         </figure>
       </section>

@@ -183,7 +183,6 @@ a:focus-visible .brand-wordmark {
 }
 @media print {
   .site-header,
-  .site-footer,
   .mobile-menu {
     display: none;
   }

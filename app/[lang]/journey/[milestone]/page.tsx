@@ -62,7 +62,11 @@ export default async function Page({ params }: { params: Params }) {
             {item.bodyLocale !== lang && (
               <p className="content-language">{contentLanguage(lang, item.bodyLocale)}</p>
             )}
-            {item.encrypted ? <EncryptedBody payload={item.body} /> : <Markdown body={item.body} />}
+            {item.encrypted ? (
+              <EncryptedBody payload={item.body} />
+            ) : (
+              <Markdown body={item.body} locale={lang} />
+            )}
             {item.links.length > 0 && (
               <>
                 <h2>{copy(lang, "Đọc tiếp từ dấu mốc này", "Continue from this milestone")}</h2>

@@ -1,4 +1,5 @@
 "use client"
+import { BrandLockup } from "@/components/brand/logo"
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
@@ -312,7 +313,10 @@ function AssistantContent({ onClose }: { onClose: () => void }) {
           <div className="assistant-body">
             {!turns.length ? (
               <div className="assistant-welcome">
-                <span className="assistant-welcome-label">vuong. / {text.local}</span>
+                <span className="assistant-welcome-label">
+                  <BrandLockup />
+                  <span>/ {text.local}</span>
+                </span>
                 <h2>{aiContext?.title ?? text.intro}</h2>
                 <p>{text.introText}</p>
                 <div className="assistant-prompts">

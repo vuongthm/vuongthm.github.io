@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { allEntries, getChapter, getChapters, translations } from "@/lib/content/server"
+import { allEntries, getChapter, translations } from "@/lib/content/server"
 import { isLocale } from "@/lib/i18n/config"
 import { metadataFor } from "@/lib/seo"
 import { headingsFor } from "@/lib/content/markdown"
@@ -41,11 +41,7 @@ export default async function Page({
   if (!isLocale(lang)) notFound()
   const entry = getChapter(series, chapter, lang)
   if (!entry) notFound()
-  const chapters = getChapters(series, lang),
-    index = chapters.findIndex((item) => item.id === entry.id),
-    { body, ...meta } = entry
-  const previous = chapters[index - 1],
-    next = chapters[index + 1]
+  const { body, ...meta } = entry
   return (
     <main id="main-content">
       <ReaderFrame
@@ -53,10 +49,12 @@ export default async function Page({
         headings={entry.encrypted ? [] : headingsFor(body)}
         body={entry.encrypted ? undefined : body}
         translations={translations(entry)}
-        previous={previous ? (({ body: _body, ...value }) => value)(previous) : undefined}
-        next={next ? (({ body: _body, ...value }) => value)(next) : undefined}
       >
-        {entry.encrypted ? <EncryptedBody payload={body} /> : <Markdown body={body} />}
+        {entry.encrypted ? (
+          <EncryptedBody payload={body} />
+        ) : (
+          <Markdown body={body} locale={lang} />
+        )}
       </ReaderFrame>
     </main>
   )

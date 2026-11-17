@@ -6,12 +6,12 @@ import { encryptString } from "../../lib/crypto.mjs"
 import { loadContentPasswords, contentPassword, encryptMarkdown } from "./locks.mjs"
 import { emitAssets } from "./assets.mjs"
 import { loadContentConfig, moduleMetadata } from "./config.mjs"
-import { compileMusic } from "./corner.mjs"
+import { compileMusic, compileFriends } from "./corner.mjs"
 import { compileCollection } from "./collections.mjs"
 import { compileLearningPaths, learningAssignment, validateQuizBlocks } from "./learning.mjs"
 import { learningMarkdown } from "../../lib/learning/markdown.mjs"
 import { articleStructure, validateArticleStructure } from "./structure.mjs"
-import { contentFiles, isInboxPath } from "./files.mjs"
+import { sourceContentFiles, isInboxPath } from "./files.mjs"
 
 export async function buildContent(root) {
   const config = loadContentConfig(root)
@@ -25,6 +25,7 @@ export async function buildContent(root) {
     albums = [],
     corners = [],
     music = [],
+    friends = [],
     journey = [],
     localRoutes = new Map(),
     entryFiles = new Map(),
@@ -84,8 +85,16 @@ export async function buildContent(root) {
       throw Error("The reading shelf must be public or password protected.")
   }
   let journeyAccess
-  if (config.site.journey) {
-    const file = path.resolve(root, config.site.journey)
+  const journeySource = config.sources.find((source) => source.adapter === "journey" && source.page)
+  if (journeySource || config.site.journey) {
+    const file = journeySource
+      ? path.resolve(journeySource.path, journeySource.page)
+      : path.resolve(root, config.site.journey)
+    if (
+      journeySource &&
+      !fs.realpathSync(file).startsWith(fs.realpathSync(journeySource.path) + path.sep)
+    )
+      throw Error("Journey page escapes its collection")
     const { data } = frontmatter(fs.readFileSync(file, "utf8"), file)
     journeyAccess = publication(data, { id: "site" }, "journey", "journey", file)
     if (journeyAccess.mode === "exclude")
@@ -200,7 +209,7 @@ export async function buildContent(root) {
         throw new Error(`Required content source missing: ${source.id} (${base})`)
       continue
     }
-    const sourceFiles = contentFiles(base).filter((file) => file.endsWith(".md"))
+    const sourceFiles = sourceContentFiles(source).filter((file) => file.endsWith(".md"))
     sources.push({ id: source.id, files: sourceFiles.length })
     if (source.adapter === "notes" || source.adapter === "articles") {
       for (const file of sourceFiles) {
@@ -261,8 +270,14 @@ export async function buildContent(root) {
         entries.push(entry)
       }
     } else if (["journey", "projects", "albums", "corner"].includes(source.adapter)) {
-      if (source.adapter === "corner")
+      if (source.adapter === "corner") {
         music.push(...compileMusic(source, (url, file) => registerAsset(url, source, file)))
+        friends.push(
+          ...compileFriends(source, config.locales, (url, file) =>
+            registerAsset(url, source, file),
+          ),
+        )
+      }
       const items = compileCollection(
         source,
         sourceFiles,
@@ -667,6 +682,9 @@ export async function buildContent(root) {
     throw Error("Duplicate music track ID across modules")
   writeIfChanged("content.json", { entries, stories, projects, paths, journey, albums, corners })
   writeIfChanged("music.json", music)
+  if (new Set(friends.map((friend) => friend.id)).size !== friends.length)
+    throw Error("Duplicate friend ID across modules")
+  writeIfChanged("friends.json", friends)
   writeIfChanged("site-pages.json", sitePages)
   writeIfChanged("profile.json", profile)
   writeIfChanged("topics.json", topicAvailability)
@@ -704,6 +722,8 @@ export async function buildContent(root) {
         ...meta,
         excerpt: learningMarkdown(body)
           .markdown.replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+          .replace(/\[!(?:NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/g, "")
+          .replace(/==([^=\n]+)==/g, "$1")
           .replace(/[#*`>|]/g, "")
           .slice(0, 2200),
       })),

@@ -77,7 +77,7 @@ File `README.md` có frontmatter cũng có thể là nội dung giới thiệu d
 
 ## Truyện, album và Góc nhỏ
 
-Xem `CONTRIBUTING.md` hoặc `README.md` trong repo nội dung tương ứng để biết cấu trúc chương, bộ ảnh/video, nhạc và sách. Trang Đọc sách hiện chỉ hiển thị sách; metadata của kệ tương tác được mô tả trong `my-corner/books/README.md`. Hành trình và Đọc sách đang công khai; cấu hình khóa nằm trong `site/journey.md` và `site/shelf.md`. Dùng tư liệu có quyền sử dụng và giữ nguồn cần thiết.
+Xem `CONTRIBUTING.md` hoặc `README.md` trong repo nội dung tương ứng để biết cấu trúc chương, bộ ảnh/video, nhạc và sách. Trang Đọc sách hiện chỉ hiển thị sách; metadata của kệ tương tác được mô tả trong `my-corner/books/README.md`. Hành trình và Đọc sách đang công khai; cấu hình khóa nằm trong `my-corner/journey/page.md` trong repo nội dung và `site/shelf.md` trong website. Dùng tư liệu có quyền sử dụng và giữ nguồn cần thiết.
 
 ## Dọn mã và tài nguyên
 
@@ -95,3 +95,7 @@ Các nhánh `content-updates/*` do workflow của repo nội dung tạo chỉ d�
 2. Giữ PR tập trung vào một vấn đề; không đưa output sinh tự động hoặc credential vào commit.
 3. Nêu cách kiểm tra. Thay UI kèm ảnh ở điện thoại/desktop khi hữu ích; thay nội dung kèm nguồn tham khảo.
 4. Giữ tương thích URL/ID cũ và chờ maintainer review trước khi xuất bản.
+
+## Logo THM
+
+Hình học và màu gốc nằm trong `lib/brand.mjs`; component `components/brand/logo.tsx` dùng chung dữ liệu đó. Chạy `pnpm icons` sau khi thay đổi logo để tạo lại `public/logo.svg`, favicon SVG, các favicon PNG và Apple icon. Giao diện tối dùng màu sáng cho thân chữ, giữ điểm nhấn vàng. Kích thước và tỷ lệ hiển thị nằm trong `styles/brand.css`; không kéo giãn riêng chiều cao của SVG.

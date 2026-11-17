@@ -816,11 +816,6 @@
 body[data-music-docked] {
   padding-bottom: calc(76px + env(safe-area-inset-bottom));
 }
-body[data-music-docked] .reader-mobile-tools {
-  left: 17px;
-  right: auto;
-  bottom: calc(88px + env(safe-area-inset-bottom));
-}
 @media (max-width: 760px) {
   .music-dock-inner {
     gap: 10px;

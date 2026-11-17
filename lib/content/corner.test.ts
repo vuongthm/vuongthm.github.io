@@ -5,7 +5,7 @@ import path from "node:path"
 import { buildContent } from "../../scripts/content/build.mjs"
 import { loadContentConfig } from "../../scripts/content/config.mjs"
 import { decryptString } from "@/lib/crypto.mjs"
-import { compileMusic } from "../../scripts/content/corner.mjs"
+import { compileMusic, compileFriends } from "../../scripts/content/corner.mjs"
 const folders: string[] = []
 afterEach(() => {
   vi.unstubAllEnvs()
@@ -64,6 +64,114 @@ function fixture() {
   return { app, repo, track, writeTracks, article, source }
 }
 describe("independent personal-corner modules", () => {
+  it("builds nested journey, stories and friends from one standalone repository while preserving routes and passwords", async () => {
+    const f = fixture()
+    const write = (name: string, body: string) => {
+      const file = path.join(f.repo, name)
+      fs.mkdirSync(path.dirname(file), { recursive: true })
+      fs.writeFileSync(file, body)
+    }
+    f.article("one-book")
+    write(
+      "module.json",
+      JSON.stringify({
+        id: "my-corner",
+        adapter: "corner",
+        music: "music/tracks.json",
+        friends: "friends/friends.json",
+        collections: ["journey", "stories"],
+      }),
+    )
+    write(
+      "journey/module.json",
+      JSON.stringify({ id: "journey", adapter: "journey", page: "page.md" }),
+    )
+    write("journey/page.md", "---\nid: journey\ntitle: Journey\nlock: false\n---\n")
+    write("journey/vi/roots.md", "---\nid: roots\ntitle: Roots\norder: 1\n---\n\nA beginning.")
+    write("stories/module.json", JSON.stringify({ id: "stories", adapter: "stories" }))
+    write(
+      "stories/example/vi/series.md",
+      "---\ntitle: Example\ndate: 2026-11-01\n---\n\nAn introduction.",
+    )
+    write(
+      "stories/example/vi/chapter-1.md",
+      "---\ntitle: A chapter\ndate: 2026-11-02\nlock: true\n---\n\n## A memory\n\nPrivate chapter text.",
+    )
+    const friend = {
+      id: "friend",
+      name: "Friend",
+      alias: "friend",
+      initials: "F",
+      website: "https://example.org",
+      topics: ["Security"],
+      description: { vi: "Bạn", en: "Friend", ja: "友人", zh: "朋友" },
+      avatar: "media/avatar.svg",
+    }
+    write("friends/friends.json", JSON.stringify([friend]))
+    write(
+      "friends/media/avatar.svg",
+      '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"/>',
+    )
+    vi.stubEnv(
+      "CONTENT_PASSWORDS",
+      JSON.stringify({ "stories/example/chapter-1": "a-unique-story-test-password" }),
+    )
+    // Simulate the standalone website's fetched repository, without local module roots.
+    const remote = path.join(f.app, ".content-sources/my-corner")
+    fs.cpSync(f.repo, remote, { recursive: true })
+    const file = path.join(f.app, "content.sources.json")
+    const config = JSON.parse(fs.readFileSync(file, "utf8"))
+    fs.writeFileSync(
+      file,
+      JSON.stringify({
+        ...config,
+        moduleRoots: [],
+        repositories: [{ id: "my-corner", repository: "owner/my-corner" }],
+      }),
+    )
+    await buildContent(f.app)
+    const db = JSON.parse(fs.readFileSync(path.join(f.app, "generated/content.json"), "utf8"))
+    expect(db.corners).toHaveLength(1)
+    expect(db.journey).toHaveLength(1)
+    expect(db.journey[0].id).toBe("roots")
+    expect(db.stories).toHaveLength(1)
+    expect(db.entries[0]).toMatchObject({
+      id: "stories:example:chapter-1",
+      href: "/vi/stories/example/chapter-1/",
+      encrypted: true,
+    })
+    const plaintext = await decryptString("a-unique-story-test-password", db.entries[0].body)
+    if (!plaintext) throw Error("The existing story password must still decrypt its chapter")
+    const decoded = JSON.parse(plaintext)
+    expect(decoded.body).toContain("Private chapter text")
+    expect(
+      JSON.parse(fs.readFileSync(path.join(f.app, "generated/friends.json"), "utf8"))[0].avatar,
+    ).toBe("/media/my-corner/friends/media/avatar.svg")
+    expect(fs.existsSync(path.join(f.app, "public/media/my-corner/friends/media/avatar.svg"))).toBe(
+      true,
+    )
+    expect(
+      JSON.parse(fs.readFileSync(path.join(f.app, "generated/site-pages.json"), "utf8")).journey
+        .encrypted,
+    ).toBe(false)
+    write(
+      "module.json",
+      JSON.stringify({ id: "my-corner", adapter: "corner", collections: ["../"] }),
+    )
+    // A manifest cannot resolve a collection outside its own repository.
+    fs.cpSync(path.join(f.repo, "module.json"), path.join(remote, "module.json"))
+    expect(() => loadContentConfig(f.app)).toThrow(/escapes its repository/)
+  })
+  it("validates the friend manifest and never reads paths outside the module", () => {
+    const f = fixture(),
+      source = { ...f.source(), friends: "friends.json" }
+    fs.writeFileSync(
+      path.join(f.repo, "friends.json"),
+      JSON.stringify([{ id: "duplicate" }, { id: "duplicate" }]),
+    )
+    expect(() => compileFriends(source, ["vi"])).toThrow(/Incomplete friend/)
+    expect(() => compileFriends({ ...source, friends: "../module.json" }, ["vi"])).toThrow()
+  })
   it("compiles Markdown shelves and Unicode-named lyrics through the same independent manifest", async () => {
     const f = fixture()
     f.article("slow-pages", "sample: true\nshelfStatus: current")

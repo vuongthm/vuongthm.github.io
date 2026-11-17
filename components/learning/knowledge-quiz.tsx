@@ -2,6 +2,7 @@
 import { useId, useRef, useState, type FormEvent } from "react"
 import { ArrowRight, Check, CircleHelp, RotateCcw, X } from "lucide-react"
 import { Dialog } from "@/components/search/dialog"
+import { playSound } from "@/lib/interaction-sound"
 import { useSite } from "@/components/providers/site-provider"
 import { learningMessages } from "@/lib/i18n/learning"
 import { gradeQuiz } from "@/lib/learning/quiz.mjs"
@@ -33,6 +34,7 @@ export function KnowledgeQuiz({ quiz }: { quiz: QuizData }) {
       return
     }
     setGraded(true)
+    playSound(result.correct === result.total ? "success" : "select")
     requestAnimationFrame(() => {
       summary.current?.focus({ preventScroll: true })
       summary.current?.scrollIntoView({
@@ -131,6 +133,7 @@ export function KnowledgeQuiz({ quiz }: { quiz: QuizData }) {
                               graded ? `${id}-${question.id}-explanation` : undefined
                             }
                             onChange={() => {
+                              playSound("select")
                               setAnswers((previous) => ({ ...previous, [question.id]: choice }))
                               setGraded(false)
                             }}
@@ -176,7 +179,7 @@ export function KnowledgeQuiz({ quiz }: { quiz: QuizData }) {
                 <RotateCcw size={14} />
                 {text.retry}
               </button>
-              <button className="button primary" type="submit">
+              <button className="button primary" type="submit" data-sound="off">
                 {text.check}
                 <Check size={15} />
               </button>

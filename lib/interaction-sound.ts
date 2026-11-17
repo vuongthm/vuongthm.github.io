@@ -1,8 +1,22 @@
 export type Sound =
-  "tap" | "open" | "tick" | "key" | "switch" | "select" | "success" | "dismiss" | "page" | "lock"
+  | "tap"
+  | "open"
+  | "tick"
+  | "key"
+  | "switch"
+  | "select"
+  | "success"
+  | "dismiss"
+  | "page"
+  | "lock"
+  | "press"
+  | "toggle-on"
+  | "toggle-off"
 const preference = "vuong:interaction-sounds"
 const change = "vuong:sound-change"
 let context: AudioContext | undefined
+let output: GainNode | undefined
+let lastPress = 0
 let lastTap = 0
 let lastKey = 0
 let memoryPreference: boolean | undefined
@@ -19,6 +33,7 @@ export function subscribeSound(listener: () => void) {
   const storage = (event: StorageEvent) => {
     if (event.key !== preference && event.key !== null) return
     memoryPreference = undefined
+    updateLevel()
     listener()
   }
   window.addEventListener(change, listener)
@@ -28,6 +43,12 @@ export function subscribeSound(listener: () => void) {
     window.removeEventListener("storage", storage)
   }
 }
+function updateLevel() {
+  if (!context || !output) return
+  const now = context.currentTime
+  output.gain.cancelScheduledValues(now)
+  output.gain.setTargetAtTime(soundEnabled() ? 0.9 : 0, now, 0.008)
+}
 export function setSoundEnabled(enabled: boolean) {
   memoryPreference = enabled
   try {
@@ -35,12 +56,18 @@ export function setSoundEnabled(enabled: boolean) {
   } catch {
     /* Private browsing. */
   }
+  updateLevel()
   window.dispatchEvent(new Event(change))
 }
 export function unlockSound() {
   if (!soundEnabled()) return
   try {
     context ??= new AudioContext()
+    if (!output) {
+      output = context.createGain()
+      output.gain.value = 0.9
+      output.connect(context.destination)
+    }
     if (context.state === "suspended") void context.resume().catch(() => {})
   } catch {
     /* Sound is an enhancement; unsupported browsers stay quiet. */
@@ -63,6 +90,26 @@ export function playSound(kind: Sound, step = 0) {
     return
   }
   const now = performance.now()
+  if (kind === "press") {
+    if (now - lastPress < 50) return
+    lastPress = now
+    const oscillator = context.createOscillator(),
+      gain = context.createGain(),
+      start = context.currentTime
+    oscillator.type = "sine"
+    oscillator.frequency.setValueAtTime(180, start)
+    oscillator.frequency.exponentialRampToValueAtTime(95, start + 0.028)
+    gain.gain.setValueAtTime(0.045, start)
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.032)
+    oscillator.connect(gain).connect(output!)
+    oscillator.start(start)
+    oscillator.stop(start + 0.035)
+    oscillator.onended = () => {
+      oscillator.disconnect()
+      gain.disconnect()
+    }
+    return
+  }
   if (kind === "key") {
     if (now - lastKey < 45) return
     lastKey = now
@@ -91,7 +138,7 @@ export function playSound(kind: Sound, step = 0) {
     filter.frequency.value = 1550 * variation
     filter.Q.value = 0.65
     gain.gain.value = 0.19
-    source.connect(filter).connect(gain).connect(context.destination)
+    source.connect(filter).connect(gain).connect(output!)
     source.start(start)
     source.onended = () => {
       source.disconnect()
@@ -110,7 +157,7 @@ export function playSound(kind: Sound, step = 0) {
       envelope.gain.setValueAtTime(0, start)
       envelope.gain.linearRampToValueAtTime(volume, start + 0.002)
       envelope.gain.exponentialRampToValueAtTime(0.0001, start + decay)
-      body.connect(envelope).connect(context.destination)
+      body.connect(envelope).connect(output!)
       body.start(start)
       body.stop(start + decay + 0.005)
       body.onended = () => {
@@ -128,7 +175,7 @@ export function playSound(kind: Sound, step = 0) {
     gain.gain.setValueAtTime(0.06, context.currentTime)
     gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.026)
     oscillator.connect(gain)
-    gain.connect(context.destination)
+    gain.connect(output!)
     oscillator.start()
     oscillator.stop(context.currentTime + 0.03)
     oscillator.onended = () => {
@@ -148,6 +195,14 @@ export function playSound(kind: Sound, step = 0) {
       [523.25, 0, 0.085, 0.12],
       [783.99, 0.025, 0.095, 0.065],
       [1046.5, 0.042, 0.07, 0.025],
+    ],
+    "toggle-on": [
+      [560, 0, 0.065, 0.075],
+      [920, 0.025, 0.085, 0.045],
+    ],
+    "toggle-off": [
+      [470, 0, 0.055, 0.065],
+      [295, 0.022, 0.075, 0.04],
     ],
     switch: [
       [660, 0, 0.07, 0.08],
@@ -186,7 +241,7 @@ export function playSound(kind: Sound, step = 0) {
     gain.gain.linearRampToValueAtTime(volume, start + 0.008)
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration)
     oscillator.connect(gain)
-    gain.connect(context.destination)
+    gain.connect(output!)
     oscillator.start(start)
     oscillator.stop(start + duration + 0.01)
     oscillator.onended = () => {

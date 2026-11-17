@@ -1,5 +1,6 @@
 "use client"
 /* eslint-disable @next/next/no-img-element -- Persistent music artwork also supports local Blob URLs. */
+import { BrandLockup } from "@/components/brand/logo"
 import { useEffect, useRef, useState, type CSSProperties } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -209,7 +210,10 @@ export function MusicPlaybackSurface() {
                 <i />
                 <i />
               </span>
-              <span className="music-artwork-label">vuong. / listening room</span>
+              <span className="music-artwork-label">
+                <BrandLockup />
+                <span>/ listening room</span>
+              </span>
             </div>
           )}
         </section>

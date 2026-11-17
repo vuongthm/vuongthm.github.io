@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto"
 import { loadContentConfig } from "./config.mjs"
 import { frontmatter, hasLock } from "./schema.mjs"
 import { contentLockKey, loadContentPasswords } from "./locks.mjs"
-import { contentFiles } from "./files.mjs"
+import { sourceContentFiles } from "./files.mjs"
 const root = path.resolve(import.meta.dirname, "../.."),
   file = path.join(root, "passwords.json")
 if (process.env.CI && !(process.env.CONTENT_PASSWORDS || process.env.CONTENT_PASSWORD))
@@ -14,7 +14,7 @@ const values = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) :
 const config = loadContentConfig(root, { allowMissingRepositories: true }),
   keys = new Set(["vault"])
 for (const source of config.sources) {
-  const files = contentFiles(source.path).filter((file) => file.endsWith(".md"))
+  const files = sourceContentFiles(source).filter((file) => file.endsWith(".md"))
   for (const file of files) {
     const raw = fs.readFileSync(file, "utf8")
     if (!raw.startsWith("---")) continue
@@ -37,6 +37,12 @@ for (const source of config.sources) {
       keys.add(contentLockKey(data, source.id, id))
     }
   }
+}
+for (const source of config.sources.filter(
+  (source) => source.adapter === "journey" && source.page,
+)) {
+  const { data } = frontmatter(fs.readFileSync(path.resolve(source.path, source.page), "utf8"))
+  if (hasLock(data)) keys.add(contentLockKey(data, "site", "journey"))
 }
 for (const [setting, id] of [
   ["photoJournal", "my-album"],

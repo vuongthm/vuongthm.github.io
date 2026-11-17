@@ -58,7 +58,7 @@ export function SiteShell({
       }
       const observe = () => {
         observer?.disconnect()
-        const height = headerRef.current?.getBoundingClientRect().height ?? 80
+        const height = headerRef.current?.getBoundingClientRect().bottom ?? 88
         setHeroPassed(hero.getBoundingClientRect().bottom <= height)
         observer = new IntersectionObserver(
           ([entry]) => setHeroPassed(entry.boundingClientRect.bottom <= height),
@@ -82,10 +82,10 @@ export function SiteShell({
     // Animate the persistent surface; remounting PageAccess would discard unlocked sessions.
     const animation = contentRef.current?.animate(
       [
-        { opacity: 0, transform: "translateY(7px)" },
+        { opacity: 0, transform: "translateY(5px)" },
         { opacity: 1, transform: "none" },
       ],
-      { duration: 400, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+      { duration: 320, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
     )
     return () => animation?.cancel()
   }, [path])
@@ -238,7 +238,7 @@ export function SiteShell({
           </div>
         </div>
       </header>
-      {headerPinned && <div className="header-spacer" aria-hidden="true" />}
+      <div className="header-spacer" aria-hidden="true" data-reading-chrome />
       {(desktopMenu || languageOpen) && (
         <button
           className="navigation-backdrop"

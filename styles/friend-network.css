@@ -80,25 +80,38 @@
     stroke 300ms,
     stroke-width 300ms;
 }
-.network-lines path.is-connected {
+.network-lines .is-connected > path {
   stroke: var(--accent);
   stroke-width: 1.5;
   opacity: 0.7;
 }
-.network-lines .network-hop-route {
-  stroke: var(--secondary);
-  stroke-width: 1;
-  stroke-dasharray: 2 7;
+.network-lines .network-data {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 0.025 0.975;
   opacity: 0.35;
+  animation: network-data-flow var(--flow-duration) linear var(--flow-delay) infinite;
 }
-.network-spark {
-  fill: var(--accent);
-  stroke: var(--bg);
-  stroke-width: 2;
-  filter: drop-shadow(0 0 5px var(--accent));
+.network-lines .is-connected > .network-data {
+  stroke: var(--accent);
+  stroke-width: 3;
+  opacity: 0.95;
+}
+@keyframes network-data-flow {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 .friend-node {
   position: absolute;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
   width: 62px;
   height: 62px;
   padding: 5px;
@@ -305,9 +318,21 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .network-data {
+    display: none;
+    animation: none;
+  }
   .network-lines path,
   .friend-node,
   .network-topics > button {
     transition: none;
   }
+}
+
+.network-canvas[data-dragging] .friend-node {
+  cursor: grabbing;
+}
+.friend-node img {
+  pointer-events: none;
+  -webkit-user-drag: none;
 }

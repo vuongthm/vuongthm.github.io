@@ -228,7 +228,6 @@
   .reader-sidebar,
   .article-actions,
   .reader-breadcrumb,
-  .reading-progress,
   .focus-exit {
     display: none !important;
   }

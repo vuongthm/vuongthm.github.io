@@ -1,0 +1,291 @@
+/* A compact directory, an invitation to contribute, and one row of tools. */
+.site-footer,
+.dark .site-footer {
+  position: relative;
+  margin-top: 64px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-width: 1px 0 0;
+  border-radius: 22px 22px 0 0;
+  background: color-mix(in srgb, var(--soft) 60%, var(--bg));
+  color: var(--ink);
+}
+.footer-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 310px) minmax(0, 1fr);
+  grid-template-areas: "intro directory" "base toolbar";
+  align-items: end;
+  gap: 22px 88px;
+  padding-block: 32px 23px;
+}
+.footer-intro {
+  grid-area: intro;
+  align-self: start;
+}
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+}
+.footer-brand .brand-wordmark {
+  width: 84px;
+  height: auto;
+}
+.footer-intro > p {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.8;
+}
+.footer-contribution {
+  margin-top: 25px;
+}
+.footer-contribution > label {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.footer-email-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 43px;
+  padding: 5px 6px 5px 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 12px;
+  transition:
+    background-color 180ms var(--ease-surface),
+    border-color 180ms var(--ease-surface),
+    box-shadow 220ms var(--ease-surface);
+}
+.footer-email-field:focus-within {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  box-shadow: none;
+}
+.footer-email-field input {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  height: 31px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 400 12px/1.5 var(--font-ui);
+}
+.footer-email-field input:focus,
+.footer-email-field input:focus-visible {
+  border: 0;
+  outline: none;
+  box-shadow: none;
+}
+.footer-email-field input::placeholder {
+  color: var(--muted);
+}
+.footer-email-field button {
+  display: grid;
+  flex: 0 0 31px;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  border-radius: 7px;
+  background: var(--accent);
+  color: var(--on-accent);
+  transition:
+    background-color 180ms var(--ease-surface),
+    transform 180ms var(--ease-surface);
+}
+.footer-email-field button:hover {
+  background: var(--accent-hover);
+}
+.footer-email-field button:active {
+  transform: scale(0.96);
+}
+.footer-email-field button svg {
+  transition: transform 240ms var(--ease-surface);
+}
+.footer-email-field button:hover svg {
+  transform: translateX(2px);
+}
+.footer-contribution-hint {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.footer-directory {
+  grid-area: directory;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  min-width: 0;
+  padding-top: 30px;
+}
+.footer-nav {
+  min-width: 0;
+}
+.footer-nav h2 {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font: 500 10px/1.6 var(--font-ui);
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+.footer-nav ul {
+  display: grid;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.footer-nav a {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 34px;
+  padding-block: 5px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink);
+  transition: color 180ms var(--ease-surface);
+}
+.footer-nav a:hover {
+  color: var(--accent);
+}
+.footer-toolbar {
+  grid-area: toolbar;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+.footer-toolbar .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+}
+.footer-toolbar .icon-button:hover {
+  color: var(--accent);
+  background: var(--accent-light);
+}
+.footer-top {
+  margin-left: auto;
+}
+.footer-base {
+  grid-area: base;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 14px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.8;
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  .footer-layout {
+    grid-template-columns: minmax(210px, 260px) minmax(0, 1fr);
+    column-gap: 38px;
+  }
+  .footer-directory {
+    gap: 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .footer-nav a {
+    font-size: 11px;
+  }
+  .footer-nav h2 {
+    font-size: 9px;
+  }
+  .footer-toolbar {
+    gap: 4px;
+  }
+}
+@media (max-width: 760px) {
+  .site-footer,
+  .dark .site-footer {
+    margin-top: 38px;
+    border-radius: 16px 16px 0 0;
+  }
+  .footer-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "intro" "directory" "toolbar" "base";
+    gap: 24px;
+    padding-block: 27px 20px;
+  }
+  .footer-intro > p {
+    font-size: 12px;
+  }
+  .footer-contribution {
+    margin-top: 23px;
+  }
+  .footer-directory {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 22px;
+    padding-top: 0;
+  }
+  .footer-nav-explore {
+    display: none;
+  }
+  .footer-email-field input {
+    font-size: 16px;
+  }
+  .footer-email-field input::placeholder {
+    font-size: 12px;
+  }
+  .footer-nav:last-child {
+    text-align: right;
+  }
+  .footer-nav:last-child a {
+    margin-left: auto;
+  }
+  .footer-nav h2 {
+    font-size: 10px;
+    letter-spacing: 0.025em;
+    margin-bottom: 11px;
+  }
+  .footer-nav a {
+    min-height: 37px;
+    font-size: 12px;
+  }
+  .footer-toolbar {
+    gap: clamp(2px, 1vw, 7px);
+    justify-content: space-between;
+  }
+  .footer-toolbar .icon-button {
+    width: 32px;
+    height: 38px;
+    min-height: 38px;
+  }
+  .footer-top {
+    margin-left: 0;
+  }
+  .footer-base {
+    gap: 3px 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-email-field,
+  .footer-email-field button,
+  .footer-email-field button svg {
+    transition: none;
+  }
+  .footer-email-field button:is(:hover, :active),
+  .footer-email-field button:hover svg {
+    transform: none;
+  }
+}

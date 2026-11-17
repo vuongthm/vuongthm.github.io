@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { isLocale, languageName } from "./config"
+import { isLocale, languageName, defaultLocale } from "./config"
 
 describe("language picker labels", () => {
+  it("opens the site in English by default", () => {
+    expect(defaultLocale).toBe("en")
+  })
   it("uses names from the current interface language", () => {
     expect(languageName("vi", "ja")).toBe("Tiếng Nhật")
     expect(languageName("en", "ja")).toBe("Japanese")

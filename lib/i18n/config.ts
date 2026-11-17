@@ -6,7 +6,7 @@ export const locales = {
 } as const
 
 export type Locale = keyof typeof locales
-export const defaultLocale: Locale = "vi"
+export const defaultLocale: Locale = "en"
 export const localeCodes = Object.keys(locales) as Locale[]
 export function isLocale(value: string): value is Locale {
   return Object.hasOwn(locales, value)

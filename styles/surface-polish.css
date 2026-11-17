@@ -1,0 +1,169 @@
+/* Shared, restrained surface motion. Layout and reading remain stable. */
+:root {
+  --ease-surface: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius-control: 9px;
+  --radius-panel: 15px;
+  --shadow-surface: 0 2px 6px #00000005, 0 14px 42px #00000012;
+  --link-hover: var(--reading-teal);
+  --on-accent: #fff;
+}
+.dark {
+  --on-accent: #101214;
+  --shadow-surface: 0 2px 6px #00000020, 0 18px 50px #00000040;
+}
+:where(a, button, input, select, textarea) {
+  transition-timing-function: var(--ease-surface);
+}
+:is(.button, .journal-all, .icon-button, .navigation-trigger, .article-actions button) {
+  border-radius: var(--radius-control);
+  transition:
+    color 180ms var(--ease-surface),
+    background-color 180ms var(--ease-surface),
+    border-color 180ms var(--ease-surface),
+    box-shadow 220ms var(--ease-surface),
+    transform 220ms var(--ease-surface);
+}
+:is(.button, .journal-all, .icon-button, .navigation-trigger, .article-actions button):active:not(
+    :disabled
+  ) {
+  transform: scale(0.98);
+  transition-duration: 100ms;
+}
+:is(.dialog-panel, .navigation-panel, .dropdown) {
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-surface);
+}
+:is(.code-block, .table-scroll) {
+  border-radius: 11px;
+}
+.article-image img {
+  border-radius: 8px;
+}
+.glossary-note {
+  border-radius: 11px;
+  box-shadow: var(--shadow-surface);
+}
+/* Remove the line without changing its layout; the colour carries the hover state. */
+:root a:any-link:hover {
+  text-decoration-line: none;
+}
+/* Text links may change hue; filled controls keep their own contrast pair. */
+:where(a:any-link):hover {
+  color: var(--link-hover);
+}
+.site-content .prose a:hover,
+.site-content :is(.text-link, .back-link, .content-language):hover {
+  text-decoration: none;
+  color: var(--link-hover);
+}
+.glossary-term:hover,
+.glossary-term[aria-expanded="true"] {
+  text-decoration-line: none;
+  border-bottom-color: transparent;
+  color: var(--link-hover);
+}
+.journal-all {
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 500;
+}
+:root .journal-all:is(:hover, :focus-visible) {
+  background: var(--accent-hover);
+  color: var(--on-accent);
+  text-decoration: none;
+}
+.journal-all:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+/* Short travel, soft deceleration; opacity and transforms do the animation work. */
+.desktop-nav .navigation-panel {
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-surface);
+  transition:
+    opacity 160ms var(--ease-surface),
+    transform 260ms var(--ease-surface),
+    visibility 0s 160ms;
+}
+.desktop-nav .navigation-panel.is-open {
+  transition-delay: 0s;
+}
+.dialog-backdrop {
+  animation: surface-backdrop-in 180ms ease-out both;
+}
+.dialog-backdrop .dialog-panel {
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-surface);
+  animation: surface-panel-in 300ms var(--ease-surface) both;
+}
+.language-control .dropdown {
+  border-radius: 12px;
+  box-shadow: var(--shadow-surface);
+  transform-origin: top right;
+  animation: surface-popover-in 240ms var(--ease-surface) both;
+}
+.navigation-menu-list a,
+.dropdown a,
+.search-result {
+  transition:
+    background-color 150ms var(--ease-surface),
+    color 150ms var(--ease-surface);
+}
+@keyframes surface-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes surface-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes surface-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  :is(.button, .journal-all):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px #00000008;
+  }
+  :is(.button, .journal-all):active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.button, .journal-all, .icon-button, .navigation-trigger, .article-actions button),
+  .desktop-nav .navigation-panel,
+  .navigation-menu-list a,
+  .dropdown a,
+  .search-result {
+    transition: none;
+  }
+  :is(.button, .journal-all, .icon-button, .navigation-trigger, .article-actions button):is(
+    :active,
+    :hover
+  ) {
+    transform: none;
+  }
+  .dialog-backdrop,
+  .dialog-backdrop .dialog-panel,
+  .language-control .dropdown {
+    animation: none;
+  }
+}

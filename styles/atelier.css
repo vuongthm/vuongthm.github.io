@@ -35,7 +35,6 @@
 }
 .dark .site-header,
 .dark .navigation-panel,
-.dark .site-footer,
 .dark .mobile-navigation,
 .dark .journal-topics a {
   background: var(--paper);
@@ -52,9 +51,6 @@
 }
 .dark .brand-wordmark {
   color: var(--ink);
-}
-.dark .site-footer {
-  color: var(--muted);
 }
 .journal-post h3 {
   font-size: var(--type-item-title);

@@ -6,6 +6,13 @@
   border-radius: 3px;
   background: #fff;
 }
+.article-image[data-color-scheme="adaptive"] img {
+  background: transparent;
+  color-scheme: light;
+}
+.dark .article-image[data-color-scheme="adaptive"] img {
+  color-scheme: dark;
+}
 .image-caption {
   display: block;
   text-align: center;

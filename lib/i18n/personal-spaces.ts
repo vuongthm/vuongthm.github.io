@@ -14,7 +14,7 @@ const en = {
   readingProgress: "Reading progress",
   keepsakes: "Things to keep",
   networkHint:
-    "Lines connect people who share a topic. Choose a person to get to know their corner of the web.",
+    "Choose a person to bring them to the center and see shared topics. Drag the circles to explore; they gently settle back. Select the center again to return to the overview.",
   network: "A network of friends",
   random: "Meet someone at random",
   shared: "Shared topics",
@@ -37,7 +37,8 @@ export const personalSpaces: Record<Locale, Text> = {
     book: "Cuốn sách",
     readingProgress: "Tiến độ đọc",
     keepsakes: "Những điều muốn giữ lại",
-    networkHint: "Đường nối là những chủ đề chung. Chọn một người để ghé vào góc internet của họ.",
+    networkHint:
+      "Chọn một người để đưa vào giữa và xem các chủ đề chung. Bạn có thể kéo các nút; chúng sẽ nhẹ nhàng trở về vị trí. Chọn lại người ở giữa để xem toàn cảnh.",
     network: "Mạng lưới những người bạn",
     random: "Ghé thăm ngẫu nhiên",
     shared: "Chủ đề chung",
@@ -57,7 +58,7 @@ export const personalSpaces: Record<Locale, Text> = {
     readingProgress: "読書の進み具合",
     keepsakes: "心に残しておきたいこと",
     networkHint:
-      "共通のトピックを持つ人を線で結びます。一人選んで、その人のサイトをのぞいてみてください。",
+      "一人選ぶと中央に移動し、共通のトピックを持つ人とのつながりが光ります。丸をドラッグして探索できます。中央の人をもう一度選ぶと全体表示に戻ります。",
     network: "友人たちのネットワーク",
     random: "ランダムに一人選ぶ",
     shared: "共通のトピック",
@@ -76,7 +77,8 @@ export const personalSpaces: Record<Locale, Text> = {
     book: "书籍",
     readingProgress: "阅读进度",
     keepsakes: "想留下来的事",
-    networkHint: "细线连接拥有共同主题的朋友。选择一位，走进他的互联网天地。",
+    networkHint:
+      "选择一位朋友移到中央，查看共同话题的连线。圆点可以拖动，松开后会轻轻归位。再次选择中央的朋友可返回全览。",
     network: "朋友关系网络",
     random: "随机认识一位朋友",
     shared: "共同主题",

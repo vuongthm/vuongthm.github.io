@@ -206,7 +206,13 @@ export function compileCollection(
           sample: base.data.sample === true,
           photoSources: encrypted ? [] : (base.data.photoSources ?? []),
           photos,
-          illustration: encrypted ? undefined : base.data.illustration,
+          illustration:
+            encrypted || !base.data.illustration
+              ? undefined
+              : {
+                  ...base.data.illustration,
+                  src: transformPhoto(base.data.illustration.src, base.file),
+                },
           includeStoryCover: !encrypted && base.data.includeStoryCover === true,
           storySlug: base.data.storySlug,
           entrySlugs: base.data.entrySlugs ?? [],

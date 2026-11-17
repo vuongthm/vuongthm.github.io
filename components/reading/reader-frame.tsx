@@ -10,19 +10,19 @@ import {
   ArrowLeft,
   ArrowRight,
   CornerDownLeft,
+  ChevronDown,
   Bookmark,
   BookmarkCheck,
   Check,
   Focus,
-  List,
   Minus,
   Plus,
   Printer,
   Share2,
   Sparkles,
-  X,
 } from "lucide-react"
-import { Dialog } from "@/components/search/dialog"
+import { ReadingProgress } from "./reading-progress"
+import { useReaderNavigation } from "@/lib/hooks/use-reader-navigation"
 import { useSite } from "@/components/providers/site-provider"
 import { dateLabel, localized, type Locale } from "@/lib/i18n/config"
 import { getTopic } from "@/lib/content/topics"
@@ -66,8 +66,7 @@ export function ReaderFrame({
     (value: Heading[]) => setUnlocked({ href: entry.href, headings: value }),
     [entry.href],
   )
-  const [active, setActive] = useState(headings[0]?.id ?? ""),
-    [size, setSize] = useState(15),
+  const [size, setSize] = useState(15),
     [focus, setFocus] = useState(false),
     [tocOpen, setTocOpen] = useState(false),
     [shared, setShared] = useState(false)
@@ -76,29 +75,17 @@ export function ReaderFrame({
   const focusOpener = useRef<HTMLButtonElement>(null),
     focusExit = useRef<HTMLButtonElement>(null)
   const hadFocus = useRef(false)
-  useEffect(() => {
-    const tick = () => {
-      const article = articleRef.current
-      if (!article) return
-      const rect = article.getBoundingClientRect(),
-        distance = Math.max(1, article.offsetHeight - window.innerHeight + 140),
-        value = Math.max(0, Math.min(1, (140 - rect.top) / distance))
-      if (progressRef.current) progressRef.current.style.transform = `scaleX(${value})`
-      let current = headings[0]?.id ?? ""
-      for (const heading of headings) {
-        if ((document.getElementById(heading.id)?.getBoundingClientRect().top ?? Infinity) <= 145)
-          current = heading.id
+  const mobileTocRef = useRef<HTMLElement>(null)
+  const mobileTocButton = useRef<HTMLButtonElement>(null)
+  const { active, navigate } = useReaderNavigation(headings, articleRef, progressRef)
+  const activeHeading = headings.find((heading) => heading.id === active)
+  const progressRing = (
+    <ReadingProgress
+      label={
+        { vi: "Tiến độ đọc", en: "Reading progress", ja: "読書の進捗", zh: "阅读进度" }[locale]
       }
-      setActive(current)
-    }
-    tick()
-    window.addEventListener("scroll", tick, { passive: true })
-    window.addEventListener("resize", tick)
-    return () => {
-      window.removeEventListener("scroll", tick)
-      window.removeEventListener("resize", tick)
-    }
-  }, [headings])
+    />
+  )
 
   useEffect(() => {
     document.documentElement.toggleAttribute("data-reading-focus", focus)
@@ -141,19 +128,34 @@ export function ReaderFrame({
     viewport.addEventListener("change", close)
     return () => viewport.removeEventListener("change", close)
   }, [])
-  function tocClick(id: string) {
-    setActive(id)
-    setTocOpen(false)
-    requestAnimationFrame(() => {
-      const target = document.getElementById(id)
-      target?.scrollIntoView({
-        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-        block: "start",
-      })
-      target?.setAttribute("tabindex", "-1")
-      target?.focus({ preventScroll: true })
-      history.replaceState(null, "", `#${id}`)
+  useEffect(() => {
+    if (!tocOpen) return
+    const frame = requestAnimationFrame(() => {
+      const list = mobileTocRef.current?.querySelector<HTMLElement>(".reader-toc-content")
+      const current = list?.querySelector<HTMLElement>("[aria-current=location]")
+      if (list && current)
+        list.scrollTop +=
+          current.getBoundingClientRect().top - list.getBoundingClientRect().top - 76
     })
+    const outside = (event: PointerEvent) => {
+      if (!mobileTocRef.current?.contains(event.target as Node)) setTocOpen(false)
+    }
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return
+      setTocOpen(false)
+      mobileTocButton.current?.focus({ preventScroll: true })
+    }
+    document.addEventListener("pointerdown", outside)
+    document.addEventListener("keydown", escape)
+    return () => {
+      cancelAnimationFrame(frame)
+      document.removeEventListener("pointerdown", outside)
+      document.removeEventListener("keydown", escape)
+    }
+  }, [tocOpen])
+  function tocClick(id: string) {
+    setTocOpen(false)
+    navigate(id)
   }
   const toc = (
     <ol className="toc-list">
@@ -161,6 +163,7 @@ export function ReaderFrame({
         <li key={item.id} className={item.level > 2 ? "toc-nested" : ""}>
           <a
             href={`#${item.id}`}
+            data-ui-sound="select"
             aria-current={active === item.id ? "location" : undefined}
             className={active === item.id ? "active" : ""}
             onClick={(event) => {
@@ -175,13 +178,42 @@ export function ReaderFrame({
     </ol>
   )
   return (
-    <>
-      <div
-        className="reading-progress"
-        ref={progressRef}
-        style={{ transform: "scaleX(0)" }}
-        aria-hidden="true"
-      />
+    <div className="reader-surface" ref={progressRef}>
+      {headings.length > 0 && (
+        <nav
+          className="reader-mobile-toc"
+          ref={mobileTocRef}
+          aria-label={m.toc}
+          data-reading-chrome
+        >
+          <div className="wrap">
+            <button
+              className="reader-toc-toggle"
+              ref={mobileTocButton}
+              aria-label={`${m.toc}: ${activeHeading?.text ?? ""}`}
+              aria-expanded={tocOpen}
+              aria-controls="reader-toc-panel"
+              onClick={() => setTocOpen((value) => !value)}
+            >
+              {progressRing}
+              <span className="reader-toc-current">{activeHeading?.text ?? m.toc}</span>
+              <ChevronDown size={15} aria-hidden="true" />
+            </button>
+          </div>
+          <div
+            className="reader-toc-dropdown"
+            data-open={tocOpen}
+            aria-hidden={!tocOpen}
+            inert={!tocOpen}
+          >
+            <div className="reader-toc-clip">
+              <div id="reader-toc-panel" className="reader-toc-content wrap">
+                {toc}
+              </div>
+            </div>
+          </div>
+        </nav>
+      )}
       <div className="wrap">
         <div className="reader-breadcrumb" data-reading-chrome>
           <Link href={`/${locale}/`}>{m.home}</Link>
@@ -195,7 +227,7 @@ export function ReaderFrame({
         <div className="reader-grid">
           <aside className="reader-sidebar" data-reading-chrome>
             <span className="eyebrow">
-              <List size={12} />
+              {progressRing}
               {m.toc}
             </span>
             {headings.length > 0 ? (
@@ -203,15 +235,6 @@ export function ReaderFrame({
             ) : entry.encrypted ? (
               <p className="reader-locked-note">{contentLockMessages[locale].toc}</p>
             ) : null}
-            <div className="reader-aside-note">
-              <p>
-                {copy(
-                  locale,
-                  "Ghi chép của một người đang học. Hãy đối chiếu nguồn và thử nghiệm trong môi trường của bạn.",
-                  "Notes from someone still learning. Check the sources and test in your own environment.",
-                )}
-              </p>
-            </div>
           </aside>
           <article
             className="reader-article"
@@ -250,6 +273,8 @@ export function ReaderFrame({
               <div className="article-actions" data-reading-chrome>
                 <button
                   className={saved ? "active" : ""}
+                  aria-pressed={saved}
+                  data-ui-sound="switch"
                   onClick={() => toggleBookmark({ href: entry.href, title: entry.title, locale })}
                 >
                   {saved ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}{" "}
@@ -320,43 +345,36 @@ export function ReaderFrame({
                   </Link>
                 ))}
               </div>
-              <div className="reader-bottom-nav">
-                {previous ? (
-                  <Link href={previous.href}>
-                    <small>
-                      <ArrowLeft size={12} />
-                      {m.previous}
-                    </small>
-                    <strong>{previous.title}</strong>
-                  </Link>
-                ) : (
-                  <Link
-                    href={localized(
-                      course
-                        ? `/paths/${course.slug}`
-                        : entry.seriesSlug
-                          ? `/stories/${entry.seriesSlug}`
-                          : "/notes",
-                      locale,
-                    )}
-                  >
-                    <small>
-                      <ArrowLeft size={12} />
-                      {m.back}
-                    </small>
-                    <strong>{entry.seriesSlug ? m.stories : m.knowledge}</strong>
-                  </Link>
-                )}
-                {next && (
-                  <Link href={next.href}>
-                    <small>
-                      {m.next}
-                      <ArrowRight size={12} />
-                    </small>
-                    <strong>{next.title}</strong>
-                  </Link>
-                )}
-              </div>
+              {course && (
+                <div className="reader-bottom-nav">
+                  {previous ? (
+                    <Link href={previous.href}>
+                      <small>
+                        <ArrowLeft size={12} />
+                        {m.previous}
+                      </small>
+                      <strong>{previous.title}</strong>
+                    </Link>
+                  ) : (
+                    <Link href={localized(`/paths/${course.slug}`, locale)}>
+                      <small>
+                        <ArrowLeft size={12} />
+                        {m.back}
+                      </small>
+                      <strong>{course.title[locale]}</strong>
+                    </Link>
+                  )}
+                  {next && (
+                    <Link href={next.href}>
+                      <small>
+                        {m.next}
+                        <ArrowRight size={12} />
+                      </small>
+                      <strong>{next.title}</strong>
+                    </Link>
+                  )}
+                </div>
+              )}
             </div>
             <div className="translation-links">
               {translations.map((item) => (
@@ -368,44 +386,6 @@ export function ReaderFrame({
           </article>
         </div>
       </div>
-      <div className="reader-mobile-tools" data-reading-chrome>
-        {headings.length > 0 && (
-          <button
-            className={tocOpen ? "active" : ""}
-            onClick={() => setTocOpen(true)}
-            aria-label={m.toc}
-            aria-expanded={tocOpen}
-            aria-controls="reader-toc-panel"
-          >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M4 4.5h5.5c1.2 0 2.1.4 2.5 1.1.4-.7 1.3-1.1 2.5-1.1H20v15h-5.5c-1.2 0-2.1.4-2.5 1.1-.4-.7-1.3-1.1-2.5-1.1H4zM12 5.6v15M7 9h2M7 12h2M15 9h2M15 12h2" />
-            </svg>
-          </button>
-        )}
-      </div>
-      {tocOpen && (
-        <Dialog label={m.toc} onClose={() => setTocOpen(false)} className="reader-toc-sheet">
-          <div className="reader-sheet-heading">
-            <h2>{m.toc}</h2>
-            <button className="icon-button" aria-label={m.close} onClick={() => setTocOpen(false)}>
-              <X size={17} />
-            </button>
-          </div>
-          <div id="reader-toc-panel" className="reader-sheet-content">
-            {toc}
-          </div>
-        </Dialog>
-      )}
       {focus && (
         <button
           className="focus-exit"
@@ -421,6 +401,6 @@ export function ReaderFrame({
           <kbd>esc</kbd>
         </button>
       )}
-    </>
+    </div>
   )
 }

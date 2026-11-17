@@ -187,9 +187,11 @@ if (kind === "module") {
     id = slug(args[["article", "album", "corner"].includes(kind) ? 1 : 0]),
     locale = argument("--lang", "vi")
   if (!["vi", "en", "ja", "zh"].includes(locale)) throw Error("Unsupported locale")
-  const definition = JSON.parse(
-    fs.readFileSync(path.join(content, moduleId, "module.json"), "utf8"),
-  )
+  const moduleBase =
+    kind === "milestone" && fs.existsSync(path.join(content, "my-corner/journey/module.json"))
+      ? path.join(content, "my-corner/journey")
+      : path.join(content, moduleId)
+  const definition = JSON.parse(fs.readFileSync(path.join(moduleBase, "module.json"), "utf8"))
   if (kind === "article" && !["notes", "articles"].includes(definition.adapter))
     throw Error("Choose an article module")
   const unit =
@@ -218,10 +220,10 @@ if (kind === "module") {
     throw Error("Choose a corner module and category books|films|podcasts")
   const file =
     kind === "project"
-      ? path.join(content, moduleId, id, locale, "index.md")
+      ? path.join(moduleBase, id, locale, "index.md")
       : kind === "corner"
-        ? path.join(content, moduleId, category, locale, id + ".md")
-        : path.join(content, moduleId, ...(unitFolder ? [unitFolder] : []), locale, id + ".md")
+        ? path.join(moduleBase, category, locale, id + ".md")
+        : path.join(moduleBase, ...(unitFolder ? [unitFolder] : []), locale, id + ".md")
   const counterpart =
     kind === "article"
       ? ["vi", "en", "ja", "zh"]
